@@ -5,6 +5,7 @@
 .packages
 build/
 .idea/
+
 # If you're building an application, you may want to check-in your pubspec.lock
 pubspec.lock
 
@@ -20,3 +21,6 @@ doc/api/
 *.js_
 *.js.deps
 *.js.map
+
+# Editor generated files/
+.vscode/

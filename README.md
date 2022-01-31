@@ -1,7 +1,7 @@
 # Millicast SDK for Flutter
 Flutter SDK for building a realtime broadcaster using the Millicast platform.
 
-This Software Development Kit (SDK) for Flutter allows developers to simplify Millicast services integration into their own web apps.
+This Software Development Kit (SDK) for Flutter allows developers to simplify Millicast services integration into their own Android and iOS apps.
 
 
 ## Table of Contents

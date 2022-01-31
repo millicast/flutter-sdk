@@ -1,7 +1,7 @@
 name: millicast_flutter_sdk
-description: A new Flutter package project.
+description: A Flutter SDK that allows developers to simplify Millicast services integration into their own Android and iOS apps.
 version: 0.0.1
-homepage:
+homepage: https://github.com/qualabs/
 
 environment:
   sdk: ">=2.15.1 <3.0.0"
@@ -15,6 +15,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^1.0.0
+  dartdoc: ^4.1.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
