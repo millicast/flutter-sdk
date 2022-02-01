@@ -1,7 +1,7 @@
-import 'package:millicast_flutter_sdk/utils/event_subscriber.dart';
+import 'utils/event_subscriber.dart';
 
-const user_count_target = 'SubscribeViewerCount';
-const user_count_target_response = 'SubscribeViewerCountResponse';
+const userCountTarget = 'SubscribeViewerCount';
+const userCountTargetResponse = 'SubscribeViewerCountResponse';
 
 const Map<String, dynamic> messageType = {};
 num invocationId = 0;

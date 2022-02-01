@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 const Map<String, dynamic> signalingEvents = {};
 const Map<String, dynamic> videoCodec = {};
@@ -11,7 +11,7 @@ const Map<String, dynamic> options = {
 class Signaling {
   String? streamName;
   String? wsUrl;
-  WebSocket? webSocket;
+  WebSocketChannel? webSocket;
   String? transactionManager;
 
   Signaling({Map<String, dynamic> options = options}) {

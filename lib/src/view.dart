@@ -1,5 +1,5 @@
+import 'utils/base_web_rtc.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
-import 'package:millicast_flutter_sdk/utils/base_web_rtc.dart';
 
 const Map<String, dynamic> connectOptionsView = {'': ''};
 const Object loggerView = {};
