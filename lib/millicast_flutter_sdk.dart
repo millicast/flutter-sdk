@@ -1,7 +1,10 @@
 library millicast_flutter_sdk;
 
-/// A Calculator.
-class Calculator {
-  /// Returns [value] plus 1.
-  int addOne(int value) => value + 1;
-}
+export './director.dart';
+export './peer_connection.dart';
+export './publish.dart';
+export './signaling.dart';
+export './stream_events.dart';
+export './view.dart';
+
+void main(List<String> args) {}
