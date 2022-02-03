@@ -1,3 +1,5 @@
+import 'package:logger/logger.dart';
+
 import '../peer_connection.dart';
 
 const num maxReconnectionInterval = 32000;
@@ -7,7 +9,7 @@ class BaseWebRTC {
   String streamName;
   Function tokenGenerator;
   bool autoReconnect;
-  Object loggerInstance;
+  Logger logger;
   String? signaling;
   PeerConnection? webRTCPeer;
   num? reconnectionInterval;
@@ -19,7 +21,7 @@ class BaseWebRTC {
     required this.streamName,
     required this.tokenGenerator,
     required this.autoReconnect,
-    required this.loggerInstance,
+    required this.logger,
     this.signaling,
     this.reconnectionInterval = baseInterval,
     this.alreadyDisconnected = false,
@@ -36,6 +38,6 @@ class BaseWebRTC {
 
   @override
   String toString() {
-    return 'BaseWebRTC(streamName: $streamName, tokenGenerator: $tokenGenerator, autoReconnect: $autoReconnect, loggerInstance: $loggerInstance, signaling: $signaling, webRTCPeer: $webRTCPeer, reconnectionInterval: $reconnectionInterval, alreadyDisconnected: $alreadyDisconnected, firstReconnection: $firstReconnection, options: $options)';
+    return 'BaseWebRTC(streamName: $streamName, tokenGenerator: $tokenGenerator, autoReconnect: $autoReconnect, loggerInstance: $logger, signaling: $signaling, webRTCPeer: $webRTCPeer, reconnectionInterval: $reconnectionInterval, alreadyDisconnected: $alreadyDisconnected, firstReconnection: $firstReconnection, options: $options)';
   }
 }

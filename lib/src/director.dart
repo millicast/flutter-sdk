@@ -1,3 +1,7 @@
+import 'logger.dart';
+
+var _logger = getLogger('Director');
+
 /// Simplify API calls to find the best server and region to publish and subscribe to.
 /// For security reasosn all calls will return a [JWT](https://jwt.io) token forn authentication including the required
 /// socket path to connect with.

@@ -1,5 +1,7 @@
 import 'package:web_socket_channel/web_socket_channel.dart';
+import 'logger.dart';
 
+var _logger = getLogger('Signaling');
 const Map<String, dynamic> signalingEvents = {};
 const Map<String, dynamic> videoCodec = {};
 const Map<String, dynamic> audioCodec = {};

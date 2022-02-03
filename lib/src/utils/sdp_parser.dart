@@ -1,4 +1,7 @@
 import 'package:flutter_webrtc/flutter_webrtc.dart';
+import '../logger.dart';
+
+var _logger = getLogger('SdpParser');
 
 const Map<String, dynamic> logger = {};
 

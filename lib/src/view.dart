@@ -1,8 +1,10 @@
 import 'utils/base_web_rtc.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
+import 'logger.dart';
+
+var _logger = getLogger('View');
 
 const Map<String, dynamic> connectOptionsView = {'': ''};
-const Object loggerView = {};
 
 class View extends BaseWebRTC {
   View(
@@ -14,7 +16,7 @@ class View extends BaseWebRTC {
             streamName: streamName,
             tokenGenerator: tokenGenerator,
             autoReconnect: autoReconnect,
-            loggerInstance: loggerView);
+            logger: _logger);
 
   void connect(
       {Map<String, dynamic> connectOptions = connectOptionsView}) async {}

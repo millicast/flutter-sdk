@@ -1,4 +1,7 @@
 import 'utils/event_subscriber.dart';
+import 'logger.dart';
+
+var _logger = getLogger('StreamEvents');
 
 const userCountTarget = 'SubscribeViewerCount';
 const userCountTargetResponse = 'SubscribeViewerCountResponse';

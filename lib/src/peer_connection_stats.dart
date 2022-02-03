@@ -1,3 +1,6 @@
+import 'logger.dart';
+
+var _logger = getLogger('PeerConnectionStats');
 const Map<String, dynamic> peerConnectionStatsEvents = {'stats': 'stats'};
 
 class PeerConnectionStats {
