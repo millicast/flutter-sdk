@@ -1,5 +1,6 @@
 import 'logger.dart';
 
+// ignore: unused_element
 var _logger = getLogger('PeerConnectionStats');
 const Map<String, dynamic> peerConnectionStatsEvents = {'stats': 'stats'};
 

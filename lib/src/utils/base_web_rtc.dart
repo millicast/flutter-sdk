@@ -38,6 +38,7 @@ class BaseWebRTC {
 
   @override
   String toString() {
+    // ignore: lines_longer_than_80_chars
     return 'BaseWebRTC(streamName: $streamName, tokenGenerator: $tokenGenerator, autoReconnect: $autoReconnect, loggerInstance: $logger, signaling: $signaling, webRTCPeer: $webRTCPeer, reconnectionInterval: $reconnectionInterval, alreadyDisconnected: $alreadyDisconnected, firstReconnection: $firstReconnection, options: $options)';
   }
 }

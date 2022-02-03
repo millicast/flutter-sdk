@@ -15,6 +15,7 @@ class InternalLogPrinter extends LogPrinter {
     AnsiColor? color = PrettyPrinter.levelColors[event.level];
     return [
       color!(
+          // ignore: lines_longer_than_80_chars
           '[$className] ${DateTime.now()} - ${(event.level).toString().toUpperCase().split('.')[1]} - ${event.message}')
     ];
   }

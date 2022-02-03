@@ -1,6 +1,7 @@
 import 'utils/event_subscriber.dart';
 import 'logger.dart';
 
+// ignore: unused_element
 var _logger = getLogger('StreamEvents');
 
 const userCountTarget = 'SubscribeViewerCount';

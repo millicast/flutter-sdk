@@ -2,9 +2,10 @@ import 'config.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'logger.dart';
 
+// ignore: unused_element
 var _logger = getLogger('PeerConnection');
 const Map<String, dynamic> webRTCEvents = {};
-const defaultTurnServerLocation = config;
+const String defaultTurnServerLocation = Config.millicastTurnserverLocation;
 const Map<String, dynamic> localSDPOptions = {};
 
 class PeerConnection {
