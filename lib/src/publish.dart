@@ -37,6 +37,8 @@ class Publish extends BaseWebRTC {
             autoReconnect: autoReconnect,
             logger: _logger);
 
-  void connect({Map<String, dynamic> connectOptions = connectOptions}) async {}
-  void reconnect() {}
+  @override
+  connect({Map<String, dynamic> connectOptions = connectOptions}) async {}
+  @override
+  reconnect() {}
 }

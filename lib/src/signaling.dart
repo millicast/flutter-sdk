@@ -15,6 +15,14 @@ const Map<String, String> videoCodec = {
   'AV1': 'av1',
 };
 
+/// Starts [WebSocketChannel] connection and manages the messages between peers.
+///
+/// [streamName] - Millicast stream name to get subscribed.
+// ignore: lines_longer_than_80_chars
+/// [wsUrl] URL is used to initialize a [webSocket] with Millicast server and establish a WebRTC connection.
+/// ```dart
+/// var millicastSignaling = Signaling(options);
+/// ```
 class Signaling extends EventEmitter {
   String? streamName;
   String wsUrl = 'ws://localhost:8080/';
@@ -22,6 +30,7 @@ class Signaling extends EventEmitter {
   TransactionManager? transactionManager;
   RTCSessionDescription? remoteSdp;
 
+  /// [options] - General signaling options.
   Signaling(Map<String, dynamic> options) {
     streamName = options['streamName'];
     wsUrl = options['url'];
@@ -30,6 +39,12 @@ class Signaling extends EventEmitter {
     remoteSdp = null;
   }
 
+  /// Starts a WebSocket connection with signaling server.
+  ///
+  /// ```dart
+  /// var response = await millicastSignaling.connect();
+  /// ```
+  /// [WebSocketChannel] Future object which represents the [webSocket] {@link https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API} of the establshed connection.
   Future<WebSocketChannel?> connect() async {
     {
       _logger.i('Connecting to Signaling Server');
@@ -49,8 +64,22 @@ class Signaling extends EventEmitter {
     }
   }
 
+  /// Close WebSocket connection with Millicast server.
+  ///
+  /// ```dart
+  /// millicastSignaling.close();
+  /// ```
   void close() {}
 
+  /// Establish WebRTC connection with Millicast Server as Subscriber role.
+  ///
+  /// [sdp] - The SDP information created by your offer.
+  /// [options] - Signaling Subscribe Options.
+  /// Returns [Future] object which represents the SDP command response.
+  ///
+  /// ```dart
+  /// var response = await millicastSignaling.subscribe(sdp)
+  /// ```
   subscribe(String sdp, {SignalingSubscribeOptions? options}) async {
     _logger.i('Starting subscription to streamName: $streamName');
     _logger.d('Subscription local description: $sdp');
@@ -97,7 +126,16 @@ class Signaling extends EventEmitter {
     }
   }
 
-  Future publish(String sdp, {SignalingPublishOptions? options}) async {
+  /// Establish WebRTC connection with Millicast Server as Publisher role.
+  ///
+  ///
+  /// [sdp] - The SDP information created by your offer.
+  /// [options] - Signaling Publish Options.
+  /// Returns Future object which represents the SDP command response.
+  /// ```dart
+  /// var response = await millicastSignaling.publish(sdp, {codec: 'h264'})
+  /// ```
+  Future publish(String? sdp, {SignalingPublishOptions? options}) async {
     _logger.i(
         // ignore: lines_longer_than_80_chars
         'Starting publishing to streamName: $streamName, codec: ${options?.codec}');
@@ -146,6 +184,11 @@ class Signaling extends EventEmitter {
     }
   }
 
+  /// Send command to the server.
+  ///
+  /// [cmd] - Command name.
+  /// [data] - Command parameters.
+  /// Returns a Future object which represents the command response.
   cmd(String cmd, Object data) async {
     _logger.i('Sending cmd: $cmd');
     transactionManager?.cmd(cmd, data);

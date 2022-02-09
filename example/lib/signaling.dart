@@ -1,9 +1,7 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:example/utils/constants.dart';
 import 'package:millicast_flutter_sdk/millicast_flutter_sdk.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
 
 var _logger = getLogger('Signaling');
 
@@ -34,7 +32,7 @@ Future<RTCPeerConnection> connect(
       'audio': true,
       'video': true
     };
-    
+
     MediaStream stream = await navigator.mediaDevices.getUserMedia(constraints);
     stream.getTracks().forEach((track) {
       peerConnection.peer?.addTrack(track, stream);

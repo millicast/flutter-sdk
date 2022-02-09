@@ -30,7 +30,6 @@ const Map<String, dynamic> localSDPOptions = {
 String defaultTurnServerLocation = Config.millicastTurnserverLocation;
 String turnServerLocation = defaultTurnServerLocation;
 
-// ignore: lines_longer_than_80_chars, lines_longer_than_80_chars
 class PeerConnection extends EventEmitter {
   RTCSessionDescription? sessionDescription;
   RTCPeerConnection? peer;
@@ -62,7 +61,6 @@ class PeerConnection extends EventEmitter {
     peer = await instanceRTCPeerConnection(this, config);
   }
 
-  // ignore: lines_longer_than_80_chars
   /// Get default RTC configuration with ICE servers from Milicast signaling server and merge it with the user configuration provided. User configuration has priority over defaults.
   ///
   /// [config] - Options to configure the new RTCPeerConnection.
@@ -279,7 +277,7 @@ class PeerConnection extends EventEmitter {
       peer.setLocalDescription(offer);
       peer.getRemoteDescription().then((value) {
         String? sdp = SdpParser.renegotiate(offer.sdp, value?.sdp);
-        _logger.i('Peer onnegotiationneeded, updating remote description', sdp);
+        _logger.i('Peer onnegotiationneeded, updating remote description $sdp');
 
         peer.setRemoteDescription(RTCSessionDescription(sdp, 'answer'));
         _logger.i('Peer onnegotiationneeded, renegotiation done');

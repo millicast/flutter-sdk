@@ -18,6 +18,7 @@ class View extends BaseWebRTC {
             autoReconnect: autoReconnect,
             logger: _logger);
 
+  @override
   void connect(
       {Map<String, dynamic> connectOptions = connectOptionsView}) async {}
   void select(Map? layer) async {}
