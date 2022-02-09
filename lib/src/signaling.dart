@@ -51,8 +51,7 @@ class Signaling extends EventEmitter {
 
   void close() {}
 
-  subscribe(RTCSessionDescription sdp,
-      {SignalingSubscribeOptions? options}) async {
+  subscribe(String sdp, {SignalingSubscribeOptions? options}) async {
     _logger.i('Starting subscription to streamName: $streamName');
     _logger.d('Subscription local description: $sdp');
     String? sdpString =
@@ -98,8 +97,7 @@ class Signaling extends EventEmitter {
     }
   }
 
-  Future publish(RTCSessionDescription sdp,
-      {SignalingPublishOptions? options}) async {
+  Future publish(String sdp, {SignalingPublishOptions? options}) async {
     _logger.i(
         // ignore: lines_longer_than_80_chars
         'Starting publishing to streamName: $streamName, codec: ${options?.codec}');
@@ -111,12 +109,12 @@ class Signaling extends EventEmitter {
         // Signaling server only recognizes 'AV1' and not 'AV1X'
       }
       if (options.codec == videoCodec['AV1']) {
-        sdp.sdp = SdpParser.adaptCodecName(sdp, 'AV1X', videoCodec['AV1']!);
+        sdp = SdpParser.adaptCodecName(sdp, 'AV1X', videoCodec['AV1']!);
       }
     }
     Map data = {
       'name': streamName,
-      'sdp': sdp.sdp,
+      'sdp': sdp,
       'codec': options?.codec,
       'sourceId': options?.sourceId
     };

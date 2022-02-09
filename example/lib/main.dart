@@ -1,10 +1,12 @@
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'signaling.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 const type = String.fromEnvironment('type');
 void main() async {
+  Logger.level = Level.info;
   await dotenv.load(fileName: '.env');
   runApp(const MyApp());
 }
