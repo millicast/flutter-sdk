@@ -4,21 +4,21 @@ var eventEmitter = EventEmitter();
 
 void reemit(EventEmitter source, EventEmitter target, List<String> events) {
   var listeners = [];
-  var callbacks = [];
-  var callback;
+  void Function(Event, Object?) callback;
+  List<void Function(Event, Object?)> callbacks = [];
   for (var event in events) {
     listeners.add(event);
-    callback = source.on(event, source, (event, context) {
+    callback = (event, context) {
       source.emit(
         event.eventName,
         source,
       );
-      callbacks.add(callback);
-    });
+    };
+    source.on(event, source, callback);
+    callbacks.add(callback);
   }
-
-  for (var event in events) {
-    for (var callback in callbacks) {
+  for (String event in events) {
+    for (callback in callbacks) {
       source.removeListener(event, callback);
     }
   }

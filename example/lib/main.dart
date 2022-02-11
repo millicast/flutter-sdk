@@ -1,14 +1,14 @@
+import 'package:example/publisher.dart';
 import 'package:example/viewer.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:millicast_flutter_sdk/millicast_flutter_sdk.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:example/signaling.dart';
 
 const type = String.fromEnvironment('type');
 void main() async {
-  Logger.level = Level.info;
+  Logger.level = Level.debug;
   await dotenv.load(fileName: '.env');
   runApp(const MyApp());
 }
@@ -48,22 +48,25 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     initRenderers();
-    // initPeerConnection();
-    subscribeExample();
+    switch (type) {
+      case 'subscribe':
+        subscribeExample();
+        break;
+      case 'publish':
+        publishExample();
+        break;
+      default:
+    }
     super.initState();
   }
 
-  void initPeerConnection() async {
-    RTCPeerConnection pc = await connectSig(type, _localRenderer);
-    if (type == 'subscribe') {
-      pc.onTrack = (event) async {
-        setState(() {
-          _localRenderer.srcObject = event.streams[0];
-        });
-      };
-    } else {
-      setState(() {});
-    }
+  void publishExample() async {
+    PeerConnection pc = await publishConnect(_localRenderer);
+    pc.on('track', this, (ev, context) {
+      setState(() {
+        _localRenderer.srcObject = ev.eventData as MediaStream?;
+      });
+    });
   }
 
   void subscribeExample() async {

@@ -80,7 +80,7 @@ class Signaling extends EventEmitter {
   /// ```dart
   /// var response = await millicastSignaling.subscribe(sdp)
   /// ```
-  Future subscribe(String sdp, {Map<String, dynamic>? options}) async {
+  Future<String> subscribe(String sdp, {Map<String, dynamic>? options}) async {
     _logger.i('Starting subscription to streamName: $streamName');
     _logger.d('Subscription local description: $sdp');
     String? sdpString =
@@ -92,7 +92,7 @@ class Signaling extends EventEmitter {
       'excludedSourceIds': options?['excludedSourceIds']
     };
     if (options != null) {
-      if (options['vad']!) {
+      if (options['vad!']) {
         data['vad'] = true;
       }
       if (options['events'] != null) {
@@ -102,14 +102,7 @@ class Signaling extends EventEmitter {
     try {
       await connect();
       _logger.i('Sending view command');
-      int transId = await transactionManager?.cmd('view', data);
-      Map<int, Listener?> transactions = {};
-      transactions[transId] =
-          transactionManager?.on('response', this, (event, context) {
-        dynamic data = event.eventData;
-        emit('remoteSdp', this, data['data']['sdp']);
-        transactions[context]?.cancel();
-      });
+      var result = await transactionManager?.cmd('view', data);
       // Check if browser supports AV1X
       // var AV1X = RTCRtpReceiver.getCapabilities?.('video')?.codecs?.find?.(codec => codec.mimeType === 'video/AV1X')
       // ignore: lines_longer_than_80_chars
@@ -120,6 +113,7 @@ class Signaling extends EventEmitter {
       // } else {
       // result.sdp = result.sdp;
       // }
+      return result['data']['sdp'];
     } catch (e) {
       _logger.e('Error sending view command, error: $e');
       throw Exception(e);
@@ -135,49 +129,41 @@ class Signaling extends EventEmitter {
   /// ```dart
   /// var response = await millicastSignaling.publish(sdp, {codec: 'h264'})
   /// ```
-  Future publish(String? sdp, {SignalingPublishOptions? options}) async {
+  Future<String> publish(String? sdp, {Map<String, dynamic>? options}) async {
     _logger.i(
         // ignore: lines_longer_than_80_chars
-        'Starting publishing to streamName: $streamName, codec: ${options?.codec}');
+        'Starting publishing to streamName: $streamName, codec: ${options?['codec']}');
     _logger.d('Publishing local description: $sdp');
     if (options != null) {
-      if (!videoCodec.containsValue(options.codec)) {
+      if (!videoCodec.containsValue(options['codec'])) {
         _logger.e('Invalid codec. Possible values are: $videoCodec');
         throw Exception('Invalid codec. Possible values are: $videoCodec');
         // Signaling server only recognizes 'AV1' and not 'AV1X'
       }
-      if (options.codec == videoCodec['AV1']) {
+      if (options['codec'] == videoCodec['AV1']) {
         sdp = SdpParser.adaptCodecName(sdp, 'AV1X', videoCodec['AV1']!);
       }
     }
     Map data = {
       'name': streamName,
       'sdp': sdp,
-      'codec': options?.codec,
-      'sourceId': options?.sourceId
+      'codec': options?['codec'],
+      'sourceId': options?['sourceId']
     };
-    if (options?.record != null) {
-      data['record'] = options?.record;
+    if (options?['record'] != null) {
+      data['record'] = options?['record'];
     }
     try {
       await connect();
       _logger.i('Sending publish command');
-      int transId = await transactionManager?.cmd('publish', data);
-      Map<int, Listener?> transactions = {};
-      transactions[transId] =
-          transactionManager?.on('response', this, (event, context) {
-        dynamic data = event.eventData;
-        emit('remoteSdp', this, data['data']['sdp']);
-        transactions[context]?.cancel();
-      });
-
+      var result = await transactionManager?.cmd('publish', data);
       // if (options.codec == videoCodec['AV1']) {
       //   // If browser supports AV1X, we change from AV1 to AV1X
       //   const AV1X = RTCRtpSender.getCapabilities?.('video')?.codecs?.find?.(codec => codec.mimeType === 'video/AV1X');
       // ignore: lines_longer_than_80_chars
       //   result['sdp'] = AV1X ? SdpParser.adaptCodecName(result.sdp, videoCodec['AV1']!, 'AV1X') : result.sdp;
       // }
-      return;
+      return result['data']['sdp'];
     } catch (e) {
       _logger.e('Error sending publish command, error: $e');
       throw Exception(e);

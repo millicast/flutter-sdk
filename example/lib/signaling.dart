@@ -16,12 +16,12 @@ Future<RTCPeerConnection> connectSig(
   String url = token.urls[0];
   String jwt = token.jwt;
   var futures = <Future>[];
-  Future<String?> localSDPPromise;
+  Future<String?> localSDPFuture;
 
   var signaling =
       Signaling({'streamName': Constants.streamName, 'url': '$url?token=$jwt'});
 
-  Future signalingPromise = signaling.connect();
+  Future signalingFuture = signaling.connect();
   if (type == 'publish') {
     EventSubscriber userEvent =
         EventSubscriber('wss://streamevents.millicast.com/ws');
@@ -39,32 +39,29 @@ Future<RTCPeerConnection> connectSig(
       _localRenderer.srcObject = stream;
     });
 
-    localSDPPromise =
+    localSDPFuture =
         peerConnection.getRTCLocalSDP(options: {'mediaStream': stream});
   } else {
     peerConnection.peer = await createAndSetStream(peerConnection.peer!);
-    localSDPPromise = peerConnection.getRTCLocalSDP(options: {'stereo': true});
+    localSDPFuture = peerConnection.getRTCLocalSDP(options: {'stereo': true});
   }
 
-  futures.add(localSDPPromise);
-  futures.add(signalingPromise);
-  var resolvedPromises = await Future.wait(futures);
-  String localSdp = resolvedPromises[0];
-  Future promise;
+  futures.add(localSDPFuture);
+  futures.add(signalingFuture);
+  var resolvedFutures = await Future.wait(futures);
+  String localSdp = resolvedFutures[0];
+  Future future;
   if (type == 'publish') {
-    promise = signaling.publish(localSdp);
+    future = signaling.publish(localSdp);
   } else {
-    promise = signaling.subscribe(localSdp);
+    future = signaling.subscribe(localSdp);
   }
-  var setLocalDescriptionPromise = peerConnection.peer
+  var setLocalDescriptionFuture = peerConnection.peer
       ?.setLocalDescription(peerConnection.sessionDescription!);
-  futures.add(promise);
-  futures.add(setLocalDescriptionPromise!);
-  await Future.wait(futures);
-  signaling.on('remoteSdp', peerConnection.peer!, (event, context) {
-    peerConnection.setRTCRemoteSDP(event.eventData.toString());
-    _logger.i('setRemoteDescription Success! ');
-  });
+  var remoteSdp = await future;
+  await setLocalDescriptionFuture;
+  peerConnection.setRTCRemoteSDP(remoteSdp);
+  _logger.i('setRemoteDescription Success! ');
   return peerConnection.peer!;
 }
 

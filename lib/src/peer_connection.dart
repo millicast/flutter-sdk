@@ -44,7 +44,7 @@ class PeerConnection extends EventEmitter {
     return '';
   }
 
-  Future<RTCPeerConnection> getRTCpeer() async {
+  Future<RTCPeerConnection> getRTCPeer() async {
     return createPeerConnection({});
   }
 
@@ -133,7 +133,7 @@ class PeerConnection extends EventEmitter {
   ///   [bool] options.disableAudio - True to not support audio.
   ///   [bool] options.disableVideo - True to not support video.
   ///   [bool] options.setSDPToPeer - True to set the SDP to local peer.
-  ///   Returns [Future<String>] Promise object which represents the SDP information of the created offer.
+  ///   Returns [Future<String>] Future object which represents the SDP information of the created offer.
   ///
 
   Future<String?> getRTCLocalSDP(
@@ -183,6 +183,15 @@ class PeerConnection extends EventEmitter {
 
   void addRemoteTrack(String media, List<MediaStream> stream) async {}
 
+  String updateBandwidthRestriction(String sdp, bitrate) {
+    _logger.i('Updating bandwidth restriction, bitrate value: $bitrate');
+    _logger.d('SDP value: $sdp');
+    if (sessionDescription != null) {
+      return sessionDescription!.sdp!;
+    }
+    return SdpParser.setVideoBitrate(sdp, bitrate);
+  }
+
   void updateBitrate({num bitrate = 0}) {}
 
   String? getRTCPeerStatus() {
@@ -199,7 +208,7 @@ class PeerConnection extends EventEmitter {
 
   static getCapabilities(String kind) {}
 
-  getTrucks() {}
+  getTracks() {}
 
   void initStats() {}
   void stopStats() {}
@@ -209,13 +218,14 @@ class PeerConnection extends EventEmitter {
         mediaStream.getVideoTracks().length <= 1;
   }
 
-  getValidMediaStream(mediaStream) async {
+  Future<MediaStream?> getValidMediaStream(MediaStream? mediaStream) async {
     if (mediaStream == null) {
       return null;
     }
 
-    if (isMediaStreamValid(mediaStream) && mediaStream is MediaStream) {
+    if (isMediaStreamValid(mediaStream)) {
       return mediaStream;
+      // ignore: unnecessary_type_check
     } else if (mediaStream is! MediaStream) {
       _logger.i('Creating MediaStream to add received tracks.');
       MediaStream stream = await createLocalMediaStream('myStream');
@@ -293,19 +303,20 @@ class PeerConnection extends EventEmitter {
       RTCRtpTransceiverInit initOptions = RTCRtpTransceiverInit();
       if (track.kind == 'audio') {
         initOptions = RTCRtpTransceiverInit(
-            direction: (options['disableAudio']
+            direction: (!options['disableAudio']
                 ? TransceiverDirection.SendOnly
                 : TransceiverDirection.Inactive),
             streams: [mediaStream]);
       }
       if (track.kind == 'video') {
         initOptions = RTCRtpTransceiverInit(
-            direction: (options['disableVideo']
+            direction: (!options['disableVideo']
                 ? TransceiverDirection.SendOnly
                 : TransceiverDirection.Inactive),
             streams: [mediaStream]);
       }
       peer?.addTransceiver(
+          track: track,
           kind: (track.kind == 'audio')
               ? RTCRtpMediaType.RTCRtpMediaTypeAudio
               : RTCRtpMediaType.RTCRtpMediaTypeVideo,

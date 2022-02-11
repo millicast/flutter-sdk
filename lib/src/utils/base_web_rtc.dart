@@ -7,6 +7,12 @@ import 'dart:async';
 const int maxReconnectionInterval = 32000;
 const int baseInterval = 1000;
 
+const Map<String, dynamic> connectOptions = {
+  'disableVideo': false,
+  'disableAudio': false,
+  'peerConfig': null
+};
+
 class BaseWebRTC extends EventEmitter {
   String streamName;
   Function tokenGenerator;
@@ -35,7 +41,7 @@ class BaseWebRTC extends EventEmitter {
   ///
   /// Returns the [RTCPeerConnection].
   Future<RTCPeerConnection> getRTCPeerConnection() {
-    return webRTCPeer.getRTCpeer();
+    return webRTCPeer.getRTCPeer();
   }
 
   /// Stops connection.
@@ -52,7 +58,7 @@ class BaseWebRTC extends EventEmitter {
   /// Returns true if connected, false if not.
   bool isActive() {
     String? rtcPeerState = webRTCPeer.getRTCPeerStatus();
-    logger.i('Broadcast status: ${rtcPeerState.toString} || not_established ');
+    logger.i('Broadcast status: ${rtcPeerState.toString()}||not_established ');
     return (rtcPeerState == 'connected');
   }
 

@@ -45,8 +45,8 @@ class SdpParser {
     return sdp;
   }
 
-  static String? setVideoBitrate(String? sdp, num bitrate) {
-    return sdp;
+  static String setVideoBitrate(String? sdp, num bitrate) {
+    return sdp ?? '';
   }
 
   static String? removeSdpLine(String? sdp, String sdpLine) {

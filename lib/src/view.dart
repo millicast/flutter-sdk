@@ -3,6 +3,7 @@
 import 'package:millicast_flutter_sdk/src/peer_connection.dart';
 import 'package:millicast_flutter_sdk/src/signaling.dart';
 
+import 'director.dart';
 import 'utils/base_web_rtc.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'logger.dart';
@@ -96,22 +97,21 @@ class View extends BaseWebRTC {
   @override
   connect({Map<String, dynamic> options = _connectOptions}) async {
     _logger.d('Viewer connect options values: $options');
-    var futures = <Future>[];
     options = {..._connectOptions, ...options, 'setSDPToPeer': false};
     if (isActive()) {
       _logger.w('Viewer currently subscribed');
       throw Error();
     }
-    var subscriberData;
+    MillicastDirectorResponse subscriberData;
     try {
       subscriberData = await tokenGenerator();
     } catch (e) {
       _logger.e('Error generating token.');
-      rethrow;
+      throw Exception(e);
     }
+    // ignore: unnecessary_null_comparison
     if (subscriberData == null) {
       _logger.e('Error while subscribing. Subscriber data required');
-      throw Error();
     }
     var signaling = Signaling({
       'streamName': streamName,
@@ -124,25 +124,23 @@ class View extends BaseWebRTC {
         webRTCPeer.getRTCLocalSDP(options: {'stereo': true});
     Future signalingConnectFuture = signaling.connect();
 
-    futures.add(getLocalSDPFuture);
-    futures.add(signalingConnectFuture);
+    Iterable<Future<dynamic>> iterFuture = [
+      getLocalSDPFuture,
+      signalingConnectFuture
+    ];
 
-    var resolvedFutures = await Future.wait(futures);
+    var resolvedFutures = await Future.wait(iterFuture);
     String localSdp = resolvedFutures[0];
-
-    var subscribeFuture = signaling.subscribe(localSdp);
-    var setLocalDescriptionFuture =
+    Future subscribeFuture = signaling.subscribe(localSdp);
+    Future<void>? setLocalDescriptionFuture =
         webRTCPeer.peer?.setLocalDescription(webRTCPeer.sessionDescription!);
+    iterFuture = [subscribeFuture, setLocalDescriptionFuture!];
 
-    futures.add(subscribeFuture);
-    futures.add(setLocalDescriptionFuture!);
+    resolvedFutures = await Future.wait(iterFuture);
+    String remoteSdp = resolvedFutures[0];
 
-    await Future.wait(futures);
-    signaling.on('remoteSdp', webRTCPeer.peer!, (event, context) async {
-      await webRTCPeer.setRTCRemoteSDP(event.eventData.toString());
-
-      _logger.i('setRemoteDescription Success! ');
-    });
+    await webRTCPeer.setRTCRemoteSDP(remoteSdp);
+    _logger.i('setRemoteDescription Success! ');
 
     setReconnect();
     _logger.i('Connected to streamName: $streamName');
