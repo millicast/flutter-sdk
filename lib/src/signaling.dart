@@ -45,12 +45,12 @@ class Signaling extends EventEmitter {
   /// var response = await millicastSignaling.connect();
   /// ```
   /// [WebSocketChannel] Future object which represents the [webSocket] {@link https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API} of the establshed connection.
-  Future<WebSocketChannel?> connect() async {
+  Future<WebSocketChannel> connect() async {
     {
       _logger.i('Connecting to Signaling Server');
       if (webSocket != null && transactionManager != null) {
         _logger.i('Connected to server $wsUrl');
-        return webSocket;
+        return webSocket!;
       }
       webSocket = WebSocketChannel.connect(Uri.parse(wsUrl));
       transactionManager = TransactionManager(webSocket!);
@@ -60,7 +60,7 @@ class Signaling extends EventEmitter {
       });
       emit(SignalingEvents.connectionSuccess,
           {'ws': webSocket, 'tm': transactionManager});
-      return webSocket;
+      return webSocket!;
     }
   }
 
@@ -80,7 +80,7 @@ class Signaling extends EventEmitter {
   /// ```dart
   /// var response = await millicastSignaling.subscribe(sdp)
   /// ```
-  subscribe(String sdp, {SignalingSubscribeOptions? options}) async {
+  Future subscribe(String sdp, {Map<String, dynamic>? options}) async {
     _logger.i('Starting subscription to streamName: $streamName');
     _logger.d('Subscription local description: $sdp');
     String? sdpString =
@@ -88,15 +88,15 @@ class Signaling extends EventEmitter {
     Map<String, dynamic> data = {
       'sdp': sdpString,
       'streamId': streamName,
-      'pinnedSourceId': options?.pinnedSourceId,
-      'excludedSourceIds': options?.excludedSourceIds
+      'pinnedSourceId': options?['pinnedSourceId'],
+      'excludedSourceIds': options?['excludedSourceIds']
     };
     if (options != null) {
-      if (options.vad!) {
+      if (options['vad']!) {
         data['vad'] = true;
       }
-      if (options.events != null) {
-        data['events'] = options.events;
+      if (options['events'] != null) {
+        data['events'] = options['events'];
       }
     }
     try {

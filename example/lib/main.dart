@@ -1,8 +1,10 @@
+import 'package:example/viewer.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
-import 'signaling.dart';
+import 'package:millicast_flutter_sdk/millicast_flutter_sdk.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:example/signaling.dart';
 
 const type = String.fromEnvironment('type');
 void main() async {
@@ -46,12 +48,13 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     initRenderers();
-    initPeerConnection();
+    // initPeerConnection();
+    subscribeExample();
     super.initState();
   }
 
   void initPeerConnection() async {
-    RTCPeerConnection pc = await connect(type, _localRenderer);
+    RTCPeerConnection pc = await connectSig(type, _localRenderer);
     if (type == 'subscribe') {
       pc.onTrack = (event) async {
         setState(() {
@@ -61,6 +64,15 @@ class _MyHomePageState extends State<MyHomePage> {
     } else {
       setState(() {});
     }
+  }
+
+  void subscribeExample() async {
+    PeerConnection pc = await viewConnect(_localRenderer);
+    pc.on('track', this, (ev, context) {
+      setState(() {
+        _localRenderer.srcObject = ev.eventData as MediaStream?;
+      });
+    });
   }
 
   void initRenderers() async {

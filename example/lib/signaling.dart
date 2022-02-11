@@ -5,7 +5,7 @@ import 'package:millicast_flutter_sdk/millicast_flutter_sdk.dart';
 
 var _logger = getLogger('Signaling');
 
-Future<RTCPeerConnection> connect(
+Future<RTCPeerConnection> connectSig(
     String type, RTCVideoRenderer _localRenderer) async {
   MillicastDirectorResponse token = await getToken(type);
 

@@ -106,7 +106,7 @@ class PeerConnection extends EventEmitter {
     return iceServer;
   }
 
-  void setRTCRemoteSDP(String sdp) async {
+  setRTCRemoteSDP(String sdp) async {
     _logger.i('Setting RTC Remote SDP');
     try {
       await peer?.setRemoteDescription(RTCSessionDescription(sdp, 'answer'));
@@ -146,7 +146,7 @@ class PeerConnection extends EventEmitter {
     if (mediaStream != null) {
       addMediaStreamToPeer(peer, mediaStream, options);
     } else {
-      addReceiveTransceivers(peer, options);
+      await addReceiveTransceivers(peer, options);
     }
 
     _logger.i('Creating peer offer');
@@ -246,13 +246,13 @@ class PeerConnection extends EventEmitter {
       // if (event.transceiver != null) {}
       // ;
 
-      instanceClass.emit(webRTCEvents['track'], event);
+      instanceClass.emit(webRTCEvents['track'], this, event.streams[0]);
     };
     if (peer.connectionState != null) {
       peer.onConnectionState = (event) {
         _logger.i('Peer connection state change: ${peer.connectionState}');
-        instanceClass.emit(
-            webRTCEvents['connectionStateChange'], peer.iceConnectionState);
+        instanceClass.emit(webRTCEvents['connectionStateChange'], this,
+            peer.iceConnectionState);
       };
     } else {
       peer.onIceConnectionState = (RTCIceConnectionState state) {
@@ -262,8 +262,8 @@ class PeerConnection extends EventEmitter {
         ///
         ///@fires PeerConnection#connectionStateChange
         ///
-        instanceClass.emit(
-            webRTCEvents['connectionStateChange'], peer.iceConnectionState);
+        instanceClass.emit(webRTCEvents['connectionStateChange'], this,
+            peer.iceConnectionState);
       };
     }
 
@@ -316,15 +316,15 @@ class PeerConnection extends EventEmitter {
     });
   }
 
-  void addReceiveTransceivers(
-      RTCPeerConnection? peer, Map<String, dynamic> options) {
+  Future<void> addReceiveTransceivers(
+      RTCPeerConnection? peer, Map<String, dynamic> options) async {
     RTCRtpTransceiverInit initOptions =
         RTCRtpTransceiverInit(direction: TransceiverDirection.RecvOnly);
-    if (options['disableVideo']) {
+    if (!options['disableVideo']) {
       peer?.addTransceiver(
           kind: RTCRtpMediaType.RTCRtpMediaTypeVideo, init: initOptions);
     }
-    if (options['disableAudio']) {
+    if (!options['disableAudio']) {
       peer?.addTransceiver(
           kind: RTCRtpMediaType.RTCRtpMediaTypeAudio, init: initOptions);
     }

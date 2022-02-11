@@ -56,7 +56,7 @@ class BaseWebRTC extends EventEmitter {
     return (rtcPeerState == 'connected');
   }
 
-  connect({Map<String, dynamic> connectOptions = const {}}) async {}
+  connect({Map<String, dynamic> options = const {}}) async {}
 
   /// Sets reconnection if autoReconnect is enabled.
   setReconnect() {
@@ -93,7 +93,7 @@ class BaseWebRTC extends EventEmitter {
       if (!isActive()) {
         stop();
         if (options != null) {
-          await connect(connectOptions: options!);
+          await connect(options: options!);
         } else {
           await connect();
         }
