@@ -64,7 +64,7 @@ class PeerConnection extends EventEmitter {
   /// Get default RTC configuration with ICE servers from Milicast signaling server and merge it with the user configuration provided. User configuration has priority over defaults.
   ///
   /// [config] - Options to configure the new RTCPeerConnection.
-  /// [Returns [Future<Map<String, dynamic>>] object which represents the RTCConfiguration.
+  /// Returns a [Map] Future object which represents the RTCConfiguration.
 
   getRTCConfiguration(Map<String, dynamic>? config) async {
     _logger.i('Getting RTC configuration');
@@ -123,9 +123,9 @@ class PeerConnection extends EventEmitter {
   ///   [Object] options
   ///   [bool] options.stereo - True to modify SDP for support stereo. Otherwise False.
   ///   [bool] options.dtx - True to modify SDP for supporting dtx in opus. Otherwise False.*
-  ///   [MediaStream|Array<MediaStreamTrack>] options.mediaStream - MediaStream to offer in a stream. This object must have
+  ///   [MediaStream] options.mediaStream - MediaStream to offer in a stream. This object must have
   ///  1 audio track and 1 video track, or at least one of them. Alternative you can provide both tracks in an array.
-  ///   [VideCodec] options.codec - Selected codec for support simulcast.
+  ///   VideoCodec [options] codec - Selected codec for support simulcast.
   ///   [String] options.scalabilityMode - Selected scalability mode. You can get the available capabilities using  method.
   ///  **Only available in Google Chrome.**
   ///  *[bool] options.absCaptureTime - True to modify SDP for supporting absolute capture time header extension. Otherwise False.

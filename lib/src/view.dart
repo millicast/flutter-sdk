@@ -1,5 +1,3 @@
-// ignore_for_file: lines_longer_than_80_chars
-
 import 'package:millicast_flutter_sdk/src/peer_connection.dart';
 import 'package:millicast_flutter_sdk/src/signaling.dart';
 
@@ -16,14 +14,16 @@ const Map<String, dynamic> _connectOptions = {
   'peerConfig': null
 };
 
-/// [View] @extends [BaseWebRTC]  Manages connection with a secure WebSocket path to signal the Millicast server and establishes a WebRTC connection to view a live stream.
+/// [View] manages a webSocket connection to view a stream using Millicast.
 ///
-///Before you can view an active broadcast, you will need:
-///- A connection path that you can get from  [Director] module or from your own implementation based on [Get a Connection Path](https://dash.millicast.com/docs.html?pg=how-to-broadcast-in-js#get-connection-paths-sect).///@constructor
-/// [String] streamName - Millicast existing Stream Name where you want to connect.
-/// [tokenGeneratorCallback] tokenGenerator - Callback function executed when a new token is needed.
-/// [mediaElement=null] - Target  media element to mount stream.
-/// [bool] autoReconnect=true - Enable auto reconnect to stream.
+/// [View] extends [BaseWebRTC] class.
+/// Before you can view an active broadcast, you will need:
+/// - A connection path that you can get from  [Director] module or from your
+/// own implementation based on [Get a Connection Path](https://dash.millicast.com/docs.html?pg=how-to-broadcast-in-js#get-connection-paths-sect).
+/// [streamName] - Millicast existing Stream Name where you want to connect.
+/// [tokenGenerator] - Callback function executed when a new token is needed.
+/// [mediaElement] - Target  media element to mount stream.
+/// [autoReconnect] = true - Enable auto reconnect to stream.
 
 class View extends BaseWebRTC {
   View(
@@ -43,24 +43,31 @@ class View extends BaseWebRTC {
     }
   }
 
-  ///
   /// Connects to an active stream as subscriber.
   ///
-  ///  [Object] options                          - General subscriber options.
-  ///  [options.dtx = false]             - True to modify SDP for supporting dtx in opus. Otherwise False.
-  ///  [bool] options.absCaptureTime = false  - True to modify SDP for supporting absolute capture time header extension. Otherwise False.
-  ///  [bool] options.disableVideo = false   - Disable the opportunity to receive video stream.
-  ///  [bool] options.disableAudio = false   - Disable the opportunity to receive audio stream.
-  ///  [num] options.multiplexedAudioTracks   - Number of audio tracks to recieve VAD multiplexed audio for secondary sources.
-  ///  [bool] options.pinnedSourceId]          - Id of the main source that will be received by the default MediaStream.
-  ///  [List<String>] options.excludedSourceIds - Do not receive media from the these source ids.
-  ///  [List<String>] options.events            - Override which events will be delivered by the server (any of "active" | "inactive" | "vad" | "layers").*
-  ///  [RTCConfiguration] options.peerConfig     - Options to configure the new RTCPeerConnection.
-  ///  [options.layer]                 - Select the simulcast encoding layer and svc layers for the main video track, leave empty for automatic layer selection based on bandwidth estimation.
+  /// [Object] options - General subscriber options.
+  //  ignore: lines_longer_than_80_chars
+  /// [options] dtx = false - True to modify SDP for supporting dtx in opus. Otherwise False.
+  //  ignore: lines_longer_than_80_chars
+  /// [options] absCaptureTime = false - True to modify SDP for supporting absolute capture time header extension. Otherwise False.
+  //  ignore: lines_longer_than_80_chars
+  /// options disableVideo = false - Disable the opportunity to receive video stream.
+  //  ignore: lines_longer_than_80_chars
+  /// options disableAudio = false - Disable the opportunity to receive audio stream.
+  //  ignore: lines_longer_than_80_chars
+  /// options multiplexedAudioTracks - Number of audio tracks to recieve VAD multiplexed audio for secondary sources.
+  //  ignore: lines_longer_than_80_chars
+  /// options pinnedSourceId - Id of the main source that will be received by the default MediaStream.
+  //  ignore: lines_longer_than_80_chars
+  /// options excludedSourceIds - Do not receive media from the these source ids.
+  //  ignore: lines_longer_than_80_chars
+  /// options events - Override which events will be delivered by the server (any of "active" | "inactive" | "vad" | "layers").*
+  //  ignore: lines_longer_than_80_chars
+  /// options peerConfig     - Options to configure the new RTCPeerConnection.
+  //  ignore: lines_longer_than_80_chars
+  /// options layer - Select the simulcast encoding layer and svc layers for the main video track, leave empty for automatic layer selection based on bandwidth estimation.
+  //  ignore: lines_longer_than_80_chars
   /// Returns Future object which resolves when the connection was successfully established.
-  /// fires PeerConnection#track
-  /// fires Signaling#broadcastEvent
-  /// fires PeerConnection#connectionStateChange
   ///
   /// @example
   /// ```dart
