@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Millicast SDK Demo',
       theme: ThemeData(
-        primarySwatch: Colors.red,
+        primarySwatch: Colors.purple,
       ),
       home: const MyHomePage(title: 'Millicast SDK Demo'),
     );
@@ -61,12 +61,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void publishExample() async {
-    PeerConnection pc = await publishConnect(_localRenderer);
-    pc.on('track', this, (ev, context) {
-      setState(() {
-        _localRenderer.srcObject = ev.eventData as MediaStream?;
-      });
-    });
+    await publishConnect(_localRenderer);
+    setState(() {});
   }
 
   void subscribeExample() async {
@@ -92,15 +88,17 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: OrientationBuilder(
         builder: (context, orientation) {
-          return Center(
-            child: Container(
-              margin: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height,
-              child: RTCVideoView(_localRenderer, mirror: true),
-              decoration: const BoxDecoration(color: Colors.black54),
-            ),
-          );
+          return RotatedBox(
+              quarterTurns: 1,
+              child: Center(
+                child: Container(
+                  margin: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  child: RTCVideoView(_localRenderer, mirror: true),
+                  decoration: const BoxDecoration(color: Colors.black54),
+                ),
+              ));
         },
       ),
     );

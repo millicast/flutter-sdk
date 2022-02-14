@@ -92,7 +92,7 @@ class Publish extends BaseWebRTC {
     ];
     futures = await Future.wait(iterFuture);
     String? localSdp = futures[0];
-    var publishFuture = signaling.publish(localSdp, options: options);
+    var publishFuture = signaling.publish(localSdp); //, options: options);
     var setLocalDescriptionFuture =
         webRTCPeer.peer!.setLocalDescription(webRTCPeer.sessionDescription!);
     iterFuture = [publishFuture, setLocalDescriptionFuture];
