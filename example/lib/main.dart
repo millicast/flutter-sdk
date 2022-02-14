@@ -66,12 +66,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void subscribeExample() async {
-    PeerConnection pc = await viewConnect(_localRenderer);
-    pc.on('track', this, (ev, context) {
-      setState(() {
-        _localRenderer.srcObject = ev.eventData as MediaStream?;
-      });
-    });
+    await viewConnect(_localRenderer);
+    setState(() {});
   }
 
   void initRenderers() async {
