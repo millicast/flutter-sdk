@@ -47,7 +47,7 @@ class EventSubscriber extends EventEmitter {
         if (response.isNotEmpty) {
           final responseParsed = parseSignalRMessage(response);
           _logger.i('Response parsed $responseParsed');
-          emit('message', responseParsed);
+          emit('message', this, responseParsed);
         }
       }
     });
