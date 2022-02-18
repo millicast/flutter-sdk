@@ -99,7 +99,7 @@ class Publish extends BaseWebRTC {
     futures = await Future.wait(iterFuture);
     remoteSdp = futures[0];
     await setLocalDescriptionFuture;
-    if (options['disableVideo'] && (options['bandwidth'] > 0)) {
+    if (!options['disableVideo'] && (options['bandwidth'] > 0)) {
       remoteSdp = webRTCPeer.updateBandwidthRestriction(
           remoteSdp, options['bandwidth']);
     }

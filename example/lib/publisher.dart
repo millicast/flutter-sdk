@@ -3,7 +3,8 @@ import 'package:example/utils/constants.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:millicast_flutter_sdk/millicast_flutter_sdk.dart';
 
-Future publishConnect(RTCVideoRenderer localRenderer) async {
+Future<MillicastPublishUserMedia> publishConnect(
+    RTCVideoRenderer localRenderer) async {
   // Setting subscriber options
   DirectorPublisherOptions directorPublisherOptions = DirectorPublisherOptions(
       token: Constants.publishToken, streamName: Constants.streamName);

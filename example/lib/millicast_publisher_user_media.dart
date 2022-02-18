@@ -50,6 +50,18 @@ class MillicastPublishUserMedia extends Publish {
       options: {...options, 'mediaStream': mediaManager?.mediaStream},
     );
   }
+
+  hangUp(bool connected) {
+    if (connected) {
+      _logger.w('Disconnecting');
+      webRTCPeer.closeRTCPeer();
+    }
+    return connected;
+  }
+
+  updateBandwidth(num bitrate) async {
+    await webRTCPeer.updateBitrate(bitrate: bitrate);
+  }
 }
 
 class MillicastMedia {
@@ -94,7 +106,7 @@ class MillicastMedia {
       mediaStream?.getAudioTracks()[0].enabled = !boolean;
       changed = true;
     } else {
-      _logger.e("There is no media stream object.");
+      _logger.e('There is no media stream object.');
     }
     return changed;
   }
@@ -106,7 +118,7 @@ class MillicastMedia {
       Helper.switchCamera(mediaStreamTrack!);
       changed = true;
     } else {
-      _logger.e("There is no media stream object.");
+      _logger.e('There is no media stream object.');
     }
     return changed;
   }
@@ -121,7 +133,7 @@ class MillicastMedia {
       mediaStream?.getVideoTracks()[0].enabled = !boolean;
       changed = true;
     } else {
-      _logger.e("There is no media stream object.");
+      _logger.e('There is no media stream object.');
     }
     return changed;
   }

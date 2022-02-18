@@ -1,5 +1,6 @@
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import '../logger.dart';
+import 'package:sdp_transform/sdp_transform.dart';
 
 // ignore: unused_element
 var _logger = getLogger('SdpParser');
@@ -45,8 +46,40 @@ class SdpParser {
     return sdp;
   }
 
+  /// Parse SDP for desired bitrate.
+  ///
+  /// [sdp] - Current SDP.
+  /// [bitrate] - Bitrate value in kbps or 0 for unlimited bitrate.
+  /// Returns SDP parsed with desired bitrate.
+  ///
+  /// ```dart
+  /// SdpParser.setVideoBitrate(sdp, 1000);
+  /// ```
   static String setVideoBitrate(String? sdp, num bitrate) {
-    return sdp ?? '';
+    int video = 0;
+    if (sdp != null) {
+      if (bitrate < 1) {
+        _logger.i('Remove bitrate restrictions');
+        sdp = sdp
+            .replaceAll(RegExp(r'b=AS:.*\r\n'), 'replace')
+            .replaceAll(RegExp(r'b=TIAS:.*\r\n'), '');
+      } else {
+        _logger.i('Setting video bitrate');
+        Map<String, dynamic> parsedSdp = parse(sdp);
+        if (parsedSdp['media'][0]['type'] == 'video') {
+          video = 0;
+        } else if (parsedSdp['media'][1]['type'] == 'video') {
+          video = 1;
+        } else {
+          return sdp;
+        }
+        parsedSdp['media'][video]['rtp'][0]['rate'] = bitrate;
+        parsedSdp['media'][video]['rtp'][1]['rate'] = bitrate;
+        sdp = write(parsedSdp, null);
+        return sdp;
+      }
+    }
+    return '';
   }
 
   static String? removeSdpLine(String? sdp, String sdpLine) {

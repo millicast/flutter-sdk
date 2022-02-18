@@ -1,8 +1,10 @@
 // ignore_for_file: lines_longer_than_80_chars
 
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:eventify/eventify.dart';
+import 'package:millicast_flutter_sdk/src/peer_connection_stats.dart';
 import 'package:millicast_flutter_sdk/src/utils/sdp_parser.dart';
 
 import 'config.dart';
@@ -33,22 +35,24 @@ String turnServerLocation = defaultTurnServerLocation;
 class PeerConnection extends EventEmitter {
   RTCSessionDescription? sessionDescription;
   RTCPeerConnection? peer;
-  String? peerConnectionStats;
+  PeerConnectionStats? peerConnectionStats;
 
   PeerConnection() : super();
+
+  /// Set TURN server location.
+  ///
+  /// [url] - New TURN location
   static void setTurnServerLocation(String url) {
     turnServerLocation = url;
   }
 
+  /// Get current TURN location.
+  ///
+  /// By default, https://turn.millicast.com/webrtc/_turn is the current TURN location.
+  /// Returns TURN url
   static String getTurnServerLocation() {
-    return '';
+    return turnServerLocation;
   }
-
-  Future<RTCPeerConnection> getRTCPeer() async {
-    return createPeerConnection({});
-  }
-
-  void closeRTCPeer() async {}
 
   /// Instance new RTCPeerConnection.
   ///
@@ -59,6 +63,33 @@ class PeerConnection extends EventEmitter {
     _logger.d('RTC configuration provided by user: ');
     config = await getRTCConfiguration(config);
     peer = await instanceRTCPeerConnection(this, config);
+  }
+
+  /// Get current RTC peer connection.
+  ///
+  /// Returns [RTCPeerConnection] Object which represents the RTCPeerConnection.
+  Future<RTCPeerConnection> getRTCPeer() async {
+    _logger.i('Getting RTC Peer');
+    if (peer != null) {
+      String connectionState = getConnectionState(peer!);
+      RTCSessionDescription? currentLocalDescription =
+          await peer!.getLocalDescription();
+      RTCSessionDescription? currentRemoteDescription =
+          await peer!.getRemoteDescription();
+      _logger.d('getRTCPeer return: ',
+          {connectionState, currentLocalDescription, currentRemoteDescription});
+    }
+    return peer!;
+  }
+
+  /// Close RTC peer connection.
+  ///
+  closeRTCPeer() async {
+    _logger.i('Closing RTCPeerConnection');
+    peer?.close();
+    peer = null;
+    stopStats();
+    emit(webRTCEvents['connectionStateChange'], this, 'closed');
   }
 
   /// Get default RTC configuration with ICE servers from Milicast signaling server and merge it with the user configuration provided. User configuration has priority over defaults.
@@ -155,7 +186,6 @@ class PeerConnection extends EventEmitter {
     _logger.i('Peer offer created');
     _logger.d('Peer offer response: ${response?.sdp}');
     sessionDescription = response;
-
     // if (!options['disableAudio']) {
     //   if (options['stereo']) {
     //     desc.sdp = SdpParser.setStereo(desc.sdp);
@@ -181,18 +211,56 @@ class PeerConnection extends EventEmitter {
     return sessionDescription?.sdp;
   }
 
-  void addRemoteTrack(String media, List<MediaStream> stream) async {}
+  /// Add remote receving track.
+  /// [media] - Media kind ('audio' | 'video').
+  /// [streams] - Streams the track will belong to.
+  /// [Future] that will be resolved when the [RTCRtpTransceiver] is assigned an mid value.
+  addRemoteTrack(media, List<MediaStream> streams) async {
+    Completer completer = Completer();
+    var transceiverCompleter = RTCRtpTransceiverCompleter(completer);
+    try {
+      for (var stream in streams) {
+        stream.getTracks().forEach((track) async {
+          transceiverCompleter.transceiver = await peer!.addTransceiver(
+              track: track,
+              kind: media,
+              init: RTCRtpTransceiverInit(
+                  direction: TransceiverDirection.RecvOnly));
+          stream.addTrack(transceiverCompleter.transceiver!.receiver.track!);
+          transceiverCompleter.completer = completer;
+          return completer.future;
+        });
+      }
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
 
-  String updateBandwidthRestriction(String sdp, bitrate) {
+  String updateBandwidthRestriction(String? sdp, num bitrate) {
     _logger.i('Updating bandwidth restriction, bitrate value: $bitrate');
     _logger.d('SDP value: $sdp');
-    if (sessionDescription != null) {
-      return sessionDescription!.sdp!;
-    }
     return SdpParser.setVideoBitrate(sdp, bitrate);
   }
 
-  void updateBitrate({num bitrate = 0}) {}
+  /// Set SDP information to remote peer with bandwidth restriction.
+  ///
+  /// [bitrate] - New bitrate value in kbps or 0 unlimited bitrate.
+  /// Returns [Future] object which resolves when bitrate was successfully updated.
+  updateBitrate({num bitrate = 0}) async {
+    if (peer == null) {
+      _logger.e('Cannot update bitrate. No peer found.');
+      throw Exception('Cannot update bitrate. No peer found.');
+    }
+
+    _logger.i('Updating bitrate to value: ', bitrate);
+    sessionDescription = await peer!.createOffer();
+    await peer?.setLocalDescription(sessionDescription!);
+    String? sdp = updateBandwidthRestriction(
+        (await peer!.getRemoteDescription())?.sdp, bitrate);
+    await setRTCRemoteSDP(sdp);
+    _logger.i(
+        'Bitrate restirctions updated:  ${bitrate > 0 ? bitrate : 'unlimited'} kbps');
+  }
 
   String? getRTCPeerStatus() {
     _logger.i('Getting RTC peer status');
@@ -204,14 +272,97 @@ class PeerConnection extends EventEmitter {
     return connectionState;
   }
 
-  void replaceTrack(MediaStreamTrack mediaStreamTrack) {}
+  /// Replace current audio or video track that is being broadcasted.
+  ///
+  /// [mediaStreamTrack] - New audio or video track to replace the current one.
+  void replaceTrack(MediaStreamTrack mediaStreamTrack) async {
+    if (peer == null) {
+      _logger.e('Could not change track if there is not an active connection.');
+      return;
+    }
 
+    try {
+      RTCRtpSender? currentSender = (await peer!.getSenders()).firstWhere(
+          (s) => s.track?.kind == mediaStreamTrack.kind,
+          orElse: () => ());
+      currentSender.replaceTrack(mediaStreamTrack);
+    } catch (e) {
+      _logger
+          .e('There is no ${mediaStreamTrack.kind} track in active broadcast.');
+    }
+  }
+
+  /// Gets user's mobile media capabilities compared with Millicast Media Server support.
+  ///
+  /// [kind] - Type of media for which you wish to get sender capabilities.
+  /// Returns Object with all capabilities supported by user's mobile and Millicast Media Server.
   static getCapabilities(String kind) {}
 
-  getTracks() {}
+  /// Get sender tracks
+  /// Returns [List] of [MediaStreamTrack] with all tracks in sender peer.
+  Future<List<MediaStreamTrack?>> getTracks() async {
+    return Future(() async {
+      return (await peer?.getSenders())!.map((sender) => sender.track).toList();
+    });
+  }
 
-  void initStats() {}
-  void stopStats() {}
+  /// Initialize the statistics monitoring of the RTCPeerConnection.
+  /// It will be emitted every second.
+  ///
+  /// ```dart
+  /// import 'package:flutter_webrtc/flutter_webrtc.dart';
+  /// import 'package:millicast_flutter_sdk/millicast_flutter_sdk.dart';
+  ///
+  /// //Initialize and connect your Publisher
+  /// var millicastPublish = Publish(streamName, tokenGenerator);
+  /// await millicastPublish.connect(options);
+  ///
+  /// //Initialize get stats
+  /// millicastPublish.webRTCPeer.initStats();
+  ///
+  /// //Capture new stats from event every second
+  /// millicastPublish.webRTCPeer.on('stats', (stats) => {
+  ///   print('Stats from event: ', stats)
+  /// });
+  /// ```
+  ///
+  /// ```dart
+  /// import 'package:flutter_webrtc/flutter_webrtc.dart';
+  /// import 'package:millicast_flutter_sdk/millicast_flutter_sdk.dart';
+  ///
+  /// //Initialize and connect your Viewer
+  /// var millicastView = View(streamName, tokenGenerator);
+  /// await millicastView.connect();
+  ///
+  /// //Initialize get stats
+  /// millicastView.webRTCPeer.initStats();
+  ///
+  /// //Capture new stats from event every second
+  /// millicastView.webRTCPeer.on('stats', (stats) => {
+  ///   print('Stats from event: ', stats);
+  /// });
+  /// ```
+  initStats() {
+    if (peerConnectionStats != null) {
+      _logger.w('Cannot init peer stats: Already initialized');
+    } else if (peer != null) {
+      peerConnectionStats = PeerConnectionStats(peer!);
+      peerConnectionStats?.init();
+      peerConnectionStats?.on(peerConnectionStatsEvents['stats'], this,
+          (ev, context) {
+        emit(peerConnectionStatsEvents['stats'], this, ev.eventData);
+      });
+    } else {
+      _logger.w('Cannot init peer stats: RTCPeerConnection not initialized');
+    }
+  }
+
+  /// Stops the monitoring of RTCPeerConnection statistics.
+  ///
+  stopStats() {
+    peerConnectionStats?.stop();
+    peerConnectionStats = null;
+  }
 
   bool isMediaStreamValid(MediaStream mediaStream) {
     return mediaStream.getAudioTracks().length <= 1 &&
@@ -239,13 +390,22 @@ class PeerConnection extends EventEmitter {
     }
   }
 
+  Future<RTCPeerConnection> instanceRTCPeerConnection(
+      instanceClass, Map<String, dynamic>? config) async {
+    RTCPeerConnection instance = await createPeerConnection(<String, dynamic>{
+      ...config!,
+      ...<String, dynamic>{'sdpSemantics': 'unified-plan'}
+    });
+    addPeerEvents(instanceClass, instance);
+    return instance;
+  }
+
   /// Emits peer events.
   ///
   /// instanceClass - PeerConnection instance.
   /// [RTCPeerConnection] peer - Peer instance.
   ///  PeerConnection#track
   ///  PeerConnection#connectionStateChange
-  ///
   void addPeerEvents(PeerConnection instanceClass, RTCPeerConnection peer) {
     peer.onTrack = (event) async {
       _logger.i('New track from peer.');
@@ -268,10 +428,6 @@ class PeerConnection extends EventEmitter {
       peer.onIceConnectionState = (RTCIceConnectionState state) {
         _logger.i(
             'Peer ICE connection state change: ', peer.iceConnectionState);
-
-        ///
-        ///@fires PeerConnection#connectionStateChange
-        ///
         instanceClass.emit(webRTCEvents['connectionStateChange'], this,
             peer.iceConnectionState);
       };
@@ -364,14 +520,10 @@ class PeerConnection extends EventEmitter {
         }
     }
   }
+}
 
-  Future<RTCPeerConnection> instanceRTCPeerConnection(
-      instanceClass, Map<String, dynamic>? config) async {
-    RTCPeerConnection instance = await createPeerConnection(<String, dynamic>{
-      ...config!,
-      ...<String, dynamic>{'sdpSemantics': 'unified-plan'}
-    });
-    addPeerEvents(instanceClass, instance);
-    return instance;
-  }
+class RTCRtpTransceiverCompleter {
+  Completer completer;
+  RTCRtpTransceiver? transceiver;
+  RTCRtpTransceiverCompleter(this.completer, [this.transceiver]);
 }

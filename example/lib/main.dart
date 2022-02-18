@@ -1,11 +1,12 @@
 import 'package:example/publisher.dart';
 import 'package:example/utils/constants.dart';
 import 'package:example/viewer.dart';
-import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:flutter/material.dart';
-import 'package:logger/logger.dart';
-import 'package:millicast_flutter_sdk/millicast_flutter_sdk.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_webrtc/flutter_webrtc.dart';
+import 'package:logger/logger.dart';
+
+import 'package:millicast_flutter_sdk/millicast_flutter_sdk.dart';
 
 import 'millicast_publisher_user_media.dart';
 
@@ -13,6 +14,8 @@ const type = String.fromEnvironment('type');
 
 bool isVideoMuted = false;
 bool isAudioMuted = false;
+bool isConnected = true;
+String? dropdownvalue = 'Default';
 
 void main() async {
   Logger.level = Level.debug;
@@ -49,6 +52,7 @@ class _MyHomePageState extends State<MyHomePage> {
   late bool _publisher;
   late MillicastPublishUserMedia _publisherMedia;
 
+  PeerConnection? webRtcPeer;
   @override
   void dispose() {
     _localRenderer.dispose();
@@ -108,6 +112,22 @@ class _MyHomePageState extends State<MyHomePage> {
     _publisherMedia.mediaManager?.switchCamera();
   }
 
+  _hangUp(bool _isConnected) async {
+    _isConnected = isConnected;
+    setState(() {
+      isConnected = !isConnected;
+    });
+    if (_isConnected) {
+      _publisherMedia.hangUp(_isConnected);
+    } else {
+      _publisherMedia = await publishConnect(_localRenderer);
+    }
+  }
+
+  _updateBitrate(num bitrate) async {
+    _publisherMedia.updateBandwidth(bitrate);
+  }
+
   void subscribeExample() async {
     await viewConnect(_localRenderer);
     setState(() {});
@@ -121,6 +141,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         backgroundColor: Colors.white,
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
@@ -130,11 +151,34 @@ class _MyHomePageState extends State<MyHomePage> {
             fit: BoxFit.contain,
             height: 30,
           ),
-          Text(widget.title, style: const TextStyle(color: Colors.black,fontSize: 15))
+          Text(widget.title,
+              style: const TextStyle(color: Colors.black, fontSize: 15))
         ]),
-
         actions: _publisher
             ? <Widget>[
+                DropdownButtonHideUnderline(
+                    child: DropdownButton(
+                  items: [
+                    '100',
+                    '250',
+                    '1000',
+                    'Custom',
+                    'Default',
+                  ].map((String items) {
+                    return DropdownMenuItem(
+                      value: items,
+                      child: Text('$items Kbps'),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      dropdownvalue = newValue!;
+                      _updateBitrate(int.parse(dropdownvalue!));
+                    });
+                  },
+                  onTap: () {},
+                  icon: const Icon(Icons.settings),
+                )),
                 Padding(
                     padding: const EdgeInsets.only(top: 20.0, right: 5.0),
                     child: Text(_viewers,
@@ -142,19 +186,19 @@ class _MyHomePageState extends State<MyHomePage> {
                 const IconTheme(
                   data: IconThemeData(color: Colors.black),
                   child: Icon(Icons.remove_red_eye_outlined),
-                )
+                ),
               ]
             : null,
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: _publisher
           ? SizedBox(
-              width: 200.0,
+              width: 250.0,
               child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     FloatingActionButton(
-                      child: Icon(Icons.switch_camera),
+                      child: const Icon(Icons.switch_camera),
                       onPressed: () {
                         setState(() {
                           _switchCamera();
@@ -179,21 +223,32 @@ class _MyHomePageState extends State<MyHomePage> {
                           _muteAudio();
                         });
                       },
-                    )
+                    ),
+                    FloatingActionButton(
+                      child: Icon(
+                          (isConnected)
+                              ? Icons.stop_circle_outlined
+                              : Icons.play_circle_filled_outlined,
+                          color: isConnected ? Colors.red : Colors.white),
+                      onPressed: () {
+                        setState(() {
+                          _hangUp(isConnected);
+                        });
+                      },
+                    ),
                   ]))
           : null,
       body: OrientationBuilder(
         builder: (context, orientation) {
-          return 
-              Center(
-                child: Container(
-                  margin: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height,
-                  child: RTCVideoView(_localRenderer, mirror: true),
-                  decoration: const BoxDecoration(color: Colors.black54),
-                ),
-              );
+          return Center(
+            child: Container(
+              margin: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              child: RTCVideoView(_localRenderer, mirror: true),
+              decoration: const BoxDecoration(color: Colors.black54),
+            ),
+          );
         },
       ),
     );

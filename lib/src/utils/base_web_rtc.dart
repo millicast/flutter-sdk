@@ -62,6 +62,7 @@ class BaseWebRTC extends EventEmitter {
     return (rtcPeerState == 'connected');
   }
 
+  // This method should be overrided by publis or view
   connect({Map<String, dynamic> options = const {}}) async {}
 
   /// Sets reconnection if autoReconnect is enabled.
