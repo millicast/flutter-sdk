@@ -18,7 +18,7 @@ bool isConnected = true;
 String? dropdownvalue = 'Default';
 
 void main() async {
-  Logger.level = Level.debug;
+  Logger.level = Level.info;
   await dotenv.load(fileName: '.env');
   runApp(const MyApp());
 }
