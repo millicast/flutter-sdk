@@ -48,6 +48,7 @@ class Publish extends BaseWebRTC {
     MillicastDirectorResponse publisherData;
     logger.d('Broadcast option values: $options');
     options = {...connectOptions, ...options, 'setSDPToPeer': false};
+    this.options = options;
     if (options['mediaStream'] == null) {
       logger.e('Error while broadcasting. MediaStream required');
       throw Exception('MediaStream required');
@@ -75,7 +76,7 @@ class Publish extends BaseWebRTC {
           'Error while broadcasting. Record option detected but recording is not available');
       throw Exception('Record option detected but recording is not available');
     }
-    var signaling = Signaling({
+    signaling = Signaling({
       'streamName': streamName,
       'url': '${publisherData.urls[0]}?token=${publisherData.jwt}'
     });
@@ -85,14 +86,14 @@ class Publish extends BaseWebRTC {
     reemit(webRTCPeer, this, [webRTCEvents['connectionStateChange']]);
     Future<String?> getLocalSDPFuture =
         webRTCPeer.getRTCLocalSDP(options: options);
-    Future signalingConnectFuture = signaling.connect();
+    Future signalingConnectFuture = signaling!.connect();
     Iterable<Future<dynamic>> iterFuture = [
       getLocalSDPFuture,
       signalingConnectFuture
     ];
     futures = await Future.wait(iterFuture);
     String? localSdp = futures[0];
-    var publishFuture = signaling.publish(localSdp); //, options: options);
+    var publishFuture = signaling!.publish(localSdp, options: options);
     var setLocalDescriptionFuture =
         webRTCPeer.peer!.setLocalDescription(webRTCPeer.sessionDescription!);
     iterFuture = [publishFuture, setLocalDescriptionFuture];

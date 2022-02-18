@@ -56,9 +56,21 @@ class Signaling extends EventEmitter {
       transactionManager = TransactionManager(webSocket!);
       _logger.i('WebSocket opened');
       transactionManager?.on('event', this, (event, context) {
-        emit(SignalingEvents.broadcastEvent, event);
+        emit(SignalingEvents.broadcastEvent, this, event);
       });
-      emit(SignalingEvents.connectionSuccess,
+      transactionManager?.on(SignalingEvents.connectionError, this,
+          (event, context) {
+        emit(SignalingEvents.connectionError, this, event);
+        throw Exception(event);
+      });
+      transactionManager?.on(SignalingEvents.connectionClose, this,
+          (event, context) {
+        webSocket = null;
+        transactionManager = null;
+        _logger.i('Connection closed with Signaling Server.');
+        emit(SignalingEvents.connectionClose, this, event);
+      });
+      emit(SignalingEvents.connectionSuccess, this,
           {'ws': webSocket, 'tm': transactionManager});
       return webSocket!;
     }

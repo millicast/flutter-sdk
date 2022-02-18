@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-
-import '../logger.dart';
+import 'package:millicast_flutter_sdk/millicast_flutter_sdk.dart';
 import 'package:eventify/eventify.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -15,7 +14,7 @@ class TransactionManager extends EventEmitter {
   Function? listener;
   String? sdp;
   TransactionManager(this.transport) {
-    listener(dynamic msg) async {
+    onData(dynamic msg) async {
       Map<String, dynamic> message;
       try {
         //Process message
@@ -72,6 +71,7 @@ class TransactionManager extends EventEmitter {
           }
         case 'error':
           {
+            _logger.e(message);
             //Get transaction
             var transaction = transactions[message['transId']];
             if (transaction == null) {
@@ -95,8 +95,27 @@ class TransactionManager extends EventEmitter {
       }
     }
 
+    onError(dynamic error) {
+      try {
+        //Process message
+        emit(SignalingEvents.connectionError, this, error);
+      } catch (e) {
+        return;
+      }
+    }
+
+    void onDone() {
+      try {
+        //Process message
+        emit(SignalingEvents.connectionError, this);
+      } catch (e) {
+        return;
+      }
+    }
+
     //Add it
-    transport.stream.listen((event) => {listener(event)});
+    transport.stream.listen((event) => onData(event),
+        onError: onError, onDone: onDone, cancelOnError: false);
   }
 
   Future<dynamic> cmd(String? name, data) async {
