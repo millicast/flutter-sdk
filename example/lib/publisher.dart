@@ -6,7 +6,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 
 Future<MillicastPublishUserMedia> publishConnect(
-    RTCVideoRenderer localRenderer) async {
+    RTCVideoRenderer localRenderer, Map mainOptions) async {
   // Setting subscriber options
   DirectorPublisherOptions directorPublisherOptions = DirectorPublisherOptions(
       token: Constants.publishToken, streamName: Constants.streamName);
@@ -23,17 +23,19 @@ Future<MillicastPublishUserMedia> publishConnect(
   /// Start connection to publisher
   try {
     Map<String, dynamic> options = {
-      'simulcast': false,
-      'scalabilityMode': null,
-      'peerConfig': null
+      'stereo': true,
     };
-    if (Platform.isAndroid) {
-      options['codec'] = 'vp8';
+
+    if (!kIsWeb) {
+      if (Platform.isAndroid) {
+        options['codec'] = 'vp8';
+      }
     }
 
-    if (sourceId != null && sourceId != '') {
-      options['sourceId'] = sourceId;
+    if (mainOptions.containsKey('sourceId')) {
+      options['sourceId'] = mainOptions['sourceId'];
     }
+
     await publish.connect(options: options);
     return publish;
   } catch (e) {

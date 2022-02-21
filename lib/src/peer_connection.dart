@@ -186,27 +186,37 @@ class PeerConnection extends EventEmitter {
     _logger.i('Peer offer created');
     _logger.d('Peer offer response: ${response?.sdp}');
     sessionDescription = response;
-    // if (!options['disableAudio']) {
-    //   if (options['stereo']) {
-    //     desc.sdp = SdpParser.setStereo(desc.sdp);
-    //   }
-    //   if (options['dtx']) {
-    //     desc.sdp = SdpParser.setDTX(desc.sdp);
-    //   }
-    //   desc.sdp = SdpParser.setMultiopus(desc.sdp, mediaStream);
-    // }
-    // if (!options['disableVideo'] && options['simulcast']) {
-    //   desc.sdp = SdpParser.setSimulcast(desc.sdp, options['codec']);
-    // }
-    // if (options['absCaptureTime']) {
-    //   desc.sdp = SdpParser.setAbsoluteCaptureTime(desc.sdp);
-    // }
-    // if (options['dependencyDescriptor']) {
-    //   desc.sdp = SdpParser.setDependencyDescriptor(desc.sdp);
-    // }
-    if (options['setSDPToPeer']) {
-      await peer?.setLocalDescription(sessionDescription!);
-      _logger.i('Peer local description set');
+    if (response != null) {
+      String? sdp = response.sdp;
+      if (options.containsKey('disableAudio')) {
+        if (!options['disableAudio']) {
+          if (options['stereo']) {
+            sdp = SdpParser.setStereo(sdp);
+          }
+          if (options['dtx'] != null) {
+            sdp = SdpParser.setDTX(sdp);
+          }
+          if (mediaStream != null) {
+            sdp = SdpParser.setMultiopus(sdp, mediaStream);
+          }
+        }
+      }
+      if (options.containsKey('disabdisableVideoleAudio') &&
+          options.containsKey('simulcast')) {
+        if (!options['disableVideo'] && options['simulcast']) {
+          sdp = SdpParser.setSimulcast(sdp, options['codec']);
+        }
+      }
+      if (options['absCaptureTime'] != null) {
+        sdp = SdpParser.setAbsoluteCaptureTime(sdp);
+      }
+      if (options['dependencyDescriptor'] != null) {
+        sdp = SdpParser.setDependencyDescriptor(sdp);
+      }
+      if (options['setSDPToPeer'] != null) {
+        await peer?.setLocalDescription(sessionDescription!);
+        _logger.i('Peer local description set');
+      }
     }
     return sessionDescription?.sdp;
   }

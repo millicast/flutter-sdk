@@ -31,6 +31,11 @@ class SdpParser {
   }
 
   static String? setStereo(String? sdp) {
+    _logger.i('Replacing SDP response for support stereo');
+    sdp = sdp!.replaceAll(
+        RegExp(r'useinbandfec=1', multiLine: true), 'useinbandfec=1; stereo=1');
+    _logger.i('Replaced SDP response for support stereo');
+    _logger.d('New SDP value: ', sdp);
     return sdp;
   }
 
@@ -73,8 +78,9 @@ class SdpParser {
         } else {
           return sdp;
         }
-        parsedSdp['media'][video]['rtp'][0]['rate'] = bitrate;
-        parsedSdp['media'][video]['rtp'][1]['rate'] = bitrate;
+        parsedSdp['media'][video]['bandwidth'] = [
+          {'type': 'AS', 'limit': bitrate}
+        ];
         sdp = write(parsedSdp, null);
         return sdp;
       }
