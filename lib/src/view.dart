@@ -120,16 +120,20 @@ class View extends BaseWebRTC {
     if (subscriberData == null) {
       _logger.e('Error while subscribing. Subscriber data required');
     }
-    var signaling = Signaling({
+    var signalingInstace = Signaling({
       'streamName': streamName,
       'url': '${subscriberData.urls[0]}?token=${subscriberData.jwt}'
     });
+
+    signaling = signalingInstace;
+
     await webRTCPeer.createRTCPeer(options['peerConfig']);
-    // reemit(webRTCPeer, this, [webRTCEvents['connectionStateChange']]);
+    // reemit(webRTCPeer, this,
+    //     [webRTCEvents['track'], webRTCEvents['connectionStateChange']]);
 
     Future getLocalSDPFuture =
-        webRTCPeer.getRTCLocalSDP(options: {'stereo': true});
-    Future signalingConnectFuture = signaling.connect();
+        webRTCPeer.getRTCLocalSDP(options: {...options, 'stereo': true});
+    Future signalingConnectFuture = signalingInstace.connect();
 
     Iterable<Future<dynamic>> iterFuture = [
       getLocalSDPFuture,
@@ -138,13 +142,20 @@ class View extends BaseWebRTC {
 
     var resolvedFutures = await Future.wait(iterFuture);
     String localSdp = resolvedFutures[0];
-    Future subscribeFuture = signaling.subscribe(localSdp);
+    Future subscribeFuture =
+        signalingInstace.subscribe(localSdp, options: options);
     Future<void>? setLocalDescriptionFuture =
         webRTCPeer.peer?.setLocalDescription(webRTCPeer.sessionDescription!);
     iterFuture = [subscribeFuture, setLocalDescriptionFuture!];
 
     resolvedFutures = await Future.wait(iterFuture);
     String remoteSdp = resolvedFutures[0];
+
+    // reemit(signaling!, this, [SignalingEvents.broadcastEvent]);
+    signalingInstace.on(SignalingEvents.broadcastEvent, signalingInstace,
+        (event, context) {
+      emit(SignalingEvents.broadcastEvent, this, event.eventData);
+    });
 
     await webRTCPeer.setRTCRemoteSDP(remoteSdp);
     _logger.i('setRemoteDescription Success! ');
@@ -153,14 +164,75 @@ class View extends BaseWebRTC {
     _logger.i('Connected to streamName: $streamName');
   }
 
-  void select(Map? layer) async {}
+  /// Select the simulcast encoding layer and svc layers for the main video track
+  ///
+  /// [Map] layer - leave empty for automatic layer selection based on bandwidth estimation.
+
+  select(Map? layer) async {
+    _logger.d('Viewer select layer values: $layer');
+    await signaling?.cmd('select', {layer});
+    _logger.i('Connected to streamName: $streamName');
+  }
+
+  /// Add remote receving track.
+  ///
+  /// String] media - Media kind ('audio' | 'video').
+  /// [List<MediaStream>] streams - Streams the track will belong to.
+  /// Return [Future<RTCRtpTransceiver>] Future that will be resolved when the RTCRtpTransceiver is assigned an mid value.
 
   Future<RTCRtpTransceiver> addRemoteTrack(
       String media, List<MediaStream> streams) async {
-    // ignore: null_argument_to_non_null_type
-    return Future<RTCRtpTransceiver>.value();
+    _logger.i('Viewer adding remote  track $media');
+    return webRTCPeer.addRemoteTrack(media, streams);
   }
 
-  void project(String sourceId, List<Object> mapping) async {}
-  void unproject(List<String> mediaIds) async {}
+  /// Start projecting source in selected media ids.
+  ///
+  /// [String] sourceId                       - Selected source id.
+  /// [List<Map>] mapping                    - Mapping of the source track ids to the receiver mids
+  /// [String] mapping.trackId                - Track id from the source (received on the "active" event), if not set the media kind will be used instead.
+  /// [String] mapping.media                  - Track kind of the source ('audio' | 'video'), if not set the trackId will be used instead.
+  /// [String] mapping.mediaId                 - mid value of the rtp receiver in which the media is going to be projected.
+  /// [LayerInfo] mapping.layer                - Select the simulcast encoding layer and svc layers, only applicable to video tracks.
+  ///
+
+  project(String? sourceId, List<Map> mapping) async {
+    for (var map in mapping) {
+      if (map['trackId'] == null && map['media'] == null) {
+        _logger
+            .e('Error in projection mapping, trackId and mediaId must be set');
+        throw Error();
+      }
+      if (map['mediaId'] == null) {
+        _logger.e('Error in projection mapping, mediaId must be set');
+        throw Error();
+      }
+
+      RTCPeerConnection? peer = await webRTCPeer.getRTCPeer();
+      List<RTCRtpTransceiver> peerTransceiverList =
+          await peer.getTransceivers();
+
+      try {
+        peerTransceiverList.firstWhere((t) => t.mid == map['mediaId']);
+      } catch (e) {
+        _logger.e(
+            'Error in projection mapping, ${map['mediaId']} mid not found in local transceivers');
+      }
+    }
+    _logger.i('Viewer project source:$sourceId layer mappings: $mapping');
+    Map<String, dynamic> data = {'sourceId': sourceId, 'mapping': mapping};
+    await signaling?.cmd('project', data);
+    logger.i('Projection done');
+  }
+
+  /// Stop projecting attached source in selected media ids.
+  ///
+  ///  [List<String>] mediaIds - mid value of the receivers that are going to be detached.
+  ///
+
+  unproject(List<String> mediaIds) async {
+    _logger.d('Viewer unproject mediaIds: $mediaIds');
+    await signaling?.cmd('unproject', {mediaIds});
+    _logger.i('Unprojection done');
+  }
 }

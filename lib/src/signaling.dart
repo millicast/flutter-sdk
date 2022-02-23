@@ -56,7 +56,7 @@ class Signaling extends EventEmitter {
       transactionManager = TransactionManager(webSocket!);
       _logger.i('WebSocket opened');
       transactionManager?.on('event', this, (event, context) {
-        emit(SignalingEvents.broadcastEvent, this, event);
+        emit(SignalingEvents.broadcastEvent, this, event.eventData);
       });
       transactionManager?.on(SignalingEvents.connectionError, this,
           (event, context) {
@@ -104,7 +104,7 @@ class Signaling extends EventEmitter {
       'excludedSourceIds': options?['excludedSourceIds']
     };
     if (options != null) {
-      if (options['vad!']) {
+      if (options['vad'] != null) {
         data['vad'] = true;
       }
       if (options['events'] != null) {

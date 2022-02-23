@@ -63,8 +63,10 @@ class TransactionManager extends EventEmitter {
             transactions.remove(message['transId']);
             //emit response
             if (transaction['completer'] is Completer) {
-              if (message['data']['sdp'] != null) {
-                transaction['completer'].complete(message);
+              if (message['data'] != null) {
+                if (message['data']['sdp'] != null) {
+                  transaction['completer'].complete(message);
+                }
               }
             }
             break;

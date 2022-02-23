@@ -18,7 +18,7 @@ class BaseWebRTC extends EventEmitter {
   Function tokenGenerator;
   bool autoReconnect;
   Logger logger;
-  Signaling? signaling;
+  late Signaling? signaling;
   PeerConnection webRTCPeer = PeerConnection();
   int? reconnectionInterval;
   bool? alreadyDisconnected;
@@ -40,8 +40,8 @@ class BaseWebRTC extends EventEmitter {
   /// Get current RTC peer connection.
   ///
   /// Returns the [RTCPeerConnection].
-  Future<RTCPeerConnection> getRTCPeerConnection() {
-    return webRTCPeer.getRTCPeer();
+  Future<RTCPeerConnection> getRTCPeerConnection() async {
+    return await webRTCPeer.getRTCPeer();
   }
 
   /// Stops connection.

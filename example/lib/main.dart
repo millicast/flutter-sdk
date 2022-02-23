@@ -56,6 +56,7 @@ class _MyHomePageState extends State<MyHomePage> {
   late String _viewers = '0';
   late bool _publisher;
   late MillicastPublishUserMedia _publisherMedia;
+  late View _view;
   Map options = {};
 
   PeerConnection? webRtcPeer;
@@ -140,7 +141,15 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void subscribeExample() async {
-    await viewConnect(_localRenderer);
+    _view = await viewConnect(_localRenderer);
+
+    _view.on('simulcast', _view, ((ev, context) {
+      if (ev.eventData == true) {
+        _proyectSourceId(null, 'audio');
+        _proyectSourceId(null, 'video');
+      }
+      setState(() {});
+    }));
     setState(() {});
   }
 
@@ -168,20 +177,22 @@ class _MyHomePageState extends State<MyHomePage> {
                       SettingsTile.navigation(
                         leading: const Icon(Icons.title),
                         title: const Text('SourceId'),
-                        value: TextField(
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              hintText: 'Enter a stream SourceId',
-                            ),
-                            onSubmitted: (sourceId) {
-                              options['sourceId'] = sourceId;
-                              TextInputAction.next;
-                            }),
+                        value: SizedBox(
+                            child: TextField(
+                                decoration: const InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  hintText: 'Enter a stream SourceId',
+                                ),
+                                onSubmitted: (sourceId) {
+                                  options['sourceId'] = sourceId;
+                                  TextInputAction.next;
+                                })),
                       ),
                       SettingsTile.navigation(
                         leading: const Icon(Icons.speed),
                         title: const Text('BitRate'),
-                        value: TextField(
+                        value: SizedBox(
+                            child: TextField(
                           decoration: const InputDecoration(
                             border: OutlineInputBorder(),
                             hintText: 'Enter bitrate limit in Kbps',
@@ -189,7 +200,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           onSubmitted: (bitrate) {
                             _updateBitrate(num.parse(bitrate));
                           },
-                        ),
+                        )),
                       ),
                       SettingsTile.switchTile(
                         onToggle: (value) {
@@ -225,6 +236,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    String? selectedSource;
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -409,7 +421,123 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                     ])
               ]))
-          : null,
+          : isMultisourceEnabled
+              ? SizedBox(
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                      Container(
+                          decoration: BoxDecoration(
+                              color: Colors.purple,
+                              borderRadius: BorderRadius.circular(15)),
+                          padding: const EdgeInsets.only(
+                            left: 1,
+                          ),
+                          child: ButtonTheme(
+                            alignedDropdown: true,
+                            child: DropdownButtonHideUnderline(
+                                child: DropdownButton<String>(
+                              icon: Icon(Icons.arrow_drop_up),
+                              iconEnabledColor: Colors.white,
+                              hint: const Text('Video Source',
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 15)),
+                              dropdownColor: Colors.purple,
+                              items: sourceIds.map((String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(
+                                    value,
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                );
+                              }).toList(),
+                              onChanged: (value) {
+                                setState(() {
+                                  _proyectSourceId(value, 'video');
+                                });
+                              },
+                            )),
+                          )),
+                      FloatingActionButton(
+                        child: Icon(
+                            (!isVideoMuted) ? Icons.pause : Icons.play_arrow),
+                        onPressed: () {
+                          setState(() {
+                            _stopVideo();
+                          });
+                        },
+                      ),
+                      FloatingActionButton(
+                        child: Icon((isAudioMuted)
+                            ? Icons.volume_off
+                            : Icons.volume_up),
+                        onPressed: () {
+                          setState(() {
+                            _stopAudio();
+                          });
+                        },
+                      ),
+                      Container(
+                          decoration: BoxDecoration(
+                              color: Colors.purple,
+                              borderRadius: BorderRadius.circular(15)),
+                          padding: const EdgeInsets.only(
+                            left: 1,
+                          ),
+                          child: ButtonTheme(
+                            alignedDropdown: true,
+                            child: DropdownButtonHideUnderline(
+                                child: DropdownButton<String>(
+                              icon: Icon(Icons.arrow_drop_up),
+                              iconEnabledColor: Colors.white,
+                              hint: const Text('Audio Source',
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 15)),
+                              dropdownColor: Colors.purple,
+                              items: sourceIds.map((String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(
+                                    value,
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                );
+                              }).toList(),
+                              onChanged: (value) {
+                                setState(() {
+                                  _proyectSourceId(value, 'audio');
+                                });
+                              },
+                            )),
+                          ))
+                    ]))
+              : SizedBox(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      FloatingActionButton(
+                        child: Icon(
+                            (!isVideoMuted) ? Icons.pause : Icons.play_arrow),
+                        onPressed: () {
+                          setState(() {
+                            _stopVideo();
+                          });
+                        },
+                      ),
+                      FloatingActionButton(
+                        child: Icon((isAudioMuted)
+                            ? Icons.volume_off
+                            : Icons.volume_up),
+                        onPressed: () {
+                          setState(() {
+                            _stopAudio();
+                          });
+                        },
+                      )
+                    ],
+                  ),
+                ),
       body: OrientationBuilder(
         builder: (context, orientation) {
           return Center(
@@ -424,5 +552,29 @@ class _MyHomePageState extends State<MyHomePage> {
         },
       ),
     );
+  }
+
+  Future<void> _proyectSourceId(String? value, String type) async {
+    await _view.project(value, [
+      {'trackId': type, 'mediaId': type == 'video' ? '0' : '1'},
+    ]);
+  }
+
+  void _stopVideo() {
+    MediaStream? stream = _localRenderer.srcObject;
+
+    if (isAudioMuted == true) {
+      stream?.getVideoTracks()[0].enabled = isVideoMuted;
+    } else {
+      stream?.getAudioTracks()[0].enabled = isVideoMuted;
+      stream?.getVideoTracks()[0].enabled = isVideoMuted;
+    }
+    isVideoMuted = !isVideoMuted;
+  }
+
+  void _stopAudio() {
+    MediaStream? stream = _localRenderer.srcObject;
+    stream?.getAudioTracks()[0].enabled = isAudioMuted;
+    isAudioMuted = !isAudioMuted;
   }
 }

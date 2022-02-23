@@ -60,7 +60,7 @@ class PeerConnection extends EventEmitter {
   ///
   createRTCPeer([Map<String, dynamic>? config]) async {
     _logger.i('Creating new RTCPeerConnection');
-    _logger.d('RTC configuration provided by user: ');
+    _logger.d('RTC configuration provided by user: $config');
     config = await getRTCConfiguration(config);
     peer = await instanceRTCPeerConnection(this, config);
   }

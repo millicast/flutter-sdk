@@ -27,7 +27,7 @@ Future<MillicastPublishUserMedia> publishConnect(
     };
 
     if (!kIsWeb) {
-      if (Platform.isAndroid) {
+      if (Platform.isAndroid || Platform.isIOS) {
         options['codec'] = 'vp8';
       }
     }
