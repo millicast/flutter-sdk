@@ -46,8 +46,8 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
   void subscribeExample() async {
     _view = await viewConnect(_localRenderer);
 
-    _view.on('simulcast', _view, ((ev, context) {
-      if (ev.eventData == true) {
+    _view.on('multicast', _view, ((ev, context) {
+      if (ev.eventData == false) {
         _projectSourceId(null, 'audio');
         _projectSourceId(null, 'video');
       }

@@ -46,6 +46,10 @@ class MillicastPublishUserMedia extends Publish {
     }
   }
 
+  migrate() {
+    signaling?.emit('migrate');
+  }
+
   @override
   connect({Map<String, dynamic> options = connectOptions}) async {
     await super.connect(

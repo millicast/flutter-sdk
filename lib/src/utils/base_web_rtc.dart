@@ -23,6 +23,7 @@ class BaseWebRTC extends EventEmitter {
   int? reconnectionInterval;
   bool? alreadyDisconnected;
   bool? firstReconnection;
+
   Map<String, dynamic>? options;
 
   BaseWebRTC({
@@ -62,14 +63,22 @@ class BaseWebRTC extends EventEmitter {
     return (rtcPeerState == 'connected');
   }
 
-  // This method should be overrided by publis or view
+  // This method should be overrided by publish or view
   connect({Map<String, dynamic> options = const {}}) async {}
+
+  // This method should be overrided by publish or view
+  replaceConnection() async {}
 
   /// Sets reconnection if autoReconnect is enabled.
   setReconnect() {
+    signaling?.on('migrate', this, (ev, context) async {
+      signaling?.isMigrating = true;
+      await replaceConnection();
+      signaling?.isMigrating = false;
+    });
     if (autoReconnect) {
       signaling?.on(SignalingEvents.connectionError, this, (event, context) {
-        if (firstReconnection == null || alreadyDisconnected == false) {
+        if ((firstReconnection == null || alreadyDisconnected == false)) {
           firstReconnection = false;
           reconnect();
         }

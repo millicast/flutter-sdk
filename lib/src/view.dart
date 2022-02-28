@@ -1,5 +1,10 @@
+// ignore_for_file: lines_longer_than_80_chars
+
+import 'dart:async';
+
 import 'package:millicast_flutter_sdk/src/peer_connection.dart';
 import 'package:millicast_flutter_sdk/src/signaling.dart';
+import 'package:millicast_flutter_sdk/src/utils/reemit.dart';
 
 import 'director.dart';
 import 'utils/base_web_rtc.dart';
@@ -26,6 +31,10 @@ const Map<String, dynamic> _connectOptions = {
 /// [autoReconnect] = true - Enable auto reconnect to stream.
 
 class View extends BaseWebRTC {
+  Function? stopReemitingWebRTCPeerInstanceEvents;
+
+  Function? stopReemitingSignalingInstanceEvents;
+
   View(
       {required String streamName,
       required Function tokenGenerator,
@@ -46,27 +55,26 @@ class View extends BaseWebRTC {
   /// Connects to an active stream as subscriber.
   ///
   /// [Object] options - General subscriber options.
-  //  ignore: lines_longer_than_80_chars
+
   /// [options] dtx = false - True to modify SDP for supporting dtx in opus. Otherwise False.
-  //  ignore: lines_longer_than_80_chars
+
   /// [options] absCaptureTime = false - True to modify SDP for supporting absolute capture time header extension. Otherwise False.
-  //  ignore: lines_longer_than_80_chars
   /// options disableVideo = false - Disable the opportunity to receive video stream.
-  //  ignore: lines_longer_than_80_chars
+
   /// options disableAudio = false - Disable the opportunity to receive audio stream.
-  //  ignore: lines_longer_than_80_chars
+
   /// options multiplexedAudioTracks - Number of audio tracks to recieve VAD multiplexed audio for secondary sources.
-  //  ignore: lines_longer_than_80_chars
+
   /// options pinnedSourceId - Id of the main source that will be received by the default MediaStream.
-  //  ignore: lines_longer_than_80_chars
+
   /// options excludedSourceIds - Do not receive media from the these source ids.
-  //  ignore: lines_longer_than_80_chars
+
   /// options events - Override which events will be delivered by the server (any of "active" | "inactive" | "vad" | "layers").*
-  //  ignore: lines_longer_than_80_chars
+
   /// options peerConfig     - Options to configure the new RTCPeerConnection.
-  //  ignore: lines_longer_than_80_chars
+
   /// options layer - Select the simulcast encoding layer and svc layers for the main video track, leave empty for automatic layer selection based on bandwidth estimation.
-  //  ignore: lines_longer_than_80_chars
+
   /// Returns Future object which resolves when the connection was successfully established.
   ///
   /// @example
@@ -103,65 +111,8 @@ class View extends BaseWebRTC {
   ///```
   @override
   connect({Map<String, dynamic> options = _connectOptions}) async {
-    _logger.d('Viewer connect options values: $options');
-    options = {..._connectOptions, ...options, 'setSDPToPeer': false};
-    if (isActive()) {
-      _logger.w('Viewer currently subscribed');
-      throw Error();
-    }
-    MillicastDirectorResponse subscriberData;
-    try {
-      subscriberData = await tokenGenerator();
-    } catch (e) {
-      _logger.e('Error generating token.');
-      throw Exception(e);
-    }
-    // ignore: unnecessary_null_comparison
-    if (subscriberData == null) {
-      _logger.e('Error while subscribing. Subscriber data required');
-    }
-    var signalingInstace = Signaling({
-      'streamName': streamName,
-      'url': '${subscriberData.urls[0]}?token=${subscriberData.jwt}'
-    });
-
-    signaling = signalingInstace;
-
-    await webRTCPeer.createRTCPeer(options['peerConfig']);
-    // reemit(webRTCPeer, this,
-    //     [webRTCEvents['track'], webRTCEvents['connectionStateChange']]);
-
-    Future getLocalSDPFuture =
-        webRTCPeer.getRTCLocalSDP(options: {...options, 'stereo': true});
-    Future signalingConnectFuture = signalingInstace.connect();
-
-    Iterable<Future<dynamic>> iterFuture = [
-      getLocalSDPFuture,
-      signalingConnectFuture
-    ];
-
-    var resolvedFutures = await Future.wait(iterFuture);
-    String localSdp = resolvedFutures[0];
-    Future subscribeFuture =
-        signalingInstace.subscribe(localSdp, options: options);
-    Future<void>? setLocalDescriptionFuture =
-        webRTCPeer.peer?.setLocalDescription(webRTCPeer.sessionDescription!);
-    iterFuture = [subscribeFuture, setLocalDescriptionFuture!];
-
-    resolvedFutures = await Future.wait(iterFuture);
-    String remoteSdp = resolvedFutures[0];
-
-    // reemit(signaling!, this, [SignalingEvents.broadcastEvent]);
-    signalingInstace.on(SignalingEvents.broadcastEvent, signalingInstace,
-        (event, context) {
-      emit(SignalingEvents.broadcastEvent, this, event.eventData);
-    });
-
-    await webRTCPeer.setRTCRemoteSDP(remoteSdp);
-    _logger.i('setRemoteDescription Success! ');
-
-    setReconnect();
-    _logger.i('Connected to streamName: $streamName');
+    this.options = {..._connectOptions, ...options, 'setSDPToPeer': false};
+    await initConnection({'migrate': false});
   }
 
   /// Select the simulcast encoding layer and svc layers for the main video
@@ -216,7 +167,6 @@ class View extends BaseWebRTC {
         _logger.e('Error in projection mapping, mediaId must be set');
         throw Error();
       }
-
       RTCPeerConnection? peer = await webRTCPeer.getRTCPeer();
       List<RTCRtpTransceiver> peerTransceiverList =
           await peer.getTransceivers();
@@ -244,5 +194,106 @@ class View extends BaseWebRTC {
     _logger.d('Viewer unproject mediaIds: $mediaIds');
     await signaling?.cmd('unproject', {mediaIds});
     _logger.i('Unprojection done');
+  }
+
+  @override
+  replaceConnection() async {
+    logger.i('Migrating current connection');
+    await initConnection({'migrate': true});
+  }
+
+  initConnection(Map<String, dynamic> data) async {
+    _logger.d('Viewer connect options values: $options');
+
+    if (isActive() && !data['migrate']) {
+      _logger.w('Viewer currently subscribed');
+      throw Error();
+    }
+    MillicastDirectorResponse subscriberData;
+    try {
+      subscriberData = await tokenGenerator();
+    } catch (e) {
+      _logger.e('Error generating token.');
+      throw Exception(e);
+    }
+    // ignore: unnecessary_null_comparison
+    if (subscriberData == null) {
+      _logger.e('Error while subscribing. Subscriber data required');
+    }
+    var signalingInstance = Signaling({
+      'streamName': streamName,
+      'url': '${subscriberData.urls[0]}?token=${subscriberData.jwt}'
+    });
+
+    var webRTCPeerInstance = data['migrate'] ? PeerConnection() : webRTCPeer;
+    await webRTCPeerInstance.createRTCPeer(options?['peerConfig']);
+
+    // Stop emiting events from the previous instances
+    if (stopReemitingWebRTCPeerInstanceEvents != null) {
+      stopReemitingWebRTCPeerInstanceEvents!();
+    }
+    if (stopReemitingSignalingInstanceEvents != null) {
+      stopReemitingSignalingInstanceEvents!();
+    }
+
+    stopReemitingWebRTCPeerInstanceEvents = reemit(webRTCPeerInstance, this,
+        [webRTCEvents['track'], webRTCEvents['connectionStateChange']]);
+
+    stopReemitingSignalingInstanceEvents =
+        reemit(signalingInstance, this, [SignalingEvents.broadcastEvent]);
+
+    Future getLocalSDPFuture = webRTCPeerInstance
+        .getRTCLocalSDP(options: {...options!, 'stereo': true});
+    Future signalingConnectFuture = signalingInstance.connect();
+
+    Iterable<Future<dynamic>> iterFuture = [
+      getLocalSDPFuture,
+      signalingConnectFuture
+    ];
+    var resolvedFutures = await Future.wait(iterFuture);
+    String localSdp = resolvedFutures[0];
+
+    Future subscribeFuture =
+        signalingInstance.subscribe(localSdp, options: options);
+    Future<void>? setLocalDescriptionFuture = webRTCPeerInstance.peer
+        ?.setLocalDescription(webRTCPeerInstance.sessionDescription!);
+    iterFuture = [subscribeFuture, setLocalDescriptionFuture!];
+
+    resolvedFutures = await Future.wait(iterFuture);
+    String remoteSdp = resolvedFutures[0];
+
+    await webRTCPeerInstance.setRTCRemoteSDP(remoteSdp);
+    _logger.i('Connected to streamName: $streamName');
+    Signaling? oldSignlaling = signaling;
+    PeerConnection? oldWebRTCPeer = webRTCPeer;
+    signaling = signalingInstance;
+    webRTCPeer = webRTCPeerInstance;
+
+    setReconnect();
+
+    if (data['migrate']) {
+      webRTCPeer.on(webRTCEvents['connectionStateChange'], webRTCPeer,
+          (ev, context) async {
+        if (ev.eventData ==
+            RTCIceConnectionState.RTCIceConnectionStateConnected) {
+          Timer(const Duration(milliseconds: 1000), () {
+            oldSignlaling?.close();
+            oldWebRTCPeer?.closeRTCPeer();
+            oldSignlaling = null;
+            oldWebRTCPeer = null;
+            _logger.i('Current connection migrated');
+          });
+        } else if ([
+          RTCIceConnectionState.RTCIceConnectionStateClosed,
+          RTCIceConnectionState.RTCIceConnectionStateFailed,
+          RTCIceConnectionState.RTCIceConnectionStateDisconnected
+        ].contains(ev.eventData)) {
+          oldSignlaling?.close();
+          oldWebRTCPeer?.closeRTCPeer();
+          oldSignlaling = null;
+          oldWebRTCPeer = null;
+        }
+      });
+    }
   }
 }

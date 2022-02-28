@@ -1,11 +1,16 @@
-import 'package:millicast_flutter_sdk/src/director.dart';
+// ignore_for_file: lines_longer_than_80_chars
 
+import 'dart:async';
+
+import 'package:flutter_webrtc/flutter_webrtc.dart';
+
+import 'director.dart';
 import 'logger.dart';
+import 'peer_connection.dart';
+import 'signaling.dart';
 import 'utils/base_web_rtc.dart';
 import 'package:jwt_decode/jwt_decode.dart';
 import 'dart:convert';
-import 'signaling.dart';
-import 'peer_connection.dart';
 import 'utils/reemit.dart';
 
 const Map<String, dynamic> connectOptions = {
@@ -23,15 +28,17 @@ var _logger = getLogger('Publish');
 
 /// Manages connection with a secure WebSocket path to signal the Millicast
 /// server and establishes a WebRTC connection to broadcast a MediaStream.
-// ignore: lines_longer_than_80_chars
 ///
 /// [streamName] - Millicast existing stream name.
-//  ignore: lines_longer_than_80_chars
 /// [tokenGenerator] - Callback function executed when a new token is needed.
 /// [logger] - Logger instance from the extended classes.
 /// [autoReconnect] - Enable auto reconnect.
 ///
 class Publish extends BaseWebRTC {
+  Function? stopReemitingWebRTCPeerInstanceEvents;
+
+  Function? stopReemitingSignalingInstanceEvents;
+
   Publish(
       {required String streamName,
       required Function tokenGenerator,
@@ -43,17 +50,32 @@ class Publish extends BaseWebRTC {
             logger: _logger);
   @override
   connect({Map<String, dynamic> options = connectOptions}) async {
-    String remoteSdp = '';
+    this.options = {...connectOptions, ...options, 'setSDPToPeer': false};
+    await initConnection({'migrate': false});
+  }
+
+  @override
+  replaceConnection() async {
+    _logger.i('Migrating current connection');
+    options?['mediaStream'] = options?['mediaStream'] ?? webRTCPeer.getTracks();
+    await initConnection({'migrate': true});
+  }
+
+  @override
+  reconnect() {
+    options?['mediaStream'] = options?['mediaStream'] ?? webRTCPeer.getTracks();
+    super.reconnect();
+  }
+
+  initConnection(Map<dynamic, dynamic> data) async {
+    _logger.i('Broadcast option values: $options');
     List futures;
     MillicastDirectorResponse publisherData;
-    _logger.d('Broadcast option values: $options');
-    options = {...connectOptions, ...options, 'setSDPToPeer': false};
-    this.options = options;
-    if (options['mediaStream'] == null) {
+    if (options?['mediaStream'] == null) {
       _logger.e('Error while broadcasting. MediaStream required');
       throw Exception('MediaStream required');
     }
-    if (isActive()) {
+    if (isActive() && data['migrate'] == false) {
       throw Exception('Broadcast curretly active');
     }
     try {
@@ -62,60 +84,94 @@ class Publish extends BaseWebRTC {
       _logger.e('Error generating token.');
       rethrow;
     }
-    // ignore: unnecessary_null_comparison
-    if (publisherData == null) {
+    if (publisherData.urls.isEmpty && publisherData.jwt.isEmpty) {
       _logger.e('Error while broadcasting. Publisher data required');
       throw Exception('Publisher data is required');
     }
     bool recordingAvailable = Jwt.parseJwt(publisherData.jwt)[
         utf8.decode(base64.decode('bWlsbGljYXN0'))]['record'];
-    _logger.i('${options['record']}');
-    if (options['record'] != null && !recordingAvailable) {
+    if (options?['record'] != null && !recordingAvailable) {
       _logger.e(
-          // ignore: lines_longer_than_80_chars
           'Error while broadcasting. Record option detected but recording is not available');
       throw Exception('Record option detected but recording is not available');
     }
-    signaling = Signaling({
+    var signalingInstance = Signaling({
       'streamName': streamName,
       'url': '${publisherData.urls[0]}?token=${publisherData.jwt}'
     });
 
-    await webRTCPeer.createRTCPeer(options['peerConfig']);
+    var webRTCPeerInstance = data['migrate'] ? PeerConnection() : webRTCPeer;
 
-    reemit(webRTCPeer, this, [webRTCEvents['connectionStateChange']]);
+    await webRTCPeerInstance.createRTCPeer(options?['peerConfig']);
+
+    // Stop emiting events from the previous instances
+    if (stopReemitingWebRTCPeerInstanceEvents != null) {
+      stopReemitingWebRTCPeerInstanceEvents!();
+    }
+    if (stopReemitingSignalingInstanceEvents != null) {
+      stopReemitingSignalingInstanceEvents!();
+    }
+
+    stopReemitingWebRTCPeerInstanceEvents = reemit(
+        webRTCPeerInstance, this, [webRTCEvents['connectionStateChange']]);
+    stopReemitingSignalingInstanceEvents =
+        reemit(signalingInstance, this, [SignalingEvents.broadcastEvent]);
+
     Future<String?> getLocalSDPFuture =
-        webRTCPeer.getRTCLocalSDP(options: options);
-    Future signalingConnectFuture = signaling!.connect();
+        webRTCPeerInstance.getRTCLocalSDP(options: options!);
+    Future signalingConnectFuture = signalingInstance.connect();
     Iterable<Future<dynamic>> iterFuture = [
       getLocalSDPFuture,
       signalingConnectFuture
     ];
     futures = await Future.wait(iterFuture);
     String? localSdp = futures[0];
-    var publishFuture = signaling!.publish(localSdp, options: options);
-    var setLocalDescriptionFuture =
-        webRTCPeer.peer!.setLocalDescription(webRTCPeer.sessionDescription!);
+
+    var publishFuture = signalingInstance.publish(localSdp, options: options);
+    var setLocalDescriptionFuture = webRTCPeerInstance.peer!
+        .setLocalDescription(webRTCPeerInstance.sessionDescription!);
     iterFuture = [publishFuture, setLocalDescriptionFuture];
     futures = await Future.wait(iterFuture);
-    remoteSdp = futures[0];
+    String remoteSdp = futures[0];
     await setLocalDescriptionFuture;
-    if (!options['disableVideo'] && (options['bandwidth'] > 0)) {
-      remoteSdp = webRTCPeer.updateBandwidthRestriction(
-          remoteSdp, options['bandwidth']);
-    }
-    await webRTCPeer.setRTCRemoteSDP(remoteSdp);
-    webRTCPeer.emit('setRemoteDescription', webRTCPeer,
-        (await webRTCPeer.peer?.getRemoteDescription())?.sdp);
-    _logger.i('setRemoteDescription Success! ');
-    setReconnect();
-    _logger.i(options['mediaStream']);
-    _logger.i('Broadcasting to streamName: $streamName');
-  }
 
-  @override
-  reconnect() {
-    options?['mediaStream'] = options?['mediaStream'];
-    super.reconnect();
+    if (!options?['disableVideo'] && (options?['bandwidth'] > 0)) {
+      remoteSdp = webRTCPeerInstance.updateBandwidthRestriction(
+          remoteSdp, options?['bandwidth']);
+    }
+
+    await webRTCPeerInstance.setRTCRemoteSDP(remoteSdp);
+    _logger.i('Broadcasting to streamName: $streamName');
+
+    Signaling? oldSignlaling = signaling;
+    PeerConnection? oldWebRTCPeer = webRTCPeer;
+    signaling = signalingInstance;
+    webRTCPeer = webRTCPeerInstance;
+    setReconnect();
+
+    if (data['migrate']) {
+      webRTCPeer.on(webRTCEvents['connectionStateChange'], webRTCPeer,
+          (ev, context) async {
+        if (ev.eventData ==
+            RTCIceConnectionState.RTCIceConnectionStateConnected) {
+          Timer(const Duration(milliseconds: 1000), () {
+            oldSignlaling?.close();
+            oldWebRTCPeer?.closeRTCPeer();
+            oldSignlaling = null;
+            oldWebRTCPeer = null;
+            _logger.i('Current connection migrated');
+          });
+        } else if ([
+          RTCIceConnectionState.RTCIceConnectionStateClosed,
+          RTCIceConnectionState.RTCIceConnectionStateFailed,
+          RTCIceConnectionState.RTCIceConnectionStateDisconnected
+        ].contains(ev.eventData)) {
+          oldSignlaling?.close();
+          oldWebRTCPeer?.closeRTCPeer();
+          oldSignlaling = null;
+          oldWebRTCPeer = null;
+        }
+      });
+    }
   }
 }

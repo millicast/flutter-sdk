@@ -24,6 +24,10 @@ Future viewConnect(RTCVideoRenderer localRenderer) async {
       tokenGenerator: tokenGenerator,
       mediaElement: localRenderer);
 
+  view.on(webRTCEvents['track'], view, (ev, context) {
+    localRenderer.srcObject = ev.eventData as MediaStream?;
+  });
+
   view.on(SignalingEvents.broadcastEvent, view, (event, context) {
     String eventData = json.encode(event.eventData);
     Map<String, dynamic> eventDataMap = jsonDecode(eventData);
@@ -31,12 +35,12 @@ Future viewConnect(RTCVideoRenderer localRenderer) async {
     if (eventDataMap['data']['sourceId'] == null &&
         eventDataMap['name'] == 'active') {
       isMultisourceEnabled = false;
-      view.emit('simulcast', view, true);
+      view.emit('multicast', view, false);
     } else if (eventDataMap['data']['sourceId'] != null) {
       if (!sourceIds.contains(eventDataMap['data']['sourceId'])) {
         sourceIds.add(eventDataMap['data']['sourceId']);
       }
-      view.emit('simulcast', view, false);
+      view.emit('multicast', view, true);
       isMultisourceEnabled = true;
     }
   });

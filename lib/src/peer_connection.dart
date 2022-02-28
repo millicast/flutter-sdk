@@ -430,8 +430,8 @@ class PeerConnection extends EventEmitter {
       };
     } else {
       peer.onIceConnectionState = (RTCIceConnectionState state) {
-        _logger.i(
-            'Peer ICE connection state change: ', peer.iceConnectionState);
+        _logger
+            .i('Peer ICE connection state change: ${peer.iceConnectionState}');
         instanceClass.emit(webRTCEvents['connectionStateChange'], this,
             peer.iceConnectionState);
       };

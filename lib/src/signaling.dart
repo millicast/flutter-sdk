@@ -1,3 +1,5 @@
+// ignore_for_file: lines_longer_than_80_chars
+
 import 'package:eventify/eventify.dart';
 // import 'package:millicast_flutter_sdk/src/utils/sdp_parser.dart';
 import 'utils/transaction_manager.dart';
@@ -18,7 +20,6 @@ const Map<String, String> videoCodec = {
 /// Starts [WebSocketChannel] connection and manages the messages between peers.
 ///
 /// [streamName] - Millicast stream name to get subscribed.
-// ignore: lines_longer_than_80_chars
 /// [wsUrl] URL is used to initialize a [webSocket] with Millicast server and establish a WebRTC connection.
 /// ```dart
 /// var millicastSignaling = Signaling(options);
@@ -26,9 +27,13 @@ const Map<String, String> videoCodec = {
 class Signaling extends EventEmitter {
   String? streamName;
   String wsUrl = 'ws://localhost:8080/';
+
   WebSocketChannel? webSocket;
   TransactionManager? transactionManager;
   RTCSessionDescription? remoteSdp;
+
+  //flag to stop reconnection if migration is in transit because websocket connection error and connection close trigger the same event(onDone)
+  bool? isMigrating = false;
 
   /// [options] - General signaling options.
   Signaling(Map<String, dynamic> options) {
@@ -60,8 +65,10 @@ class Signaling extends EventEmitter {
       });
       transactionManager?.on(SignalingEvents.connectionError, this,
           (event, context) {
-        emit(SignalingEvents.connectionError, this, event);
-        throw Exception(event);
+        if (isMigrating == false) {
+          emit(SignalingEvents.connectionError, this, event);
+          throw Exception(event);
+        }
       });
       transactionManager?.on(SignalingEvents.connectionClose, this,
           (event, context) {
@@ -81,7 +88,10 @@ class Signaling extends EventEmitter {
   /// ```dart
   /// millicastSignaling.close();
   /// ```
-  void close() {}
+  void close() {
+    _logger.i('Closing connection with Signaling Server.');
+    webSocket?.sink.close();
+  }
 
   /// Establish WebRTC connection with Millicast Server as Subscriber role.
   ///
@@ -117,10 +127,8 @@ class Signaling extends EventEmitter {
       var result = await transactionManager?.cmd('view', data);
       // Check if browser supports AV1X
       // var AV1X = RTCRtpReceiver.getCapabilities?.('video')?.codecs?.find?.(codec => codec.mimeType === 'video/AV1X')
-      // ignore: lines_longer_than_80_chars
       // Signaling server returns 'AV1'. If browser supports AV1X, we change it to AV1X
       // if (AV1X) {
-      // ignore: lines_longer_than_80_chars
       // result.sdp = SdpParser.adaptCodecName(result.sdp, VideoCodec.av1, 'AV1X');
       // } else {
       // result.sdp = result.sdp;
@@ -143,7 +151,6 @@ class Signaling extends EventEmitter {
   /// ```
   Future<String> publish(String? sdp, {Map<String, dynamic>? options}) async {
     _logger.i(
-        // ignore: lines_longer_than_80_chars
         'Starting publishing to streamName: $streamName, codec: ${options?['codec']}');
     _logger.d('Publishing local description: $sdp');
     if (options != null) {
@@ -172,7 +179,6 @@ class Signaling extends EventEmitter {
       // if (options.codec == videoCodec['AV1']) {
       //   // If browser supports AV1X, we change from AV1 to AV1X
       //   const AV1X = RTCRtpSender.getCapabilities?.('video')?.codecs?.find?.(codec => codec.mimeType === 'video/AV1X');
-      // ignore: lines_longer_than_80_chars
       //   result['sdp'] = AV1X ? SdpParser.adaptCodecName(result.sdp, videoCodec['AV1']!, 'AV1X') : result.sdp;
       // }
       return result['data']['sdp'];
