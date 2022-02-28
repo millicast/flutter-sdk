@@ -164,9 +164,11 @@ class View extends BaseWebRTC {
     _logger.i('Connected to streamName: $streamName');
   }
 
-  /// Select the simulcast encoding layer and svc layers for the main video track
+  /// Select the simulcast encoding layer and svc layers for the main video
+  /// track.
   ///
-  /// [Map] layer - leave empty for automatic layer selection based on bandwidth estimation.
+  /// [Map] layer - leave empty for automatic layer selection based on bandwidth
+  /// estimation.
 
   select(Map? layer) async {
     _logger.d('Viewer select layer values: $layer');
@@ -178,7 +180,8 @@ class View extends BaseWebRTC {
   ///
   /// String] media - Media kind ('audio' | 'video').
   /// [List<MediaStream>] streams - Streams the track will belong to.
-  /// Return [Future<RTCRtpTransceiver>] Future that will be resolved when the RTCRtpTransceiver is assigned an mid value.
+  /// Return [Future<RTCRtpTransceiver>] Future that will be resolved when the
+  /// RTCRtpTransceiver is assigned an mid value.
 
   Future<RTCRtpTransceiver> addRemoteTrack(
       String media, List<MediaStream> streams) async {
@@ -189,11 +192,17 @@ class View extends BaseWebRTC {
   /// Start projecting source in selected media ids.
   ///
   /// [String] sourceId                       - Selected source id.
-  /// [List<Map>] mapping                    - Mapping of the source track ids to the receiver mids
-  /// [String] mapping.trackId                - Track id from the source (received on the "active" event), if not set the media kind will be used instead.
-  /// [String] mapping.media                  - Track kind of the source ('audio' | 'video'), if not set the trackId will be used instead.
-  /// [String] mapping.mediaId                 - mid value of the rtp receiver in which the media is going to be projected.
-  /// [LayerInfo] mapping.layer                - Select the simulcast encoding layer and svc layers, only applicable to video tracks.
+  /// [List<Map>] mapping                    - Mapping of the source track ids
+  /// to the receiver mids
+  /// [String] mapping.trackId                - Track id from the source
+  /// (received on the "active" event), if not set the media kind will
+  /// be used instead.
+  /// [String] mapping.media                  - Track kind of the source
+  /// ('audio' | 'video'), if not set the trackId will be used instead.
+  /// [String] mapping.mediaId                 - mid value of the rtp receiver
+  /// in which the media is going to be projected.
+  /// [LayerInfo] mapping.layer                - Select the simulcast encoding
+  /// layer and svc layers, only applicable to video tracks.
   ///
 
   project(String? sourceId, List<Map> mapping) async {
@@ -215,8 +224,8 @@ class View extends BaseWebRTC {
       try {
         peerTransceiverList.firstWhere((t) => t.mid == map['mediaId']);
       } catch (e) {
-        _logger.e(
-            'Error in projection mapping, ${map['mediaId']} mid not found in local transceivers');
+        _logger.e('Error in projection mapping, ${map['mediaId']}'
+            'mid not found in local transceivers');
       }
     }
     _logger.i('Viewer project source:$sourceId layer mappings: $mapping');
@@ -227,7 +236,8 @@ class View extends BaseWebRTC {
 
   /// Stop projecting attached source in selected media ids.
   ///
-  ///  [List<String>] mediaIds - mid value of the receivers that are going to be detached.
+  ///  [List<String>] mediaIds - mid value of the receivers that are going to
+  /// be detached.
   ///
 
   unproject(List<String> mediaIds) async {

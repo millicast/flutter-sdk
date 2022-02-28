@@ -1,5 +1,3 @@
-// ignore_for_file: lines_longer_than_80_chars
-
 import 'dart:convert';
 
 import 'package:millicast_flutter_sdk/src/config.dart';
@@ -21,36 +19,16 @@ const String errorMsg =
 const String defaultEventsLocation = Config.millicastEventsLocation;
 var eventsLocation = defaultEventsLocation;
 
-///
-///  [Object] OnUserCountOptions
-///  [String] accountId - Millicast Account Id.
-///  [String] streamName - Millicast Stream Name.
-///  [onUserCountCallback] callback - Callback function executed when a new message is available.
-///
-///
-
-///
-/// Callback invoke when new user count is received.
-/// @callback onUserCountCallback
-///  [Map] data
-///  [String] data['streamId'] - Stream identifier with the following format `accountId/streamName`.
-///  [num] data['count']    - Current amount of viewers of the stream.
-///  [String] data.error  - Error message.
-///
 /// StreamEvents
 /// Lets you to subscribe to stream events like receive the amount of viewers of a stream.
 /// This events are handled via a WebSocket with Millicast server.
-///
-
 class StreamEvents {
   EventSubscriber? eventSubscriber;
 
-  ///
   /// Initializes the connection with Millicast Stream Event.
-  /// Returns [Future<StreamEvents>] Future object which represents the StreamEvents instance
+  /// Returns [Future<StreamEvents>] Future object which represents the
+  /// StreamEvents instance
   /// once the connection with the Millicast stream events is done.
-  /// @example const streamEvents = await StreamEvents.init()
-  ///
   static init() async {
     StreamEvents instance = StreamEvents();
     instance.eventSubscriber = EventSubscriber(getEventsLocation());
@@ -62,18 +40,14 @@ class StreamEvents {
   /// Set Websocket Stream Events location.
   ///
   ///  [String] url - New Stream Events location
-  ///
-
   static setEventsLocation(String url) {
     eventsLocation = url;
   }
 
-  ///
   /// Get current Websocket Stream Events location.
   ///
   /// By default, wss://streamevents.millicast.com/ws is the location.
   /// Returns [String] Stream Events location
-  ///
   static String getEventsLocation() {
     return eventsLocation;
   }
@@ -85,8 +59,8 @@ class StreamEvents {
       throw Error();
     }
     var optionsParsed = getOnUserCountOptions(options);
-    _logger.i(
-        'Starting user count. AccountId: ${optionsParsed['accountId']}, streamName: ${optionsParsed['streamName']}');
+    _logger.i('Starting user count. AccountId: ${optionsParsed['accountId']},'
+        ' streamName: ${optionsParsed['streamName']}');
     String streamId =
         '${optionsParsed['accountId']}/${optionsParsed['streamName']}';
     var requestInvocationId = invocationId++;
@@ -107,10 +81,7 @@ class StreamEvents {
     });
   }
 
-  ///
   /// Stop listening to stream events connected.
-  ///  streamEvents.stop()
-  ///
   void stop() {
     eventSubscriber?.close();
   }

@@ -6,6 +6,7 @@ import 'dart:convert';
 import 'package:eventify/eventify.dart';
 import 'package:millicast_flutter_sdk/src/peer_connection_stats.dart';
 import 'package:millicast_flutter_sdk/src/utils/sdp_parser.dart';
+import 'utils/reemit.dart';
 
 import 'config.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
@@ -76,8 +77,8 @@ class PeerConnection extends EventEmitter {
           await peer!.getLocalDescription();
       RTCSessionDescription? currentRemoteDescription =
           await peer!.getRemoteDescription();
-      _logger.d('getRTCPeer return: ',
-          {connectionState, currentLocalDescription, currentRemoteDescription});
+      _logger.d(
+          'getRTCPeer return: {$connectionState, $currentLocalDescription, $currentRemoteDescription}');
     }
     return peer!;
   }
@@ -137,7 +138,7 @@ class PeerConnection extends EventEmitter {
     return iceServer;
   }
 
-  setRTCRemoteSDP(String sdp) async {
+  Future<void> setRTCRemoteSDP(String sdp) async {
     _logger.i('Setting RTC Remote SDP');
     try {
       await peer?.setRemoteDescription(RTCSessionDescription(sdp, 'answer'));
@@ -201,18 +202,13 @@ class PeerConnection extends EventEmitter {
           }
         }
       }
-      if (options.containsKey('disabdisableVideoleAudio') &&
-          options.containsKey('simulcast')) {
-        if (!options['disableVideo'] && options['simulcast']) {
-          sdp = SdpParser.setSimulcast(sdp, options['codec']);
-        }
-      }
       if (options['absCaptureTime'] != null) {
         sdp = SdpParser.setAbsoluteCaptureTime(sdp);
       }
       if (options['dependencyDescriptor'] != null) {
         sdp = SdpParser.setDependencyDescriptor(sdp);
       }
+      sessionDescription?.sdp = sdp;
       if (options['setSDPToPeer'] != null) {
         await peer?.setLocalDescription(sessionDescription!);
         _logger.i('Peer local description set');
@@ -358,10 +354,7 @@ class PeerConnection extends EventEmitter {
     } else if (peer != null) {
       peerConnectionStats = PeerConnectionStats(peer!);
       peerConnectionStats?.init();
-      peerConnectionStats?.on(peerConnectionStatsEvents['stats'], this,
-          (ev, context) {
-        emit(peerConnectionStatsEvents['stats'], this, ev.eventData);
-      });
+      reemit(peerConnectionStats!, this, [peerConnectionStatsEvents['stats']]);
     } else {
       _logger.w('Cannot init peer stats: RTCPeerConnection not initialized');
     }
@@ -398,6 +391,7 @@ class PeerConnection extends EventEmitter {
         return stream;
       }
     }
+    return null;
   }
 
   Future<RTCPeerConnection> instanceRTCPeerConnection(
@@ -443,21 +437,21 @@ class PeerConnection extends EventEmitter {
       };
     }
 
+    // No renegotationNeeded
     peer.onRenegotiationNeeded = () async {
-      if (peer.getConfiguration.isEmpty) {
-        return;
-      }
-      _logger.i('Peer onnegotiationneeded, updating local description');
-      RTCSessionDescription offer = await peer.createOffer();
-      _logger.i('Peer onnegotiationneeded, got local offer ${offer.sdp}');
-      peer.setLocalDescription(offer);
-      peer.getRemoteDescription().then((value) {
-        String? sdp = SdpParser.renegotiate(offer.sdp, value?.sdp);
-        _logger.i('Peer onnegotiationneeded, updating remote description $sdp');
-
-        peer.setRemoteDescription(RTCSessionDescription(sdp, 'answer'));
-        _logger.i('Peer onnegotiationneeded, renegotiation done');
-      });
+      //   on('setRemoteDescription', this, (ev, context) async {
+      //     if (peer.getConfiguration.isEmpty) {
+      //       return;
+      //     }
+      // _logger.i('Peer onnegotiationneeded, updating local description');
+      //     RTCSessionDescription offer = await peer.createOffer();
+      //     _logger.i('Peer onnegotiationneeded, got local offer ${offer.sdp}');
+      //     peer.setLocalDescription(offer);
+      //     String? sdp = SdpParser.renegotiate(offer.sdp, ev.eventData.toString());
+      //     _logger.i('Peer onnegotiationneeded, updating remote description $sdp');
+      //     peer.setRemoteDescription(RTCSessionDescription(sdp, 'answer'));
+      //     _logger.i('Peer onnegotiationneeded, renegotiation done');
+      //   });
     };
   }
 
@@ -472,14 +466,44 @@ class PeerConnection extends EventEmitter {
             direction: (!options['disableAudio']
                 ? TransceiverDirection.SendOnly
                 : TransceiverDirection.Inactive),
-            streams: [mediaStream]);
+            streams: [
+              mediaStream
+            ],
+            sendEncodings: [
+              RTCRtpEncoding(
+                rid: 'f',
+                maxBitrate: 900000,
+                numTemporalLayers: 3,
+              )
+            ]);
       }
       if (track.kind == 'video') {
         initOptions = RTCRtpTransceiverInit(
             direction: (!options['disableVideo']
                 ? TransceiverDirection.SendOnly
                 : TransceiverDirection.Inactive),
-            streams: [mediaStream]);
+            streams: [mediaStream],
+            // Choose bitrates for each encoding
+            sendEncodings: (options['simulcast'])
+                ? [
+                    RTCRtpEncoding(
+                      rid: 'f',
+                      numTemporalLayers: 3,
+                    ),
+                    RTCRtpEncoding(
+                      rid: 'h',
+                      numTemporalLayers: 3,
+                      maxBitrate: 300000,
+                      scaleResolutionDownBy: 2.0,
+                    ),
+                    RTCRtpEncoding(
+                      rid: 'q',
+                      numTemporalLayers: 3,
+                      maxBitrate: 100000,
+                      scaleResolutionDownBy: 4.0,
+                    ),
+                  ]
+                : null);
       }
       peer?.addTransceiver(
           track: track,
@@ -487,7 +511,6 @@ class PeerConnection extends EventEmitter {
               ? RTCRtpMediaType.RTCRtpMediaTypeAudio
               : RTCRtpMediaType.RTCRtpMediaTypeVideo,
           init: initOptions);
-
       _logger.i(
           'Track ${track.label} added: ,id: ${track.id}, kind: ${track.kind}');
     });

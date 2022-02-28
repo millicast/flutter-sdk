@@ -72,7 +72,7 @@ class MillicastMedia {
   MillicastMedia(Map<String, dynamic>? options) {
     constraints = {
       'audio': {
-        'echoCancellation': false,
+        'echoCancellation': true,
         'channelCount': {'ideal': 2},
       },
       'video': {

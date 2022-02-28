@@ -22,9 +22,7 @@ Future<MillicastPublishUserMedia> publishConnect(
 
   /// Start connection to publisher
   try {
-    Map<String, dynamic> options = {
-      'stereo': true,
-    };
+    Map<String, dynamic> options = {};
 
     if (!kIsWeb) {
       if (Platform.isAndroid || Platform.isIOS) {
@@ -34,6 +32,21 @@ Future<MillicastPublishUserMedia> publishConnect(
 
     if (mainOptions.containsKey('sourceId')) {
       options['sourceId'] = mainOptions['sourceId'];
+    }
+    if (mainOptions.containsKey('stereo')) {
+      options['stereo'] = mainOptions['stereo'];
+    }
+    if (mainOptions.containsKey('dtx')) {
+      options['dtx'] = mainOptions['dtx'];
+    }
+    if (mainOptions.containsKey('absCaptureTime')) {
+      options['absCaptureTime'] = mainOptions['absCaptureTime'];
+    }
+    if (mainOptions.containsKey('dependencyDescriptor')) {
+      options['dependencyDescriptor'] = mainOptions['dependencyDescriptor'];
+    }
+    if (mainOptions.containsKey('simulcast')) {
+      options['simulcast'] = mainOptions['simulcast'];
     }
 
     await publish.connect(options: options);

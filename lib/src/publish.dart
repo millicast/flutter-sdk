@@ -46,11 +46,11 @@ class Publish extends BaseWebRTC {
     String remoteSdp = '';
     List futures;
     MillicastDirectorResponse publisherData;
-    logger.d('Broadcast option values: $options');
+    _logger.d('Broadcast option values: $options');
     options = {...connectOptions, ...options, 'setSDPToPeer': false};
     this.options = options;
     if (options['mediaStream'] == null) {
-      logger.e('Error while broadcasting. MediaStream required');
+      _logger.e('Error while broadcasting. MediaStream required');
       throw Exception('MediaStream required');
     }
     if (isActive()) {
@@ -59,19 +59,19 @@ class Publish extends BaseWebRTC {
     try {
       publisherData = await tokenGenerator();
     } catch (error) {
-      logger.e('Error generating token.');
+      _logger.e('Error generating token.');
       rethrow;
     }
     // ignore: unnecessary_null_comparison
     if (publisherData == null) {
-      logger.e('Error while broadcasting. Publisher data required');
+      _logger.e('Error while broadcasting. Publisher data required');
       throw Exception('Publisher data is required');
     }
     bool recordingAvailable = Jwt.parseJwt(publisherData.jwt)[
         utf8.decode(base64.decode('bWlsbGljYXN0'))]['record'];
     _logger.i('${options['record']}');
     if (options['record'] != null && !recordingAvailable) {
-      logger.e(
+      _logger.e(
           // ignore: lines_longer_than_80_chars
           'Error while broadcasting. Record option detected but recording is not available');
       throw Exception('Record option detected but recording is not available');
@@ -105,9 +105,12 @@ class Publish extends BaseWebRTC {
           remoteSdp, options['bandwidth']);
     }
     await webRTCPeer.setRTCRemoteSDP(remoteSdp);
+    webRTCPeer.emit('setRemoteDescription', webRTCPeer,
+        (await webRTCPeer.peer?.getRemoteDescription())?.sdp);
     _logger.i('setRemoteDescription Success! ');
     setReconnect();
-    logger.i('Broadcasting to streamName: $streamName');
+    _logger.i(options['mediaStream']);
+    _logger.i('Broadcasting to streamName: $streamName');
   }
 
   @override

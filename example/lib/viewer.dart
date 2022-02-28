@@ -51,8 +51,7 @@ Future viewConnect(RTCVideoRenderer localRenderer) async {
       if (stats.eventData != null) {
         for (var report in stats.eventData as List<StatsReport>) {
           if (report.type != 'codec') {
-            _logger.d(
-                '${report.id}, ${report.type}, ${report.timestamp}, ${report.values['candidateType']}, ${report.values['availableOutgoingBitrate']}, ${report.values['totalRoundTripTime']}');
+            _logger.d('${report.id}, ${report.type}, ${report.timestamp}');
           }
         }
       }
