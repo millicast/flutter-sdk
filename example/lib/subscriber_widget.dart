@@ -1,9 +1,15 @@
+import 'package:example/utils/constants.dart';
 import 'package:example/viewer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
+import 'package:logger/logger.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 
+import 'subscriber_settings_widget.dart';
+
 import 'package:millicast_flutter_sdk/millicast_flutter_sdk.dart';
+
+Logger _logger = getLogger('SubscriberWidget');
 
 class SubscriberWidget extends StatefulWidget {
   const SubscriberWidget({Key? key}) : super(key: key);
@@ -17,17 +23,39 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
   );
   final RTCVideoRenderer _localRenderer = RTCVideoRenderer();
   late String _viewers = '0';
-  late View _view;
+  View? _view;
   Map options = {};
   bool isVideoMuted = false;
   bool isAudioMuted = false;
   bool isConnected = true;
+  StreamEvents? events;
 
-  PeerConnection? webRtcPeer;
   @override
   void dispose() {
-    _localRenderer.dispose();
     super.dispose();
+  }
+
+  @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
+  }
+
+  @override
+  void deactivate() async {
+    if (events != null) {
+      events?.stop();
+    }
+    if (_localRenderer != null) {
+      await closeCameraStream();
+    }
+    if (_view != null) {
+      if (_view?.webRTCPeer != null) {
+        await _view?.webRTCPeer.closeRTCPeer();
+      }
+    }
+    super.deactivate();
   }
 
   @override
@@ -46,7 +74,7 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
   void subscribeExample() async {
     _view = await viewConnect(_localRenderer);
 
-    _view.on('multicast', _view, ((ev, context) {
+    _view?.on('multicast', _view, ((ev, context) {
       if (ev.eventData == false) {
         _projectSourceId(null, 'audio');
         _projectSourceId(null, 'video');
@@ -54,10 +82,34 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
       setState(() {});
     }));
     setState(() {});
+
+    Map<String, dynamic> onUserCountOptions = {
+      'accountId': Constants.accountId,
+      'streamName': Constants.streamName,
+      'callback': (countChange) => {refresh(countChange)},
+    };
+
+    /// Add UserCount event listener
+    StreamEvents events = await StreamEvents.init();
+    events.onUserCount(onUserCountOptions);
   }
 
   void initRenderers() async {
     await _localRenderer.initialize();
+  }
+
+  Future<void> closeCameraStream() async {
+    if (_localRenderer.srcObject != null) {
+      _localRenderer.srcObject?.getTracks().forEach((element) async {
+        await element.stop();
+      });
+      await _localRenderer.srcObject?.dispose();
+      _localRenderer.srcObject = null;
+    }
+  }
+
+  void handleClose() {
+    Navigator.of(context).pushReplacementNamed('/');
   }
 
   String calculateTime(int seconds) {
@@ -76,23 +128,26 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
         backgroundColor: Colors.white,
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
-        title: Row(mainAxisSize: MainAxisSize.max, children: [
-          Image.asset(
-            'assets/millicastImage.png',
-            fit: BoxFit.contain,
-            height: 40,
-          ),
-          Container(
-            width: 5,
-          ),
-          const Text('Subscriber App',
-              style: TextStyle(color: Colors.black, fontSize: 15))
-        ]),
-        leading: BackButton(
-            color: Colors.black, onPressed: () => Navigator.of(context).pop()),
+        title: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Image.asset(
+                'assets/millicastImage.png',
+                fit: BoxFit.contain,
+                height: 40,
+              ),
+              Container(
+                width: 5,
+              ),
+              const Text('Subscriber App',
+                  style: TextStyle(color: Colors.black, fontSize: 15))
+            ]),
+        leading:
+            BackButton(color: Colors.black, onPressed: () => handleClose()),
         actions: <Widget>[
           Padding(
-              padding: const EdgeInsets.only(top: 20.0, right: 5.0),
+              padding: const EdgeInsets.only(top: 20.0, right: 10.0, left: 20),
               child: Text(_viewers,
                   style: const TextStyle(
                     color: Colors.black,
@@ -101,127 +156,140 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
             data: IconThemeData(color: Colors.black, size: 30),
             child: Icon(
               Icons.remove_red_eye_outlined,
-              size: 30,
+              size: 25,
             ),
-          )
+          ),
+          ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                alignment: const Alignment(5, 0),
+                primary: Colors.white,
+                elevation: 0,
+              ),
+              child: const Icon(
+                Icons.settings,
+                color: Colors.black,
+                size: 25,
+              ),
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute<void>(
+                      builder: (BuildContext context) =>
+                          SubscriberSettingsWidget(
+                              view: _view, options: options),
+                    ));
+              }),
+          ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                  alignment: const Alignment(0, 0),
+                  primary: Colors.white,
+                  elevation: 0),
+              child: const Icon(
+                Icons.replay_outlined,
+                color: Colors.black,
+                size: 25,
+              ),
+              onPressed: () async {
+                await _view?.webRTCPeer.closeRTCPeer();
+                subscribeExample();
+              }),
         ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: isMultisourceEnabled
-          ? SizedBox(
-              child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: <Widget>[
-                  Container(
-                      decoration: BoxDecoration(
-                          color: Colors.purple,
-                          borderRadius: BorderRadius.circular(15)),
-                      padding: const EdgeInsets.only(
-                        left: 1,
-                      ),
-                      child: ButtonTheme(
-                        alignedDropdown: true,
-                        child: DropdownButtonHideUnderline(
-                            child: DropdownButton<String>(
-                          icon: const Icon(Icons.arrow_drop_up),
-                          iconEnabledColor: Colors.white,
-                          hint: const Text('Video Source',
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 15)),
-                          dropdownColor: Colors.purple,
-                          items: sourceIds.map((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(
-                                value,
-                                style: const TextStyle(color: Colors.white),
-                              ),
-                            );
-                          }).toList(),
-                          onChanged: (value) {
-                            setState(() {
-                              _projectSourceId(value, 'video');
-                            });
-                          },
-                        )),
+      floatingActionButton: SizedBox(
+          child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: <Widget>[
+            isMultisourceEnabled
+                ? Container(
+                    decoration: BoxDecoration(
+                        color: Colors.purple,
+                        borderRadius: BorderRadius.circular(15)),
+                    padding: const EdgeInsets.only(
+                      left: 1,
+                    ),
+                    child: ButtonTheme(
+                      alignedDropdown: true,
+                      child: DropdownButtonHideUnderline(
+                          child: DropdownButton<String>(
+                        icon: const Icon(Icons.arrow_drop_up),
+                        iconEnabledColor: Colors.white,
+                        hint: const Text('Video Source',
+                            style:
+                                TextStyle(color: Colors.white, fontSize: 15)),
+                        dropdownColor: Colors.purple,
+                        items: sourceIds.map((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(
+                              value,
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            _projectSourceId(value, 'video');
+                          });
+                        },
                       )),
-                  FloatingActionButton(
-                    child:
-                        Icon((!isVideoMuted) ? Icons.pause : Icons.play_arrow),
-                    onPressed: () {
-                      setState(() {
-                        _stopVideo();
-                      });
-                    },
-                  ),
-                  FloatingActionButton(
-                    child: Icon(
-                        (isAudioMuted) ? Icons.volume_off : Icons.volume_up),
-                    onPressed: () {
-                      setState(() {
-                        _stopAudio();
-                      });
-                    },
-                  ),
-                  Container(
-                      decoration: BoxDecoration(
-                          color: Colors.purple,
-                          borderRadius: BorderRadius.circular(15)),
-                      padding: const EdgeInsets.only(
-                        left: 1,
-                      ),
-                      child: ButtonTheme(
-                        alignedDropdown: true,
-                        child: DropdownButtonHideUnderline(
-                            child: DropdownButton<String>(
-                          icon: const Icon(Icons.arrow_drop_up),
-                          iconEnabledColor: Colors.white,
-                          hint: const Text('Audio Source',
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 15)),
-                          dropdownColor: Colors.purple,
-                          items: sourceIds.map((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(
-                                value,
-                                style: const TextStyle(color: Colors.white),
-                              ),
-                            );
-                          }).toList(),
-                          onChanged: (value) {
-                            setState(() {
-                              _projectSourceId(value, 'audio');
-                            });
-                          },
-                        )),
-                      ))
-                ]))
-          : SizedBox(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  FloatingActionButton(
-                    child:
-                        Icon((!isVideoMuted) ? Icons.pause : Icons.play_arrow),
-                    onPressed: () {
-                      setState(() {
-                        _stopVideo();
-                      });
-                    },
-                  ),
-                  FloatingActionButton(
-                    child: Icon(
-                        (isAudioMuted) ? Icons.volume_off : Icons.volume_up),
-                    onPressed: () {
-                      setState(() {
-                        _stopAudio();
-                      });
-                    },
-                  )
-                ],
-              ),
+                    ))
+                : Container(),
+            FloatingActionButton(
+              heroTag: const Text('Stop Video'),
+              child: Icon((!isVideoMuted) ? Icons.pause : Icons.play_arrow),
+              onPressed: () {
+                setState(() {
+                  _stopVideo();
+                });
+              },
             ),
+            FloatingActionButton(
+              heroTag: const Text('Stop Audio'),
+              child: Icon((isAudioMuted) ? Icons.volume_off : Icons.volume_up),
+              onPressed: () {
+                setState(() {
+                  _stopAudio();
+                });
+              },
+            ),
+            isMultisourceEnabled
+                ? Container(
+                    decoration: BoxDecoration(
+                        color: Colors.purple,
+                        borderRadius: BorderRadius.circular(15)),
+                    padding: const EdgeInsets.only(
+                      left: 1,
+                    ),
+                    child: ButtonTheme(
+                      alignedDropdown: true,
+                      child: DropdownButtonHideUnderline(
+                          child: DropdownButton<String>(
+                        icon: const Icon(Icons.arrow_drop_up),
+                        iconEnabledColor: Colors.white,
+                        hint: const Text('Audio Source',
+                            style:
+                                TextStyle(color: Colors.white, fontSize: 15)),
+                        dropdownColor: Colors.purple,
+                        items: sourceIds.map((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(
+                              value,
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            _projectSourceId(value, 'audio');
+                          });
+                        },
+                      )),
+                    ))
+                : Container(),
+          ])),
       body: OrientationBuilder(
         builder: (context, orientation) {
           return Center(
@@ -239,7 +307,7 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
   }
 
   Future<void> _projectSourceId(String? value, String type) async {
-    await _view.project(value, [
+    await _view?.project(value, [
       {'trackId': type, 'mediaId': type == 'video' ? '0' : '1'},
     ]);
   }

@@ -1,20 +1,26 @@
+import 'package:example/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_settings_ui/flutter_settings_ui.dart';
+import 'package:logger/logger.dart';
+import 'package:millicast_flutter_sdk/millicast_flutter_sdk.dart';
 
 import 'millicast_publisher_user_media.dart';
 
-class SettingsWidget extends StatefulWidget {
+Logger _logger = getLogger('PublisherSettings');
+
+class PublisherSettingsWidget extends StatefulWidget {
   final MillicastPublishUserMedia? publisherMedia;
   final Map? options;
-  const SettingsWidget({this.publisherMedia, this.options, Key? key})
+  const PublisherSettingsWidget({this.publisherMedia, this.options, Key? key})
       : super(key: key);
   @override
-  _SettingsWidgetState createState() =>
+  _PublisherSettingsWidgetState createState() =>
       // ignore: no_logic_in_create_state
-      _SettingsWidgetState(publisherMedia: publisherMedia, options: options);
+      _PublisherSettingsWidgetState(
+          publisherMedia: publisherMedia, options: options);
 }
 
-class _SettingsWidgetState extends State<SettingsWidget> {
+class _PublisherSettingsWidgetState extends State<PublisherSettingsWidget> {
   int _bitrate = 0;
   bool _audio = false;
   bool _simulcast = false;
@@ -22,7 +28,8 @@ class _SettingsWidgetState extends State<SettingsWidget> {
   final _formKey = GlobalKey<FormState>();
   MillicastPublishUserMedia? publisherMedia;
 
-  _SettingsWidgetState({required this.publisherMedia, required this.options});
+  _PublisherSettingsWidgetState(
+      {required this.publisherMedia, required this.options});
 
   @override
   Widget build(BuildContext context) {
@@ -103,6 +110,45 @@ class _SettingsWidgetState extends State<SettingsWidget> {
                   setState(() {});
                 },
               ),
+              SettingsTile(
+                leading: const Icon(Icons.view_stream),
+                title: 'Stream Name',
+                onPressed: (BuildContext context) {
+                  popupDialog(
+                      context: context,
+                      formKey: _formKey,
+                      handler: (value) {
+                        options?['streamName'] = value;
+                        Constants.streamName = value;
+                      });
+                },
+              ),
+              SettingsTile(
+                leading: const Icon(Icons.perm_identity),
+                title: 'Account Id',
+                onPressed: (BuildContext context) {
+                  popupDialog(
+                      context: context,
+                      formKey: _formKey,
+                      handler: (value) {
+                        options?['accountId'] = value;
+                        Constants.accountId = value;
+                      });
+                },
+              ),
+              SettingsTile(
+                leading: const Icon(Icons.token),
+                title: 'Publish Token',
+                onPressed: (BuildContext context) {
+                  popupDialog(
+                      context: context,
+                      formKey: _formKey,
+                      handler: (value) {
+                        options?['publishToken'] = value;
+                        Constants.publishToken = value;
+                      });
+                },
+              )
             ],
           ),
         ],
@@ -163,34 +209,46 @@ class _SettingsWidgetState extends State<SettingsWidget> {
         });
   }
 
-  ButtonTheme dropdownCodec() {
-    return ButtonTheme(
-        alignedDropdown: true,
-        child: DropdownButtonHideUnderline(
-            child: DropdownButton<String>(
-          icon: const Icon(Icons.arrow_drop_up),
-          iconEnabledColor: Colors.white,
-          hint: const Text('Audio Source',
-              style: TextStyle(color: Colors.white, fontSize: 15)),
-          dropdownColor: Colors.purple,
-          items: ['h264', 'vp8', 'vp9'].map((String value) {
-            return DropdownMenuItem<String>(
-              value: value,
-              child: Text(
-                value,
-                style: const TextStyle(color: Colors.white),
-              ),
-            );
-          }).toList(),
-          onChanged: (value) {
-            setState(() {
-              options?['codec'] = value;
-            });
-          },
-        )));
+  Container dropdownCodec() {
+    return Container(
+      decoration: BoxDecoration(
+          color: Colors.purple, borderRadius: BorderRadius.circular(15)),
+      padding: const EdgeInsets.only(
+        left: 1,
+      ),
+      child: ButtonTheme(
+          alignedDropdown: true,
+          child: DropdownButton<String>(
+            isExpanded: true,
+            icon: const Icon(Icons.arrow_drop_down),
+            iconEnabledColor: Colors.white,
+            hint: const Text('Choose Codec',
+                style: TextStyle(color: Colors.white, fontSize: 15)),
+            dropdownColor: Colors.purple,
+            value: options?['codec'],
+            items: ['h264', 'vp8', 'vp9'].map((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(
+                  value,
+                  style: const TextStyle(color: Colors.white),
+                ),
+              );
+            }).toList(),
+            onChanged: (value) {
+              setState(() {
+                options?['codec'] = value;
+              });
+            },
+          )),
+    );
   }
 
   _updateBitrate(num bitrate) async {
-    publisherMedia?.updateBandwidth(bitrate);
+    if (publisherMedia != null) {
+      publisherMedia?.updateBandwidth(bitrate);
+    } else {
+      _logger.w('Please await until a publisherMedia has been defined.');
+    }
   }
 }

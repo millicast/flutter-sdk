@@ -87,7 +87,7 @@ class PeerConnection extends EventEmitter {
   ///
   closeRTCPeer() async {
     _logger.i('Closing RTCPeerConnection');
-    peer?.close();
+    await peer?.close();
     peer = null;
     stopStats();
     emit(webRTCEvents['connectionStateChange'], this, 'closed');

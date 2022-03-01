@@ -68,6 +68,10 @@ class MillicastPublishUserMedia extends Publish {
   updateBandwidth(num bitrate) async {
     await webRTCPeer.updateBitrate(bitrate: bitrate);
   }
+
+  close() async {
+    await webRTCPeer.closeRTCPeer();
+  }
 }
 
 class MillicastMedia {
@@ -101,11 +105,8 @@ class MillicastMedia {
     }
   }
 
-  ///
-  /// bool] boolean - true if you want to mute the audio, false for mute it.
+  /// [boolean] - true if you want to mute the audio, false for mute it.
   /// Returns [bool] - returns true if it was changed, otherwise returns false.
-  ///
-
   bool muteAudio({boolean = true}) {
     var changed = false;
     if (mediaStream != null) {

@@ -1,5 +1,3 @@
-// ignore_for_file: lines_longer_than_80_chars
-
 import 'dart:convert';
 
 import 'package:millicast_flutter_sdk/src/config.dart';
@@ -22,16 +20,17 @@ const String defaultEventsLocation = Config.millicastEventsLocation;
 var eventsLocation = defaultEventsLocation;
 
 /// StreamEvents
-/// Lets you to subscribe to stream events like receive the amount of viewers of a stream.
+/// Allows you to subscribe to stream events such as the amount of active
+/// viewers
 /// This events are handled via a WebSocket with Millicast server.
 class StreamEvents {
   EventSubscriber? eventSubscriber;
 
   /// Initializes the connection with Millicast Stream Event.
-  /// Returns [Future<StreamEvents>] Future object which represents the
+  /// Returns [StreamEvents] Future object which represents the
   /// StreamEvents instance
   /// once the connection with the Millicast stream events is done.
-  static init() async {
+  static Future<StreamEvents> init() async {
     StreamEvents instance = StreamEvents();
     instance.eventSubscriber = EventSubscriber(getEventsLocation());
     await instance.eventSubscriber?.initializeHandshake();

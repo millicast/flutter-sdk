@@ -28,4 +28,9 @@ class Constants {
       'OfferToReceiveVideo': true,
     }
   };
+
+  static void setConstants({String? newAccountId, String? newStreamName}) {
+    accountId = newAccountId ?? accountId;
+    streamName = newStreamName ?? streamName;
+  }
 }

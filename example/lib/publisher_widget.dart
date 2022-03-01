@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 
 import 'millicast_publisher_user_media.dart';
 
@@ -8,8 +9,10 @@ import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 
-import 'settings_widget.dart';
+import 'publisher_settings_widget.dart';
 import 'package:millicast_flutter_sdk/millicast_flutter_sdk.dart';
+
+Logger _logger = getLogger('main');
 
 class PublisherWidget extends StatefulWidget {
   const PublisherWidget({Key? key}) : super(key: key);
@@ -18,7 +21,6 @@ class PublisherWidget extends StatefulWidget {
 }
 
 class _PublisherWidgetState extends State<PublisherWidget> {
-  late MillicastPublishUserMedia publisherMedia;
   Map options = {};
 
   _PublisherWidgetState();
@@ -32,12 +34,35 @@ class _PublisherWidgetState extends State<PublisherWidget> {
   bool isVideoMuted = false;
   bool isAudioMuted = false;
   bool isConnected = true;
+  StreamEvents? events;
 
   PeerConnection? webRtcPeer;
   @override
   void dispose() {
-    _localRenderer.dispose();
     super.dispose();
+  }
+
+  @override
+  void deactivate() async {
+    if (events != null) {
+      events?.stop();
+    }
+    if (_localRenderer != null) {
+      await closeCameraStream();
+    }
+    if (_publisherMedia != null) {
+      if (_publisherMedia.webRTCPeer != null) {
+        await _publisherMedia.webRTCPeer.closeRTCPeer();
+      }
+    }
+    super.deactivate();
+  }
+
+  @override
+  void setState(fn) {
+    if (mounted) {
+      super.setState(fn);
+    }
   }
 
   @override
@@ -60,8 +85,8 @@ class _PublisherWidgetState extends State<PublisherWidget> {
     };
 
     /// Add UserCount event listener
-    StreamEvents events = await StreamEvents.init();
-    events.onUserCount(onUserCountOptions);
+    events = await StreamEvents.init();
+    events?.onUserCount(onUserCountOptions);
   }
 
   void refresh(countChange) {
@@ -103,6 +128,21 @@ class _PublisherWidgetState extends State<PublisherWidget> {
     await _localRenderer.initialize();
   }
 
+  void handleClose() {
+    Navigator.of(context).pushReplacementNamed('/');
+  }
+
+  Future<void> closeCameraStream() async {
+    if (_localRenderer.srcObject != null) {
+      _localRenderer.srcObject?.getTracks().forEach((element) async {
+        await element.stop();
+      });
+      await _localRenderer.srcObject?.dispose();
+      _localRenderer.srcObject = null;
+    }
+    await _localRenderer.dispose();
+  }
+
   String calculateTime(int seconds) {
     var hoursStr =
         ((seconds / (60 * 60)) % 60).floor().toString().padLeft(2, '0');
@@ -131,8 +171,8 @@ class _PublisherWidgetState extends State<PublisherWidget> {
           const Text('Publisher App',
               style: TextStyle(color: Colors.black, fontSize: 15))
         ]),
-        leading: BackButton(
-            color: Colors.black, onPressed: () => Navigator.of(context).pop()),
+        leading:
+            BackButton(color: Colors.black, onPressed: () => handleClose()),
         actions: <Widget>[
           Padding(
               padding: const EdgeInsets.only(top: 20.0, right: 5.0),
@@ -159,8 +199,10 @@ class _PublisherWidgetState extends State<PublisherWidget> {
                 Navigator.push(
                     context,
                     MaterialPageRoute<void>(
-                      builder: (BuildContext context) => SettingsWidget(
-                          publisherMedia: _publisherMedia, options: options),
+                      builder: (BuildContext context) =>
+                          PublisherSettingsWidget(
+                              publisherMedia: _publisherMedia,
+                              options: options),
                     ));
               }),
           Container(
@@ -288,7 +330,7 @@ class _PublisherWidgetState extends State<PublisherWidget> {
                         child: const Icon(Icons.share),
                         onPressed: () {
                           Share.share(
-                            'View my stream at https://viewer.millicast.com/?streamId=${Constants.accountId}/${Constants.streamName}',
+                            '''View my stream at https://viewer.millicast.com/?streamId=${Constants.accountId}/${Constants.streamName}, My accountId is: ${Constants.accountId}, My streamName is: ${Constants.streamName}, Jump in!''',
                             subject: 'Look what I made!',
                           );
                         },
