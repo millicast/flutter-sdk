@@ -13,6 +13,7 @@ import 'publisher_settings_widget.dart';
 import 'package:millicast_flutter_sdk/millicast_flutter_sdk.dart';
 
 Logger _logger = getLogger('main');
+bool isConnected = true;
 
 class PublisherWidget extends StatefulWidget {
   const PublisherWidget({Key? key}) : super(key: key);
@@ -33,7 +34,7 @@ class _PublisherWidgetState extends State<PublisherWidget> {
   late MillicastPublishUserMedia _publisherMedia;
   bool isVideoMuted = false;
   bool isAudioMuted = false;
-  bool isConnected = true;
+
   StreamEvents? events;
 
   PeerConnection? webRtcPeer;
@@ -163,10 +164,7 @@ class _PublisherWidgetState extends State<PublisherWidget> {
           Image.asset(
             'assets/millicastImage.png',
             fit: BoxFit.contain,
-            height: 40,
-          ),
-          Container(
-            width: 5,
+            height: 30,
           ),
           const Text('Publisher App',
               style: TextStyle(color: Colors.black, fontSize: 15))

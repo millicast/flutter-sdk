@@ -1,10 +1,12 @@
 import 'package:example/utils/constants.dart';
+import 'package:example/viewer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_settings_ui/flutter_settings_ui.dart';
 import 'package:logger/logger.dart';
 import 'package:millicast_flutter_sdk/millicast_flutter_sdk.dart';
 
 Logger _logger = getLogger('SubscriberSettings');
+var simulcastQualityValue = 'Auto';
 
 class SubscriberSettingsWidget extends StatefulWidget {
   final View? view;
@@ -61,9 +63,100 @@ class _SubscriberSettingsWidgetState extends State<SubscriberSettingsWidget> {
                       context: context,
                       formKey: _formKey,
                       handler: (value) {
+                        options?['accountId'] = value;
                         Constants.accountId = value;
-                        _logger.i(Constants.accountId);
                       });
+                },
+              ),
+              SettingsTile(
+                leading: const Icon(Icons.perm_identity),
+                title: 'MultiSource',
+                enabled: isMultisourceEnabled,
+                onPressed: (BuildContext context) {
+                  showDialog(
+                      context: context,
+                      builder: (builder) => AlertDialog(
+                            title: const Text('Select Sources'),
+                            actions: [
+                              generateMultiSourceAlert(
+                                  'Video', selectedVideoSource),
+                              generateMultiSourceAlert(
+                                  'Audio', selectedAudioSource)
+                            ],
+                          ));
+                },
+              ),
+              SettingsTile(
+                leading: const Icon(Icons.perm_identity),
+                title: 'Simulcast',
+                enabled: isSimulcastEnabled,
+                onPressed: (BuildContext context) {
+                  showDialog(
+                      context: context,
+                      builder: (builder) => AlertDialog(
+                            title: const Text('Video Quality'),
+                            actions: [
+                              StatefulBuilder(builder:
+                                  (BuildContext context, StateSetter setState) {
+                                return Container(
+                                    decoration: BoxDecoration(
+                                        color: Colors.purple,
+                                        borderRadius:
+                                            BorderRadius.circular(15)),
+                                    padding: const EdgeInsets.only(
+                                      left: 1,
+                                    ),
+                                    child: ButtonTheme(
+                                      alignedDropdown: true,
+                                      child: DropdownButtonHideUnderline(
+                                          child: DropdownButton<String>(
+                                        value: simulcastQualityValue,
+                                        icon: const Icon(Icons.arrow_drop_up),
+                                        iconEnabledColor: Colors.white,
+                                        hint: const Text('Video Quality',
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 15)),
+                                        dropdownColor: Colors.purple,
+                                        items: ['Auto', 'High', 'Medium', 'Low']
+                                            .map((String value) {
+                                          return DropdownMenuItem<String>(
+                                            value: value,
+                                            child: Text(
+                                              value,
+                                              style: const TextStyle(
+                                                  color: Colors.white),
+                                            ),
+                                          );
+                                        }).toList(),
+                                        onChanged: (value) {
+                                          setState(() {
+                                            simulcastQualityValue = value!;
+                                            switch (simulcastQualityValue) {
+                                              case 'Auto':
+                                                view?.select();
+                                                break;
+                                              case 'High':
+                                                view?.select(
+                                                    layer: {'encodingId': '2'});
+                                                break;
+                                              case 'Medium':
+                                                view?.select(
+                                                    layer: {'encodingId': '1'});
+                                                break;
+                                              case 'Low':
+                                                view?.select(
+                                                    layer: {'encodingId': '0'});
+                                                break;
+                                              default:
+                                            }
+                                          });
+                                        },
+                                      )),
+                                    ));
+                              })
+                            ],
+                          ));
                 },
               )
             ],
@@ -119,5 +212,62 @@ class _SubscriberSettingsWidgetState extends State<SubscriberSettingsWidget> {
             ),
           );
         });
+  }
+
+  Future<void> _projectSourceId(String? value, String type) async {
+    if (value == 'Main') {
+      value = null;
+    }
+    await view?.project(value, [
+      {'trackId': type, 'mediaId': type == 'video' ? '0' : '1'},
+    ]);
+    if (type == 'video') {
+      selectedVideoSource = type == 'video' ? value : null;
+    } else {
+      selectedAudioSource = type == 'audio' ? value : null;
+    }
+
+    isSimulcastEnabled = !isSimulcastEnabled;
+    setState(() {});
+  }
+
+//Generates a container based on type(audio or video) for multisourcing
+  generateMultiSourceAlert(String type, source) {
+    return StatefulBuilder(
+        builder: (BuildContext context, StateSetter setState) {
+      return Container(
+          decoration: BoxDecoration(
+              color: Colors.purple, borderRadius: BorderRadius.circular(15)),
+          padding: const EdgeInsets.only(
+            left: 1,
+          ),
+          child: ButtonTheme(
+            alignedDropdown: true,
+            child: DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+              icon: const Icon(Icons.arrow_drop_up),
+              iconEnabledColor: Colors.white,
+              value: source,
+              hint: Text('$type Source',
+                  style: const TextStyle(color: Colors.white, fontSize: 15)),
+              dropdownColor: Colors.purple,
+              items: sourceIds.map((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(
+                    value,
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                );
+              }).toList(),
+              onChanged: (value) {
+                setState(() {
+                  source = value;
+                  _projectSourceId(value, type.toLowerCase());
+                });
+              },
+            )),
+          ));
+    });
   }
 }

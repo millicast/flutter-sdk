@@ -5,6 +5,7 @@ import 'package:logger/logger.dart';
 import 'package:millicast_flutter_sdk/millicast_flutter_sdk.dart';
 
 import 'millicast_publisher_user_media.dart';
+import 'publisher_widget.dart';
 
 Logger _logger = getLogger('PublisherSettings');
 
@@ -50,8 +51,10 @@ class _PublisherSettingsWidgetState extends State<PublisherSettingsWidget> {
               SettingsTile(
                 leading: const Icon(Icons.title),
                 title: 'SourceId',
+                enabled: !isConnected,
                 onPressed: (BuildContext context) {
                   popupDialog(
+                      currentValue: options?['sourceId'],
                       context: context,
                       formKey: _formKey,
                       isTextbox: true,
@@ -70,12 +73,14 @@ class _PublisherSettingsWidgetState extends State<PublisherSettingsWidget> {
                       isTextbox: true,
                       handler: (value) {
                         _bitrate = value != null ? int.parse(value) : 0;
+                        options?['bandwidth'] = _bitrate;
                         _updateBitrate(_bitrate);
                       });
                 },
               ),
               SettingsTile(
                 leading: const Icon(Icons.splitscreen_sharp),
+                enabled: !isConnected,
                 title: 'Codec',
                 onPressed: (BuildContext context) {
                   popupDialog(
@@ -87,6 +92,7 @@ class _PublisherSettingsWidgetState extends State<PublisherSettingsWidget> {
                 },
               ),
               SettingsTile.switchTile(
+                enabled: !isConnected,
                 onToggle: (bool value) {
                   setState(() {
                     _simulcast = !_simulcast;
@@ -100,7 +106,7 @@ class _PublisherSettingsWidgetState extends State<PublisherSettingsWidget> {
                 title: 'Simulcast',
               ),
               SettingsTile.switchTile(
-                enabled: true,
+                enabled: !isConnected,
                 switchValue: _audio,
                 leading: const Icon(Icons.headset),
                 title: 'Audio',
@@ -111,6 +117,7 @@ class _PublisherSettingsWidgetState extends State<PublisherSettingsWidget> {
                 },
               ),
               SettingsTile(
+                enabled: !isConnected,
                 leading: const Icon(Icons.view_stream),
                 title: 'Stream Name',
                 onPressed: (BuildContext context) {
@@ -124,6 +131,7 @@ class _PublisherSettingsWidgetState extends State<PublisherSettingsWidget> {
                 },
               ),
               SettingsTile(
+                enabled: !isConnected,
                 leading: const Icon(Icons.perm_identity),
                 title: 'Account Id',
                 onPressed: (BuildContext context) {
@@ -137,6 +145,7 @@ class _PublisherSettingsWidgetState extends State<PublisherSettingsWidget> {
                 },
               ),
               SettingsTile(
+                enabled: !isConnected,
                 leading: const Icon(Icons.token),
                 title: 'Publish Token',
                 onPressed: (BuildContext context) {
@@ -161,6 +170,7 @@ class _PublisherSettingsWidgetState extends State<PublisherSettingsWidget> {
       required Key formKey,
       required void Function(dynamic) handler,
       bool state = false,
+      String? currentValue,
       bool isTextbox = true,
       bool isDropdown = false}) {
     return showDialog(
@@ -193,6 +203,8 @@ class _PublisherSettingsWidgetState extends State<PublisherSettingsWidget> {
                           child: SizedBox(
                               child: isTextbox
                                   ? TextField(
+                                      controller: TextEditingController(
+                                          text: currentValue),
                                       enableSuggestions: false,
                                       onSubmitted: handler,
                                       autocorrect: false)
@@ -209,39 +221,42 @@ class _PublisherSettingsWidgetState extends State<PublisherSettingsWidget> {
         });
   }
 
-  Container dropdownCodec() {
-    return Container(
-      decoration: BoxDecoration(
-          color: Colors.purple, borderRadius: BorderRadius.circular(15)),
-      padding: const EdgeInsets.only(
-        left: 1,
-      ),
-      child: ButtonTheme(
-          alignedDropdown: true,
-          child: DropdownButton<String>(
-            isExpanded: true,
-            icon: const Icon(Icons.arrow_drop_down),
-            iconEnabledColor: Colors.white,
-            hint: const Text('Choose Codec',
-                style: TextStyle(color: Colors.white, fontSize: 15)),
-            dropdownColor: Colors.purple,
-            value: options?['codec'],
-            items: ['h264', 'vp8', 'vp9'].map((String value) {
-              return DropdownMenuItem<String>(
-                value: value,
-                child: Text(
-                  value,
-                  style: const TextStyle(color: Colors.white),
-                ),
-              );
-            }).toList(),
-            onChanged: (value) {
-              setState(() {
-                options?['codec'] = value;
-              });
-            },
-          )),
-    );
+  StatefulBuilder dropdownCodec() {
+    return StatefulBuilder(
+        builder: (BuildContext context, StateSetter setState) {
+      return Container(
+        decoration: BoxDecoration(
+            color: Colors.purple, borderRadius: BorderRadius.circular(15)),
+        padding: const EdgeInsets.only(
+          left: 1,
+        ),
+        child: ButtonTheme(
+            alignedDropdown: true,
+            child: DropdownButton<String>(
+              isExpanded: true,
+              icon: const Icon(Icons.arrow_drop_down),
+              iconEnabledColor: Colors.white,
+              hint: const Text('Choose Codec',
+                  style: TextStyle(color: Colors.white, fontSize: 15)),
+              dropdownColor: Colors.purple,
+              value: options?['codec'],
+              items: ['h264', 'vp8', 'vp9'].map((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(
+                    value,
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                );
+              }).toList(),
+              onChanged: (value) {
+                setState(() {
+                  options?['codec'] = value;
+                });
+              },
+            )),
+      );
+    });
   }
 
   _updateBitrate(num bitrate) async {

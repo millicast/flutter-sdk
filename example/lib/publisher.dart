@@ -48,6 +48,12 @@ Future<MillicastPublishUserMedia> publishConnect(
     if (mainOptions.containsKey('simulcast')) {
       options['simulcast'] = mainOptions['simulcast'];
     }
+    if (mainOptions.containsKey('codec')) {
+      options['codec'] = mainOptions['codec'];
+    }
+    if (mainOptions.containsKey('bandwidth')) {
+      options['bandwidth'] = mainOptions['bandwidth'];
+    }
 
     await publish.connect(options: options);
     return publish;

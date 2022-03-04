@@ -121,9 +121,9 @@ class View extends BaseWebRTC {
   /// [Map] layer - leave empty for automatic layer selection based on bandwidth
   /// estimation.
 
-  select(Map? layer) async {
-    _logger.d('Viewer select layer values: $layer');
-    await signaling?.cmd('select', {layer});
+  select({Map? layer = const {}}) async {
+    _logger.i('Viewer select layer values: $layer');
+    await signaling?.cmd('select', {'layer': layer});
     _logger.i('Connected to streamName: $streamName');
   }
 

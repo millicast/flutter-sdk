@@ -74,7 +74,7 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
   void subscribeExample() async {
     _view = await viewConnect(_localRenderer);
 
-    _view?.on('multicast', _view, ((ev, context) {
+    _view?.on('multisource', _view, ((ev, context) {
       if (ev.eventData == false) {
         _projectSourceId(null, 'audio');
         _projectSourceId(null, 'video');
@@ -129,25 +129,27 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
         title: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.max,
             children: [
               Image.asset(
                 'assets/millicastImage.png',
                 fit: BoxFit.contain,
-                height: 40,
-              ),
-              Container(
-                width: 5,
+                height: 30,
               ),
               const Text('Subscriber App',
                   style: TextStyle(color: Colors.black, fontSize: 15))
             ]),
-        leading:
-            BackButton(color: Colors.black, onPressed: () => handleClose()),
+        leading: Padding(
+            padding: const EdgeInsets.only(right: 10.0),
+            child: BackButton(
+                color: Colors.black, onPressed: () => handleClose())),
+
         actions: <Widget>[
           Padding(
-              padding: const EdgeInsets.only(top: 20.0, right: 10.0, left: 20),
+              padding: const EdgeInsets.only(
+                top: 20.0,
+              ),
               child: Text(_viewers,
                   style: const TextStyle(
                     color: Colors.black,
@@ -156,12 +158,12 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
             data: IconThemeData(color: Colors.black, size: 30),
             child: Icon(
               Icons.remove_red_eye_outlined,
-              size: 25,
+              size: 20,
             ),
           ),
           ElevatedButton(
               style: ElevatedButton.styleFrom(
-                alignment: const Alignment(5, 0),
+                alignment: const Alignment(0, 0),
                 primary: Colors.white,
                 elevation: 0,
               ),
@@ -201,41 +203,6 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: <Widget>[
-            isMultisourceEnabled
-                ? Container(
-                    decoration: BoxDecoration(
-                        color: Colors.purple,
-                        borderRadius: BorderRadius.circular(15)),
-                    padding: const EdgeInsets.only(
-                      left: 1,
-                    ),
-                    child: ButtonTheme(
-                      alignedDropdown: true,
-                      child: DropdownButtonHideUnderline(
-                          child: DropdownButton<String>(
-                        icon: const Icon(Icons.arrow_drop_up),
-                        iconEnabledColor: Colors.white,
-                        hint: const Text('Video Source',
-                            style:
-                                TextStyle(color: Colors.white, fontSize: 15)),
-                        dropdownColor: Colors.purple,
-                        items: sourceIds.map((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(
-                              value,
-                              style: const TextStyle(color: Colors.white),
-                            ),
-                          );
-                        }).toList(),
-                        onChanged: (value) {
-                          setState(() {
-                            _projectSourceId(value, 'video');
-                          });
-                        },
-                      )),
-                    ))
-                : Container(),
             FloatingActionButton(
               heroTag: const Text('Stop Video'),
               child: Icon((!isVideoMuted) ? Icons.pause : Icons.play_arrow),
@@ -254,41 +221,6 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
                 });
               },
             ),
-            isMultisourceEnabled
-                ? Container(
-                    decoration: BoxDecoration(
-                        color: Colors.purple,
-                        borderRadius: BorderRadius.circular(15)),
-                    padding: const EdgeInsets.only(
-                      left: 1,
-                    ),
-                    child: ButtonTheme(
-                      alignedDropdown: true,
-                      child: DropdownButtonHideUnderline(
-                          child: DropdownButton<String>(
-                        icon: const Icon(Icons.arrow_drop_up),
-                        iconEnabledColor: Colors.white,
-                        hint: const Text('Audio Source',
-                            style:
-                                TextStyle(color: Colors.white, fontSize: 15)),
-                        dropdownColor: Colors.purple,
-                        items: sourceIds.map((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(
-                              value,
-                              style: const TextStyle(color: Colors.white),
-                            ),
-                          );
-                        }).toList(),
-                        onChanged: (value) {
-                          setState(() {
-                            _projectSourceId(value, 'audio');
-                          });
-                        },
-                      )),
-                    ))
-                : Container(),
           ])),
       body: OrientationBuilder(
         builder: (context, orientation) {
@@ -310,6 +242,8 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
     await _view?.project(value, [
       {'trackId': type, 'mediaId': type == 'video' ? '0' : '1'},
     ]);
+
+    isSimulcastEnabled = false;
   }
 
   void _stopVideo() {

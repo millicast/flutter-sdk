@@ -4,8 +4,13 @@ import 'package:example/utils/constants.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:millicast_flutter_sdk/millicast_flutter_sdk.dart';
 
-List<String> sourceIds = [];
+Set<String> sourceIds = {};
 bool isMultisourceEnabled = false;
+bool isSimulcastEnabled = false;
+// ignore: prefer_typing_uninitialized_variables
+var selectedVideoSource;
+// ignore: prefer_typing_uninitialized_variables
+var selectedAudioSource;
 var _logger = getLogger('ViewerDemo');
 
 Future viewConnect(RTCVideoRenderer localRenderer) async {
@@ -28,26 +33,79 @@ Future viewConnect(RTCVideoRenderer localRenderer) async {
     localRenderer.srcObject = ev.eventData as MediaStream?;
   });
 
+  // Based on broadcast events control different(multisource,simulcast) flows with flags and events in the ui
   view.on(SignalingEvents.broadcastEvent, view, (event, context) {
     String eventData = json.encode(event.eventData);
     Map<String, dynamic> eventDataMap = jsonDecode(eventData);
 
-    if (eventDataMap['data']['sourceId'] == null &&
-        eventDataMap['name'] == 'active') {
-      isMultisourceEnabled = false;
-      view.emit('multicast', view, false);
-    } else if (eventDataMap['data']['sourceId'] != null) {
-      if (!sourceIds.contains(eventDataMap['data']['sourceId'])) {
-        sourceIds.add(eventDataMap['data']['sourceId']);
-      }
-      view.emit('multicast', view, true);
-      isMultisourceEnabled = true;
+    switch (eventDataMap['name']) {
+
+      // Case simulcast is enabled
+      case 'layers':
+        isSimulcastEnabled = true;
+        break;
+
+      // Case you start publishing
+      case 'active':
+
+        // Case no multisource, sourceId will be Main
+        if (eventDataMap['data']['sourceId'] == null) {
+          isMultisourceEnabled = false;
+          sourceIds.add('Main');
+          view.emit('multisource', view, false);
+        }
+
+        // Case multisource is enabled sourceId!= null
+        else {
+          sourceIds.add(eventDataMap['data']['sourceId']);
+          view.emit('multisource', view, true);
+          isMultisourceEnabled = true;
+        }
+        break;
+
+      // Case you stop publishing
+      case 'inactive':
+        if (eventDataMap['data']['sourceId'] != null) {
+          // If the video you are subscribed to is stopped
+          if (selectedVideoSource == eventDataMap['data']['sourceId']) {
+            // Clean selected value from dropdown
+            selectedVideoSource = null;
+          }
+
+          // If the audio you are subscribed to is stopped
+          if (selectedAudioSource == eventDataMap['data']['sourceId']) {
+            // Clean selected value from dropdown
+            selectedAudioSource = null;
+          }
+
+          // Remove source from dropdownList
+          if (eventDataMap['data']['sourceId'] != null) {
+            sourceIds.remove(eventDataMap['data']['sourceId']);
+          } else {
+            sourceIds.remove('Main');
+          }
+        }
+
+        // No multisource
+        if (sourceIds.isEmpty) {
+          isMultisourceEnabled = false;
+          view.emit('multisource', view, false);
+        } else {
+          view.emit('multisource', view, true);
+        }
+
+        isSimulcastEnabled = false;
+        break;
+
+      default:
     }
   });
 
   /// Start connection to publisher
   try {
-    await view.connect();
+    await view.connect(options: {
+      'events': ['active', 'inactive', 'layers']
+    });
 
     view.webRTCPeer.initStats();
 
