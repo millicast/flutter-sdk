@@ -19,6 +19,7 @@ Millicast Flutter SDK Example
 * [Publisher App](#publisher-app)
     + [Publisher Settings](#publisher-settings)
 * [Subscriber App](#subscriber-app)
+    + [Subscriber Settings](#subscriber-settings)
 
 ## Getting Started
 
@@ -118,8 +119,6 @@ In the publisher app, you can switch camera, mute/unmute, turn off camera and sh
 This app will also be subscribed to stream events, allowing you to keep the viewer user count.
 
 <img src="assets/PublisherHome.png" alt="drawing" width="200"/>
- &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp
-<img src="assets/PublisherSettings.png" alt="drawing" width="200"/>
 
 ### Publisher Settings
 
@@ -127,8 +126,16 @@ Publisher settings allow you to set a SoruceId, set maximum bitrate, codec, simu
 
 You may also change the stream information (name, accountId and publish token).
 
+<img src="assets/PublisherSettings.png" alt="drawing" width="200"/>
+
 ## Subscriber App
 
 <img src="assets/SubscriberHome.png" alt="drawing" width="200"/>
- &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp
+
+### Subscriber Settings
+
+Subscriber settings allow you to select a multisource SoruceId and different simulcast layers.
+
+You may also change the stream information (Stream name & accountId).
+
 <img src="assets/SubscriberSettings.png" alt="drawing" width="200"/>
