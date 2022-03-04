@@ -1,5 +1,3 @@
-// ignore_for_file: lines_longer_than_80_chars
-
 import 'dart:async';
 import 'dart:convert';
 
@@ -49,8 +47,9 @@ class PeerConnection extends EventEmitter {
 
   /// Get current TURN location.
   ///
-  /// By default, https://turn.millicast.com/webrtc/_turn is the current TURN location.
-  /// Returns TURN url
+  /// By default, https://turn.millicast.com/webrtc/_turn is the current
+  /// TURN location.
+  /// Returns TURN url ([turnServerLocation]) [String].
   static String getTurnServerLocation() {
     return turnServerLocation;
   }
@@ -58,7 +57,6 @@ class PeerConnection extends EventEmitter {
   /// Instance new RTCPeerConnection.
   ///
   /// [config] - Peer configuration.
-  ///
   createRTCPeer([Map<String, dynamic>? config]) async {
     _logger.i('Creating new RTCPeerConnection');
     _logger.d('RTC configuration provided by user: $config');
@@ -68,7 +66,7 @@ class PeerConnection extends EventEmitter {
 
   /// Get current RTC peer connection.
   ///
-  /// Returns [RTCPeerConnection] Object which represents the RTCPeerConnection.
+  /// Returns [RTCPeerConnection] Object which represents the Peer Connection.
   Future<RTCPeerConnection> getRTCPeer() async {
     _logger.i('Getting RTC Peer');
     if (peer != null) {
@@ -95,9 +93,8 @@ class PeerConnection extends EventEmitter {
 
   /// Get default RTC configuration with ICE servers from Milicast signaling server and merge it with the user configuration provided. User configuration has priority over defaults.
   ///
-  /// [config] - Options to configure the new RTCPeerConnection.
+  /// [config] - Options to configure the new [RTCPeerConnection].
   /// Returns a [Map] Future object which represents the RTCConfiguration.
-
   getRTCConfiguration(Map<String, dynamic>? config) async {
     _logger.i('Getting RTC configuration');
     Map<String, dynamic> configParsed = config ?? {};
@@ -109,7 +106,7 @@ class PeerConnection extends EventEmitter {
 
   /// Get Ice servers from a Millicast signaling server.
   ///
-  ///  [Future] object which represents a list of Ice servers.
+  /// Returns a [Future] object which represents a [List] of ice servers.
   getRTCIceServers({String? location}) async {
     location = location ?? turnServerLocation;
     _logger.i('Getting RTC ICE servers');
@@ -120,7 +117,8 @@ class PeerConnection extends EventEmitter {
       http.Response data = await http.put(Uri.parse(location));
       _logger.d('RTC ICE servers response: $data');
       if (jsonDecode(data.body)['s'] == 'ok') {
-        // call returns old format, this updates URL to URLS in credentials path.
+        // call returns old format,
+        // this updates URL to URLS in credentials path.
         for (Map credentials in jsonDecode(data.body)['v']['iceServers']) {
           var url = credentials['url'];
           if (url.toString().isNotEmpty) {
@@ -150,24 +148,31 @@ class PeerConnection extends EventEmitter {
     }
   }
 
-  ///  Get the SDP modified depending the options. Optionally set the SDP information to local peer.
+  /// Get the SDP modified depending the options. Optionally set the
+  /// SDP information to local peer.
   ///
-  ///   [Object] options
-  ///   [bool] options.stereo - True to modify SDP for support stereo. Otherwise False.
-  ///   [bool] options.dtx - True to modify SDP for supporting dtx in opus. Otherwise False.*
-  ///   [MediaStream] options.mediaStream - MediaStream to offer in a stream. This object must have
-  ///  1 audio track and 1 video track, or at least one of them. Alternative you can provide both tracks in an array.
-  ///   VideoCodec [options] codec - Selected codec for support simulcast.
-  ///   [String] options.scalabilityMode - Selected scalability mode. You can get the available capabilities using  method.
-  ///  **Only available in Google Chrome.**
-  ///  *[bool] options.absCaptureTime - True to modify SDP for supporting absolute capture time header extension. Otherwise False.
-  ///   [bool] options.dependencyDescriptor - True to modify SDP for supporting aom dependency descriptor header extension. Otherwise False.
-  ///   [bool] options.disableAudio - True to not support audio.
-  ///   [bool] options.disableVideo - True to not support video.
-  ///   [bool] options.setSDPToPeer - True to set the SDP to local peer.
-  ///   Returns [Future<String>] Future object which represents the SDP information of the created offer.
-  ///
-
+  /// [Map] options
+  /// [bool] options['stereo'] - True to modify SDP for support stereo.
+  /// Otherwise False.
+  /// [bool] options['dtx'] - True to modify SDP for supporting dtx in opus.
+  /// Otherwise False.*
+  /// [MediaStream] options['mediaStream'] - MediaStream to offer in a stream.
+  /// This object must have
+  /// 1 audio track and 1 video track, or at least one of them.
+  /// Alternative you can provide both tracks in an array.
+  /// VideoCodec [options[' codec'] - Selected codec for support simulcast.
+  /// [String] options['scalabilityMode'] - Selected scalability mode.
+  /// You can get the available capabilities using  method.
+  /// **Only available in Google Chrome.**
+  /// *[bool] options['absCaptureTime'] - True to modify SDP for
+  /// supporting absolute capture time header extension. Otherwise False.
+  /// [bool] options['dependencyDescriptor'] - True to modify SDP for supporting
+  /// aom dependency descriptor header extension. Otherwise False.
+  /// [bool] options['disableAudio'] - True to not support audio.
+  /// [bool] options['disableVideo'] - True to not support video.
+  /// [bool] options['setSDPToPeer'] - True to set the SDP to local peer.
+  /// Returns [String] Future object which represents the SDP information
+  /// of the created offer.
   Future<String?> getRTCLocalSDP(
       {Map<String, dynamic> options = localSDPOptions}) async {
     _logger.i('Getting RTC Local SDP');
@@ -218,9 +223,11 @@ class PeerConnection extends EventEmitter {
   }
 
   /// Add remote receving track.
+  ///
   /// [media] - Media kind ('audio' | 'video').
   /// [streams] - Streams the track will belong to.
-  /// [Future] that will be resolved when the [RTCRtpTransceiver] is assigned an mid value.
+  /// [Future] that will be resolved when the [RTCRtpTransceiver]
+  /// is assigned an mid value.
   addRemoteTrack(media, List<MediaStream> streams) async {
     Completer completer = Completer();
     var transceiverCompleter = RTCRtpTransceiverCompleter(completer);
@@ -251,7 +258,8 @@ class PeerConnection extends EventEmitter {
   /// Set SDP information to remote peer with bandwidth restriction.
   ///
   /// [bitrate] - New bitrate value in kbps or 0 unlimited bitrate.
-  /// Returns [Future] object which resolves when bitrate was successfully updated.
+  /// Returns [Future] object which resolves when bitrate was successfully
+  /// updated.
   updateBitrate({num bitrate = 0}) async {
     if (peer == null) {
       _logger.e('Cannot update bitrate. No peer found.');
@@ -298,10 +306,14 @@ class PeerConnection extends EventEmitter {
     }
   }
 
-  /// Gets user's mobile media capabilities compared with Millicast Media Server support.
+  /// Gets user's mobile media capabilities compared with
+  /// Millicast Media Server support.
   ///
   /// [kind] - Type of media for which you wish to get sender capabilities.
-  /// Returns Object with all capabilities supported by user's mobile and Millicast Media Server.
+  /// Returns [Map] with all capabilities supported by user's mobile and
+  /// Millicast Media Server.
+  /// Bug: This ticket is related to the implementation of
+  /// jsTrack.getCapabilities(), https://github.com/dart-lang/sdk/issues/44319
   static getCapabilities(String kind) {}
 
   /// Get sender tracks
@@ -312,7 +324,7 @@ class PeerConnection extends EventEmitter {
     });
   }
 
-  /// Initialize the statistics monitoring of the RTCPeerConnection.
+  /// Initialize the statistics monitoring of the [RTCPeerConnection].
   /// It will be emitted every second.
   ///
   /// ```dart
@@ -360,7 +372,7 @@ class PeerConnection extends EventEmitter {
     }
   }
 
-  /// Stops the monitoring of RTCPeerConnection statistics.
+  /// Stops the monitoring of [RTCPeerConnection] statistics.
   ///
   stopStats() {
     peerConnectionStats?.stop();
@@ -406,7 +418,7 @@ class PeerConnection extends EventEmitter {
 
   /// Emits peer events.
   ///
-  /// instanceClass - PeerConnection instance.
+  /// instanceClass - [PeerConnection] instance.
   /// [RTCPeerConnection] peer - Peer instance.
   ///  PeerConnection#track
   ///  PeerConnection#connectionStateChange

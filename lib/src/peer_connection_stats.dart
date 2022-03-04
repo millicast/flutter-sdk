@@ -6,7 +6,6 @@ import 'package:millicast_flutter_sdk/millicast_flutter_sdk.dart';
 
 import 'logger.dart';
 
-// ignore: unused_element
 var _logger = getLogger('PeerConnectionStats');
 const Map<String, dynamic> peerConnectionStatsEvents = {'stats': 'stats'};
 
@@ -73,11 +72,11 @@ class PeerConnectionStats extends EventEmitter {
     emitInterval?.cancel();
   }
 
-  // ignore: lines_longer_than_80_chars
-  /// Parse and add incoming outbound-rtp report from RTCPeerConnection to final report.
+  /// Parse and add incoming outbound-rtp report from RTCPeerConnection
+  /// to final report.
   ///
-  // ignore: lines_longer_than_80_chars
-  /// [report] - JSON object which represents a report from RTCPeerConnection stats.
+  /// stats.
+  /// [report] - JSON object which represents a report from RTCPeerConnection
   /// [previousStats] - Previous stats parsed.
   /// [statsObject] - Current stats object being parsed.
   addOutboundRtpReport(
@@ -89,7 +88,6 @@ class PeerConnectionStats extends EventEmitter {
         getBaseRtpReportData(report as Map<String, dynamic>, mediaType);
     additionalData['totalBytesSent'] = report['bytesSent'];
     additionalData['id'] = report['id'];
-    // ignore: prefer_typing_uninitialized_variables
     var previousBytesSent;
     if ((previousStats != null)) {
       previousBytesSent = previousStats[mediaType]['outbounds'].firstWhere(
@@ -109,11 +107,11 @@ class PeerConnectionStats extends EventEmitter {
     }
   }
 
-  // ignore: lines_longer_than_80_chars
-  /// Parse and add incoming inbound-rtp report from RTCPeerConnection to final report.
+  /// Parse and add incoming inbound-rtp report from RTCPeerConnection
+  /// to final report.
   ///
-  // ignore: lines_longer_than_80_chars
-  /// [report] - JSON object which represents a report from RTCPeerConnection stats.
+  /// [report] - JSON object which represents a report from
+  /// RTCPeerConnection stats.
   /// [previousStats] - Previous stats parsed.
   /// [statsObject] - Current stats object being parsed.
   addInboundRtpReport(
@@ -157,12 +155,12 @@ class PeerConnectionStats extends EventEmitter {
     statsObject[mediaType]['inbounds'].add({...codecInfo, ...additionalData});
   }
 
-  // ignore: lines_longer_than_80_chars
-  /// Parse and add incoming candidate-pair report from RTCPeerConnection to final report.
+  /// Parse and add incoming candidate-pair report from RTCPeerConnection
+  /// to final report.
   /// Also adds associated local-candidate data to report.
   ///
-  // ignore: lines_longer_than_80_chars
-  /// [report] - JSON object which represents a report from RTCPeerConnection stats.
+  /// [report] - JSON object which represents a report from
+  /// RTCPeerConnection stats.
   /// [statsObject] - Current stats object being parsed.
   addCandidateReport(
       Map<dynamic, dynamic> report, ConnectionStats statsObject) {
@@ -179,8 +177,9 @@ class PeerConnectionStats extends EventEmitter {
   }
 
   /// Get media type.
-  // ignore: lines_longer_than_80_chars
-  /// [report] - JSON object which represents a report from RTCPeerConnection stats.
+  ///
+  /// [report] - JSON object which represents a report from RTCPeerConnection
+  /// stats.
   /// Returns Media type.
   getMediaType(Map report) {
     return (report['mediaType'] ?? report['kind']);
@@ -205,8 +204,8 @@ class PeerConnectionStats extends EventEmitter {
 
   /// Get common information for RTP reports.
   ///
-  // ignore: lines_longer_than_80_chars
-  /// [report] - JSON object which represents a report from RTCPeerConnection stats.
+  /// [report] - JSON object which represents a report from
+  /// RTCPeerConnection stats.
   /// [mediaType] - Media type.
   /// Returns Object containing common information.
   Map getBaseRtpReportData(Map<dynamic, dynamic> report, String mediaType) {
@@ -246,30 +245,37 @@ class PeerConnectionStats extends EventEmitter {
   }
 }
 
-/// [ConnectionStats]
-/// [raw] - All RTCPeerConnection stats without parsing. Reference {[/]developer.mozilla.org/en-US/docs/Web/API/RTCStatsReport}.
-/// [audio] - Parsed audio information.
-/// [video] - Parsed video information.
-/// [availableOutgoingBitrate] - The available outbound capacity of the network
-/// connection. The higher the value, the more bandwidth you can assume is
-/// available for outgoing data. The value is reported in bits per second.
-/// This value comes from the nominated candidate-pair.
-/// [totalRoundTripTime] - Total round trip time is the total time in seconds
-/// that has elapsed between sending STUN requests and receiving the responses.
-/// This value comes from the nominated candidate-pair.
-/// [currentRoundTripTime] - Current round trip time indicate the number of
-/// seconds it takes for data to be sent by this peer to the remote peer and
-/// back over the connection described by this pair of ICE candidates.
-/// This value comes from the nominated candidate-pair.
-/// [candidateType] - Local candidate type from the nominated candidate-pair
-/// which indicates the type of ICE candidate the object represents.
+///
 class ConnectionStats {
+  /// [raw] - All RTCPeerConnection stats without parsing.
+  /// Reference {https://developer.mozilla.org/en-US/docs/Web/API/RTCStatsReport}.
   List<StatsReport>? raw;
+
+  /// [audio] - Parsed audio information.
   Map<String, List<dynamic>>? audio;
+
+  /// [video] - Parsed video information.
   Map<String, List<dynamic>>? video;
+
+  /// [availableOutgoingBitrate] - The available outbound capacity of the network
+  /// connection. The higher the value, the more bandwidth you can assume is
+  /// available for outgoing data. The value is reported in bits per second.
+  /// This value comes from the nominated candidate-pair.
   double? availableOutgoingBitrate;
+
+  /// [totalRoundTripTime] - Total round trip time is the total time in seconds
+  /// that has elapsed between sending STUN requests and receiving the responses.
+  /// This value comes from the nominated candidate-pair.
   double? totalRoundTripTime;
+
+  /// [currentRoundTripTime] - Current round trip time indicate the number of
+  /// seconds it takes for data to be sent by this peer to the remote peer and
+  /// back over the connection described by this pair of ICE candidates.
+  /// This value comes from the nominated candidate-pair.
   double? currentRoundTripTime;
+
+  /// [candidateType] - Local candidate type from the nominated candidate-pair
+  /// which indicates the type of ICE candidate the object represents.
   String? candidateType;
 
   ConnectionStats(

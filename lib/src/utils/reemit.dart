@@ -2,6 +2,7 @@ import 'package:eventify/eventify.dart';
 
 var eventEmitter = EventEmitter();
 
+/// Re emit events from another emitter
 Function reemit(EventEmitter source, EventEmitter target, List<String> events) {
   var listeners = [];
   void Function(Event, Object?) callback;

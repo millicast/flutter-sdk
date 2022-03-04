@@ -14,9 +14,16 @@ const Map<String, dynamic> connectOptions = {
 };
 
 class BaseWebRTC extends EventEmitter {
+  /// [streamName] - Millicast existing stream name.
   String streamName;
+
+  /// [tokenGenerator] - Callback function executed when a new token is needed.
   Function tokenGenerator;
+
+  /// [autoReconnect] - Enable auto reconnect.
   bool autoReconnect;
+
+  /// [logger] - Logger instance from the extended classes.
   Logger logger;
   late Signaling? signaling;
   PeerConnection webRTCPeer = PeerConnection();

@@ -1,5 +1,3 @@
-// ignore_for_file: lines_longer_than_80_chars
-
 import 'dart:async';
 
 import 'package:millicast_flutter_sdk/src/peer_connection.dart';
@@ -29,7 +27,6 @@ const Map<String, dynamic> _connectOptions = {
 /// [tokenGenerator] - Callback function executed when a new token is needed.
 /// [mediaElement] - Target  media element to mount stream.
 /// [autoReconnect] = true - Enable auto reconnect to stream.
-
 class View extends BaseWebRTC {
   Function? stopReemitingWebRTCPeerInstanceEvents;
 
@@ -55,27 +52,29 @@ class View extends BaseWebRTC {
   /// Connects to an active stream as subscriber.
   ///
   /// [Object] options - General subscriber options.
-
-  /// [options] dtx = false - True to modify SDP for supporting dtx in opus. Otherwise False.
-
-  /// [options] absCaptureTime = false - True to modify SDP for supporting absolute capture time header extension. Otherwise False.
-  /// options disableVideo = false - Disable the opportunity to receive video stream.
-
-  /// options disableAudio = false - Disable the opportunity to receive audio stream.
-
-  /// options multiplexedAudioTracks - Number of audio tracks to recieve VAD multiplexed audio for secondary sources.
-
-  /// options pinnedSourceId - Id of the main source that will be received by the default MediaStream.
-
-  /// options excludedSourceIds - Do not receive media from the these source ids.
-
-  /// options events - Override which events will be delivered by the server (any of "active" | "inactive" | "vad" | "layers").*
-
-  /// options peerConfig     - Options to configure the new RTCPeerConnection.
-
-  /// options layer - Select the simulcast encoding layer and svc layers for the main video track, leave empty for automatic layer selection based on bandwidth estimation.
-
-  /// Returns Future object which resolves when the connection was successfully established.
+  /// options['dtx'] = false - True to modify SDP for supporting dtx in opus.
+  ///  Otherwise False.
+  /// options['absCaptureTime'] = false - True to modify SDP for
+  /// supporting absolute capture time header extension. Otherwise False.
+  /// options['disableVideo'] = false - Disable the opportunity to receive
+  /// video stream.
+  /// options['disableAudio'] = false - Disable the opportunity to receive
+  /// audio stream.
+  /// options['multiplexedAudioTracks'] - Number of audio tracks to recieve
+  /// VAD multiplexed audio for secondary sources.
+  /// options['pinnedSourceId'] - Id of the main source that will be received
+  /// by the default MediaStream.
+  /// options['excludedSourceIds'] - Do not receive media from the these
+  /// source ids.
+  /// options['events'] - Override which events will be delivered by the
+  /// server (any of "active" | "inactive" | "vad" | "layers").*
+  /// options['peerConfig']     - Options to configure the new
+  /// RTCPeerConnection.
+  /// options['layer'] - Select the simulcast encoding layer and svc layers
+  /// for the main video track, leave empty for automatic layer selection
+  /// based on bandwidth estimation.
+  /// Returns Future object which resolves when the connection was
+  /// successfully established.
   ///
   /// @example
   /// ```dart

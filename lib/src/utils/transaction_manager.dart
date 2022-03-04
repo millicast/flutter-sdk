@@ -4,9 +4,10 @@ import 'package:millicast_flutter_sdk/millicast_flutter_sdk.dart';
 import 'package:eventify/eventify.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
-// ignore: unused_element
 var _logger = getLogger('TransactionManager');
 
+/// Simple transaction manager for json messages
+/// Based on https://www.npmjs.com/package/transaction-manager
 class TransactionManager extends EventEmitter {
   num maxId = 0;
   WebSocketChannel transport;

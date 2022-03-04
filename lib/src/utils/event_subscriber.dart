@@ -8,23 +8,26 @@ import '../logger.dart';
 var _logger = getLogger('EventSubscriber');
 const recordSeparator = '\x1E';
 
-/// Initializes the web socket and subscribe Millicast Stream Event
+/// Initializes the web socket and subscribe Millicast Stream Event.
 ///
 /// ```dart
 /// EventSubscriber eventSubscriber =
 ///     EventSubscriber({webSocketUrl});
 /// await eventSubscriber.initializeHandshake();
 /// eventSubscriber.subscribe(topicRequest);
-///
 class EventSubscriber extends EventEmitter {
+  /// The websocket through which we communicate with the server.
   WebSocketChannel? webSocket;
+
+  /// The Uri [String] that specifies the events server location.
   String eventsLocation;
 
   EventSubscriber(this.eventsLocation);
 
-  /// Subscribe to Millicast Stream Event
-  // ignore: lines_longer_than_80_chars
-  /// [Object] topicRequest - Object that represents the event topic you want to subscribe.
+  /// Subscribe to Millicast Stream Event.
+  ///
+  /// [topicRequest] - [Object] that represents the event topic you want
+  /// to subscribe to.
   void subscribe(Object topicRequest) async {
     bool isHandshakeResponse = true;
     _logger.i('Subscribing to event topic');
@@ -34,9 +37,8 @@ class EventSubscriber extends EventEmitter {
       _logger.i('The event is $event');
       if (isHandshakeResponse) {
         final parsedResponse = handleHandshakeResponse(event);
-        _logger.i(
-            // ignore: lines_longer_than_80_chars
-            'Successful handshake with events WebSocket. Waiting for subscriptions...');
+        _logger.i('Successful handshake with events WebSocket. Waiting '
+            'for subscriptions...');
         _logger.d('WebSocket handshake message: ', parsedResponse);
         isHandshakeResponse = false;
       }
@@ -56,6 +58,7 @@ class EventSubscriber extends EventEmitter {
   }
 
   /// Initializes the connection with the Millicast event WebSocket.
+  ///
   /// Returns [Future] which represents the handshake finalization.
   initializeHandshake() async {
     if (webSocket == null) {
@@ -66,19 +69,18 @@ class EventSubscriber extends EventEmitter {
         'protocol': 'json',
         'version': 1
       };
-      _logger.i(
-          // ignore: lines_longer_than_80_chars
-          'Sending handshakeRequest ${jsonEncode(handshakeRequest) + recordSeparator}');
+      _logger.i('Sending handshakeRequest '
+          '${jsonEncode(handshakeRequest) + recordSeparator}');
       webSocket?.sink.add(jsonEncode(handshakeRequest) + recordSeparator);
     }
   }
 
-  // ignore: lines_longer_than_80_chars
-  /// Receives the event data response from the WebSocket and throw error if the response has an error.
+  /// Receives the event data response from the WebSocket and
+  /// throw error if the response has an error.
   ///
-  // ignore: lines_longer_than_80_chars
-  /// [message] - WebSocket event data response from the handshake initialization.
-  /// Returns incoming message into an [Object].
+  /// [message] - WebSocket event data response from the handshake
+  /// initialization.
+  /// Returns incoming message into an [String].
   String handleHandshakeResponse(String message) {
     String handshakeResponse = parseSignalRMessage(message);
     if (handshakeResponse.isEmpty) {
@@ -91,6 +93,7 @@ class EventSubscriber extends EventEmitter {
   }
 
   /// Parses incoming WebSocket event messages.
+  ///
   String parseSignalRMessage(String message) {
     message = message.endsWith(recordSeparator)
         ? message.substring(0, message.length - 1)
@@ -99,6 +102,7 @@ class EventSubscriber extends EventEmitter {
   }
 
   /// Close WebSocket connection with Millicast stream events server.
+  ///
   void close() {
     if (webSocket?.protocol != null) {
       webSocket?.sink.close();

@@ -1,7 +1,5 @@
-// ignore_for_file: lines_longer_than_80_chars
-
 import 'package:eventify/eventify.dart';
-// import 'package:millicast_flutter_sdk/src/utils/sdp_parser.dart';
+import 'package:millicast_flutter_sdk/src/utils/sdp_parser.dart';
 import 'utils/transaction_manager.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'logger.dart';
@@ -19,20 +17,23 @@ const Map<String, String> videoCodec = {
 
 /// Starts [WebSocketChannel] connection and manages the messages between peers.
 ///
-/// [streamName] - Millicast stream name to get subscribed.
-/// [wsUrl] URL is used to initialize a [webSocket] with Millicast server and establish a WebRTC connection.
+/// establish a WebRTC connection.
 /// ```dart
 /// var millicastSignaling = Signaling(options);
 /// ```
 class Signaling extends EventEmitter {
+  /// [streamName] - Millicast stream name to get subscribed.
   String? streamName;
+
+  /// [wsUrl] URL is used to initialize a [webSocket] with Millicast server and
   String wsUrl = 'ws://localhost:8080/';
 
   WebSocketChannel? webSocket;
   TransactionManager? transactionManager;
   RTCSessionDescription? remoteSdp;
 
-  //flag to stop reconnection if migration is in transit because websocket connection error and connection close trigger the same event(onDone)
+  //flag to stop reconnection if migration is in transit because websocket
+  //connection error and connection close trigger the same event(onDone)
   bool? isMigrating = false;
 
   /// [options] - General signaling options.
@@ -49,7 +50,9 @@ class Signaling extends EventEmitter {
   /// ```dart
   /// var response = await millicastSignaling.connect();
   /// ```
-  /// [WebSocketChannel] Future object which represents the [webSocket] {@link https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API} of the establshed connection.
+  /// [WebSocketChannel] Future object which represents the [webSocket]
+  /// {https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API}
+  /// of the establshed connection.
   Future<WebSocketChannel> connect() async {
     {
       _logger.i('Connecting to Signaling Server');
@@ -125,14 +128,6 @@ class Signaling extends EventEmitter {
       await connect();
       _logger.i('Sending view command');
       var result = await transactionManager?.cmd('view', data);
-      // Check if browser supports AV1X
-      // var AV1X = RTCRtpReceiver.getCapabilities?.('video')?.codecs?.find?.(codec => codec.mimeType === 'video/AV1X')
-      // Signaling server returns 'AV1'. If browser supports AV1X, we change it to AV1X
-      // if (AV1X) {
-      // result.sdp = SdpParser.adaptCodecName(result.sdp, VideoCodec.av1, 'AV1X');
-      // } else {
-      // result.sdp = result.sdp;
-      // }
       return result['data']['sdp'];
     } catch (e) {
       _logger.e('Error sending view command, error: $e');
@@ -142,7 +137,6 @@ class Signaling extends EventEmitter {
 
   /// Establish WebRTC connection with Millicast Server as Publisher role.
   ///
-  ///
   /// [sdp] - The SDP information created by your offer.
   /// [options] - Signaling Publish Options.
   /// Returns Future object which represents the SDP command response.
@@ -150,14 +144,13 @@ class Signaling extends EventEmitter {
   /// var response = await millicastSignaling.publish(sdp, {codec: 'h264'})
   /// ```
   Future<String> publish(String? sdp, {Map<String, dynamic>? options}) async {
-    _logger.i(
-        'Starting publishing to streamName: $streamName, codec: ${options?['codec']}');
+    _logger.i('Starting publishing to streamName: '
+        '$streamName, codec: ${options?['codec']}');
     _logger.d('Publishing local description: $sdp');
     if (options != null) {
       if (!videoCodec.containsValue(options['codec'])) {
         _logger.e('Invalid codec. Possible values are: $videoCodec');
         throw Exception('Invalid codec. Possible values are: $videoCodec');
-        // Signaling server only recognizes 'AV1' and not 'AV1X'
       }
       if (options['codec'] == videoCodec['AV1']) {
         sdp = SdpParser.adaptCodecName(sdp, 'AV1X', videoCodec['AV1']!);
@@ -176,11 +169,6 @@ class Signaling extends EventEmitter {
       await connect();
       _logger.i('Sending publish command');
       var result = await transactionManager?.cmd('publish', data);
-      // if (options.codec == videoCodec['AV1']) {
-      //   // If browser supports AV1X, we change from AV1 to AV1X
-      //   const AV1X = RTCRtpSender.getCapabilities?.('video')?.codecs?.find?.(codec => codec.mimeType === 'video/AV1X');
-      //   result['sdp'] = AV1X ? SdpParser.adaptCodecName(result.sdp, videoCodec['AV1']!, 'AV1X') : result.sdp;
-      // }
       return result['data']['sdp'];
     } catch (e) {
       _logger.e('Error sending publish command, error: $e');

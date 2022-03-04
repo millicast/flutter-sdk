@@ -1,5 +1,3 @@
-// ignore_for_file: lines_longer_than_80_chars
-
 import 'dart:async';
 
 import 'package:flutter_webrtc/flutter_webrtc.dart';
@@ -33,7 +31,6 @@ var _logger = getLogger('Publish');
 /// [tokenGenerator] - Callback function executed when a new token is needed.
 /// [logger] - Logger instance from the extended classes.
 /// [autoReconnect] - Enable auto reconnect.
-///
 class Publish extends BaseWebRTC {
   Function? stopReemitingWebRTCPeerInstanceEvents;
 

@@ -3,7 +3,6 @@ import 'package:flutter_webrtc/flutter_webrtc.dart';
 import '../logger.dart';
 import 'package:sdp_transform/sdp_transform.dart';
 
-// ignore: unused_element
 var _logger = getLogger('SdpParser');
 
 const Map<String, dynamic> logger = {};
@@ -51,7 +50,7 @@ class SdpParser {
   ///
   /// [sdp] - Current SDP.
   /// [codec] - Codec.
-  /// Returns SDP parsed with simulcast support.
+  /// Returns SDP [String] parsed with simulcast support.
   static String? setSimulcast(String? sdp, String codec) {
     _logger.i('Setting simulcast. Codec: $codec');
     if (codec != 'h264' && codec != 'vp8') {
@@ -119,7 +118,7 @@ class SdpParser {
   /// Parse SDP for support stereo.
   ///
   /// [sdp] - Current SDP.
-  /// Returns {String} SDP parsed with stereo support.
+  /// Returns [String] SDP parsed with stereo support.
   static String? setStereo(String? sdp) {
     _logger.i('Replacing SDP response for support stereo');
     sdp = sdp!.replaceAll(
@@ -179,7 +178,7 @@ class SdpParser {
   ///
   /// [sdp] - Current SDP.
   /// [bitrate] - Bitrate value in kbps or 0 for unlimited bitrate.
-  /// Returns SDP parsed with desired bitrate.
+  /// Returns [String] SDP parsed with desired bitrate.
   static String setVideoBitrate(String? sdp, num bitrate) {
     int? video = 0;
     if (sdp != null) {
@@ -304,7 +303,7 @@ class SdpParser {
   /// Description.
   ///
   /// [sdp] - Current SDP.
-  /// Returns List All available header extension IDs.
+  /// Returns [List] of All available header extension IDs.
   static List<num> getAvailableHeaderExtensionIdRange(String? sdp) {
     var regex = RegExp(r'a=extmap:(\d+)(?:.*)\r\n', multiLine: true);
     var matches = regex.allMatches(sdp!);
@@ -322,8 +321,10 @@ class SdpParser {
   }
 
   /// Renegotiate remote sdp based on previous description.
-  // ignore: lines_longer_than_80_chars
-  /// This function will fill missing m-lines cloning on the remote description by cloning the codec and extensions already negotiated for that media
+  ///
+  /// This function will fill missing m-lines cloning on the remote
+  /// description by cloning the codec and extensions already negotiated
+  /// for that media
   ///
   /// [localDescription] - Updated local sdp
   /// [remoteDescription] - Previous remote sdp
@@ -372,6 +373,7 @@ class SdpParser {
   }
 
   /// Checks if mediaStream has more than 2 audio channels.
+  ///
   /// [mediaStream] - MediaStream to verify.
   /// Returns true [bool] if MediaStream has more than 2 channels.
   static bool hasAudioMultichannel(MediaStream mediaStream) {

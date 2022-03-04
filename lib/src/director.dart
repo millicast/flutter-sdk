@@ -9,16 +9,15 @@ String liveWebSocketDomain = '';
 const String defaultApiEndpoint = Config.millicastDirectorEndpoint;
 String apiEndpoint = defaultApiEndpoint;
 
-// ignore: lines_longer_than_80_chars
-
 var _logger = getLogger('Director');
 
-// ignore: lines_longer_than_80_chars
-/// Simplify API calls to find the best server and region to publish and subscribe to.
+/// Simplify API calls to find the best server and region to publish and
+/// subscribe to.
 ///
-/// For security reasosn all calls will return a [JWT](https://jwt.io) token forn authentication including the required
-/// socket path to connect with.
-/// You will need your own Publishing token and Stream name, please refer to [Managing Your Tokens](https://dash.millicast.com/docs.html?pg=managing-your-tokens).
+/// For security reasosn all calls will return a [JWT](https://jwt.io) token
+/// from authentication including the required socket path to connect with.
+/// You will need your own Publishing token and Stream name, please refer to
+/// [Managing Your Tokens](https://dash.millicast.com/docs.html?pg=managing-your-tokens).
 class Director {
   /// Set Director API endpoint where requests will be sent.
   ///
@@ -50,7 +49,6 @@ class Director {
   /// If it is set to empty, it will not parse the response.
   /// [domain] - New Websocket Live domain
   /// ```dart
-  ///
   /// void main() {
   ///   String liveDomain = '';
   ///   liveDomain = Director.getLiveDomain();
@@ -73,8 +71,8 @@ class Director {
   /// Get publisher connection data.
   ///
   /// [options] - Millicast options.
-  // ignore: lines_longer_than_80_chars
-  /// Returns Future object which represents the result of getting the publishing connection path.
+  /// Returns [Future] object which represents the result of getting the
+  /// publishing connection path.
   ///
   /// ```dart
   /// import 'package:millicast_flutter_sdk/millicast_flutter_sdk.dart';
@@ -126,8 +124,8 @@ class Director {
   /// Get subscriber connection data.
   ///
   /// [options] - Millicast options.
-  // ignore: lines_longer_than_80_chars
-  /// Returns Future object which represents the result of getting the subscribe connection data.
+  /// Returns Future object which represents the result of getting the
+  /// subscribe connection data.
   ///
   /// ```dart
   /// import 'package:millicast_flutter_sdk/millicast_flutter_sdk.dart';
@@ -183,7 +181,8 @@ class Director {
     }
   }
 
-  /// Modifies domain of subscriber/publisher Director reponses with liveWebSocketDomain value.
+  /// Modifies domain of subscriber/publisher Director reponses
+  /// with liveWebSocketDomain value.
   ///
   /// Recieves a [directorResponse] and parses it's urls.
   /// Then it modifies their domain with the [liveWebSocketDomain] value.
@@ -192,12 +191,10 @@ class Director {
   /// void main() {
   ///   Director.setLiveDomain('custom-live-domain.millicast.com/');
   ///   var response = MillicastDirectorResponse(jwt: 'validToken', urls: [
-  ///     'wss://default-live-domain.com/ws/v/sub/abf4edb5833a463d87c3f23ae891d3ed'
+  ///     'wss://default-live-domain.com'
+  ///     '/ws/v/sub/abf4edb5833a463d87c3f23ae891d3ed'
   ///   ]);
   ///   var parsedResponse = Director.parseIncomingDirectorResponse(response);
-  ///   // 'wss://default-live-domain.com/ws/v/sub/abf4edb5833a463d87c3f23ae891d3ed'
-  ///   // changed to
-  ///   // 'wss://custom-live-domain.millicast.com/ws/v/sub/abf4edb5833a463d87c3f23ae891d3ed'
   /// }
   /// ```
   static MillicastDirectorResponse parseIncomingDirectorResponse(
@@ -237,8 +234,14 @@ class MillicastDirectorResponse {
 }
 
 class DirectorSubscriberOptions {
+  /// Millicast publisher Stream Name.
   String streamName;
+
+  /// Millicast Account ID.
   String streamAccountId;
+
+  /// Token to subscribe to secure streams. If you are subscribing to an
+  /// unsecure stream, you can omit this param.
   String? subscriberToken;
   http.Client? client;
 
@@ -251,9 +254,16 @@ class DirectorSubscriberOptions {
 }
 
 class DirectorPublisherOptions {
+  /// Millicast Publishing Token.
   String token;
+
+  /// Millicast publisher Stream Name.
   String streamName;
+
+  /// Millicast Stream Type.
   String? streamType;
+
+  /// http Client used to communicate with server.
   http.Client? client;
 
   DirectorPublisherOptions(

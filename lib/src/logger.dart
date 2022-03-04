@@ -6,12 +6,12 @@ Logger getLogger(String className) {
 }
 
 BufferMemoryOutput memory = BufferMemoryOutput(bufferSize: maxLogHistorySize);
-const defaultLogHistorySize = 5;
+const defaultLogHistorySize = 10000;
 int maxLogHistorySize = defaultLogHistorySize;
 List<String> history = [];
 
-//LogPrinter implementation
-//Log format '[className] Date - {Log.level} - {log.message}'
+/// LogPrinter implementation
+/// Log format '[className] Date - {Log.level} - {log.message}'
 class InternalLogPrinter extends LogPrinter {
   final String className;
   InternalLogPrinter(this.className);

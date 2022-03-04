@@ -20,13 +20,14 @@ const String defaultEventsLocation = Config.millicastEventsLocation;
 var eventsLocation = defaultEventsLocation;
 
 /// StreamEvents
-/// Allows you to subscribe to stream events such as the amount of active
-/// viewers
+/// Allows you to subscribe to stream events such as the amount of
+/// active viewers.
 /// This events are handled via a WebSocket with Millicast server.
 class StreamEvents {
   EventSubscriber? eventSubscriber;
 
   /// Initializes the connection with Millicast Stream Event.
+  ///
   /// Returns [StreamEvents] Future object which represents the
   /// StreamEvents instance
   /// once the connection with the Millicast stream events is done.
@@ -40,7 +41,7 @@ class StreamEvents {
 
   /// Set Websocket Stream Events location.
   ///
-  ///  [String] url - New Stream Events location
+  /// [String] url - New Stream Events location
   static setEventsLocation(String url) {
     eventsLocation = url;
   }
