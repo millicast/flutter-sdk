@@ -14,7 +14,7 @@ This Software Development Kit (SDK) for Flutter allows developers to simplify Mi
   + [Important reminder](#important-reminder)
 * [API Reference](#api-reference)
 * [Sample](#sample)
-* [SDK developer information (WIP)](#sdk-developer-information)
+* [SDK developer information](#sdk-developer-information)
 * [License](#license)
 
 ## Installation
@@ -275,7 +275,7 @@ You can find the latest, most up to date SDK documentation at our [API Reference
 
 Example can be found in [example](example) folder.
 
-## SDK developer information (WIP)
+## SDK developer information
 
 To develop and contribute to this project, there are some instructions on how to set up your environment to start contributing. [Follow this link](developer-info.md).
 
