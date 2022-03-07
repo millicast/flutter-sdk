@@ -15,6 +15,7 @@ const recordSeparator = '\x1E';
 ///     EventSubscriber({webSocketUrl});
 /// await eventSubscriber.initializeHandshake();
 /// eventSubscriber.subscribe(topicRequest);
+/// ```
 class EventSubscriber extends EventEmitter {
   /// The websocket through which we communicate with the server.
   WebSocketChannel? webSocket;

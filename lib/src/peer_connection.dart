@@ -11,7 +11,6 @@ import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'logger.dart';
 import 'package:http/http.dart' as http;
 
-// ignore: unused_element
 var _logger = getLogger('PeerConnection');
 const Map<String, dynamic> webRTCEvents = {
   'track': 'track',
@@ -91,7 +90,9 @@ class PeerConnection extends EventEmitter {
     emit(webRTCEvents['connectionStateChange'], this, 'closed');
   }
 
-  /// Get default RTC configuration with ICE servers from Milicast signaling server and merge it with the user configuration provided. User configuration has priority over defaults.
+  /// Get default RTC configuration with ICE servers from Milicast signaling
+  /// server and merge it with the user configuration provided. User
+  /// configuration has priority over defaults.
   ///
   /// [config] - Options to configure the new [RTCPeerConnection].
   /// Returns a [Map] Future object which represents the RTCConfiguration.
@@ -160,7 +161,7 @@ class PeerConnection extends EventEmitter {
   /// This object must have
   /// 1 audio track and 1 video track, or at least one of them.
   /// Alternative you can provide both tracks in an array.
-  /// VideoCodec [options[' codec'] - Selected codec for support simulcast.
+  /// VideoCodec options[' codec'] - Selected codec for support simulcast.
   /// [String] options['scalabilityMode'] - Selected scalability mode.
   /// You can get the available capabilities using  method.
   /// **Only available in Google Chrome.**
@@ -450,21 +451,7 @@ class PeerConnection extends EventEmitter {
     }
 
     // No renegotationNeeded
-    peer.onRenegotiationNeeded = () async {
-      //   on('setRemoteDescription', this, (ev, context) async {
-      //     if (peer.getConfiguration.isEmpty) {
-      //       return;
-      //     }
-      // _logger.i('Peer onnegotiationneeded, updating local description');
-      //     RTCSessionDescription offer = await peer.createOffer();
-      //     _logger.i('Peer onnegotiationneeded, got local offer ${offer.sdp}');
-      //     peer.setLocalDescription(offer);
-      //     String? sdp = SdpParser.renegotiate(offer.sdp, ev.eventData.toString());
-      //     _logger.i('Peer onnegotiationneeded, updating remote description $sdp');
-      //     peer.setRemoteDescription(RTCSessionDescription(sdp, 'answer'));
-      //     _logger.i('Peer onnegotiationneeded, renegotiation done');
-      //   });
-    };
+    peer.onRenegotiationNeeded = () async {};
   }
 
   void addMediaStreamToPeer(RTCPeerConnection? peer, MediaStream? mediaStream,
