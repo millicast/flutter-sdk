@@ -279,6 +279,6 @@ Example can be found in [example](example) folder.
 
 To develop and contribute to this project, there are some instructions on how to set up your environment to start contributing. [Follow this link](developer-info.md).
 
-## License (WIP)
+## License
 
 Please refer to [LICENSE](LICENSE) file.
