@@ -47,6 +47,7 @@ class _SubscriberSettingsWidgetState extends State<SubscriberSettingsWidget> {
                 title: 'Stream Name',
                 onPressed: (BuildContext context) {
                   popupDialog(
+                      currentValue: Constants.streamName,
                       context: context,
                       formKey: _formKey,
                       handler: (value) {
@@ -60,6 +61,7 @@ class _SubscriberSettingsWidgetState extends State<SubscriberSettingsWidget> {
                 title: 'Account Id',
                 onPressed: (BuildContext context) {
                   popupDialog(
+                      currentValue: Constants.accountId,
                       context: context,
                       formKey: _formKey,
                       handler: (value) {
@@ -171,6 +173,7 @@ class _SubscriberSettingsWidgetState extends State<SubscriberSettingsWidget> {
       required Key formKey,
       required void Function(dynamic) handler,
       bool state = false,
+      String? currentValue,
       bool isTextbox = true,
       bool isDropdown = false}) {
     return showDialog(
@@ -202,6 +205,8 @@ class _SubscriberSettingsWidgetState extends State<SubscriberSettingsWidget> {
                           padding: const EdgeInsets.all(8.0),
                           child: SizedBox(
                               child: TextField(
+                                  controller:
+                                      TextEditingController(text: currentValue),
                                   enableSuggestions: false,
                                   onSubmitted: handler,
                                   autocorrect: false)))

@@ -63,7 +63,9 @@ class MyApp extends StatelessWidget {
         // When navigating to the "/second" route, build the SecondScreen widget.
         '/publisher': (context) => const PublisherWidget(),
         '/subscriber': (context) => const SubscriberWidget(),
-        '/settings': (context) => const PublisherSettingsWidget()
+        '/settings': (context) => const PublisherSettingsWidget(
+              isConnected: false,
+            )
       },
       home: HomeScreen(),
     );

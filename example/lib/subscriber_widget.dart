@@ -194,6 +194,11 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
               onPressed: () async {
                 await _view?.webRTCPeer.closeRTCPeer();
                 subscribeExample();
+                setState(() {
+                  isVideoMuted = false;
+                  isAudioMuted = false;
+                  isConnected = true;
+                });
               }),
         ],
       ),
@@ -229,7 +234,7 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
               margin: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.height,
-              child: RTCVideoView(_localRenderer, mirror: true),
+              child: RTCVideoView(_localRenderer),
               decoration: const BoxDecoration(color: Colors.black54),
             ),
           );

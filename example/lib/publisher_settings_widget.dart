@@ -12,28 +12,35 @@ Logger _logger = getLogger('PublisherSettings');
 class PublisherSettingsWidget extends StatefulWidget {
   final MillicastPublishUserMedia? publisherMedia;
   final Map? options;
-  const PublisherSettingsWidget({this.publisherMedia, this.options, Key? key})
+  final bool isConnected;
+  const PublisherSettingsWidget(
+      {this.publisherMedia, this.options, required this.isConnected, Key? key})
       : super(key: key);
   @override
   _PublisherSettingsWidgetState createState() =>
       // ignore: no_logic_in_create_state
       _PublisherSettingsWidgetState(
-          publisherMedia: publisherMedia, options: options);
+          publisherMedia: publisherMedia,
+          options: options,
+          isConnected: isConnected);
 }
 
 class _PublisherSettingsWidgetState extends State<PublisherSettingsWidget> {
-  int _bitrate = 0;
-  bool _audio = false;
-  bool _simulcast = false;
   Map? options;
+  bool isConnected;
   final _formKey = GlobalKey<FormState>();
   MillicastPublishUserMedia? publisherMedia;
 
   _PublisherSettingsWidgetState(
-      {required this.publisherMedia, required this.options});
+      {required this.publisherMedia,
+      required this.options,
+      required this.isConnected});
 
   @override
   Widget build(BuildContext context) {
+    int _bitrate = options?['bandwidth'] ?? 0;
+    bool _audio = options?['stereo'] ?? false;
+    bool _simulcast = options?['simulcast'] ?? false;
     return Scaffold(
       appBar: AppBar(
         foregroundColor: Colors.black,
@@ -68,6 +75,7 @@ class _PublisherSettingsWidgetState extends State<PublisherSettingsWidget> {
                 title: 'BitRate',
                 onPressed: (BuildContext context) {
                   popupDialog(
+                      currentValue: _bitrate.toString(),
                       context: context,
                       formKey: _formKey,
                       isTextbox: true,
@@ -122,6 +130,7 @@ class _PublisherSettingsWidgetState extends State<PublisherSettingsWidget> {
                 title: 'Stream Name',
                 onPressed: (BuildContext context) {
                   popupDialog(
+                      currentValue: Constants.streamName,
                       context: context,
                       formKey: _formKey,
                       handler: (value) {
@@ -136,6 +145,7 @@ class _PublisherSettingsWidgetState extends State<PublisherSettingsWidget> {
                 title: 'Account Id',
                 onPressed: (BuildContext context) {
                   popupDialog(
+                      currentValue: Constants.accountId,
                       context: context,
                       formKey: _formKey,
                       handler: (value) {
@@ -150,6 +160,7 @@ class _PublisherSettingsWidgetState extends State<PublisherSettingsWidget> {
                 title: 'Publish Token',
                 onPressed: (BuildContext context) {
                   popupDialog(
+                      currentValue: Constants.publishToken,
                       context: context,
                       formKey: _formKey,
                       handler: (value) {
