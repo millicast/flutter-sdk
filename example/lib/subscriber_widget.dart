@@ -28,7 +28,6 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
   bool isVideoMuted = false;
   bool isAudioMuted = false;
   bool isConnected = true;
-  StreamEvents? events;
 
   @override
   void dispose() {
@@ -44,9 +43,6 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
 
   @override
   void deactivate() async {
-    if (events != null) {
-      events?.stop();
-    }
     if (_localRenderer != null) {
       await closeCameraStream();
     }
@@ -88,10 +84,6 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
       'streamName': Constants.streamName,
       'callback': (countChange) => {refresh(countChange)},
     };
-
-    /// Add UserCount event listener
-    StreamEvents events = await StreamEvents.init();
-    events.onUserCount(onUserCountOptions);
   }
 
   void initRenderers() async {
