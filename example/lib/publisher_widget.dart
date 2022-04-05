@@ -52,7 +52,7 @@ class _PublisherWidgetState extends State<PublisherWidget>
     if (events != null) {
       events?.stop();
     }
-    if (_localRenderer != null) {
+    if (_localRenderer.srcObject != null) {
       await closeCameraStream();
     }
     if (_publisherMedia != null) {
