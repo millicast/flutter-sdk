@@ -5,7 +5,6 @@ import 'package:logger/logger.dart';
 import 'package:millicast_flutter_sdk/millicast_flutter_sdk.dart';
 
 import 'millicast_publisher_user_media.dart';
-import 'publisher_widget.dart';
 
 Logger _logger = getLogger('PublisherSettings');
 
@@ -30,6 +29,7 @@ class _PublisherSettingsWidgetState extends State<PublisherSettingsWidget> {
   bool isConnected;
   final _formKey = GlobalKey<FormState>();
   MillicastPublishUserMedia? publisherMedia;
+  bool isSimulcastEnabled = true;
 
   _PublisherSettingsWidgetState(
       {required this.publisherMedia,
@@ -41,6 +41,7 @@ class _PublisherSettingsWidgetState extends State<PublisherSettingsWidget> {
     int _bitrate = options?['bandwidth'] ?? 0;
     bool _audio = options?['stereo'] ?? false;
     bool _simulcast = options?['simulcast'] ?? false;
+
     return Scaffold(
       appBar: AppBar(
         foregroundColor: Colors.black,
@@ -100,7 +101,7 @@ class _PublisherSettingsWidgetState extends State<PublisherSettingsWidget> {
                 },
               ),
               SettingsTile.switchTile(
-                enabled: !isConnected,
+                enabled: (!isConnected && isSimulcastEnabled),
                 onToggle: (bool value) {
                   setState(() {
                     _simulcast = !_simulcast;
@@ -247,11 +248,11 @@ class _PublisherSettingsWidgetState extends State<PublisherSettingsWidget> {
               isExpanded: true,
               icon: const Icon(Icons.arrow_drop_down),
               iconEnabledColor: Colors.white,
-              hint: const Text('Choose Codec',
+              hint: const Text('vp8',
                   style: TextStyle(color: Colors.white, fontSize: 15)),
               dropdownColor: Colors.purple,
               value: options?['codec'],
-              items: ['h264', 'vp8', 'vp9'].map((String value) {
+              items: ['h264', 'vp8', 'vp9', 'av1'].map((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
                   child: Text(
@@ -262,6 +263,15 @@ class _PublisherSettingsWidgetState extends State<PublisherSettingsWidget> {
               }).toList(),
               onChanged: (value) {
                 setState(() {
+                  if (value == 'vp9' || value == 'av1') {
+                    super.setState(() {
+                      isSimulcastEnabled = false;
+                    });
+                  } else {
+                    super.setState(() {
+                      isSimulcastEnabled = true;
+                    });
+                  }
                   options?['codec'] = value;
                 });
               },

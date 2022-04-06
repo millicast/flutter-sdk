@@ -216,7 +216,7 @@ Future publishConnect(RTCVideoRenderer localRenderer) async {
 
   //Publishing Options
   Map<String, dynamic> broadcastOptions = {'mediaStream': stream};
-  //Android does not support h264 codec for publishing
+  //Some Android devices do not support h264 codec for publishing
   if (Platform.isAndroid) {
     broadcastOptions['codec'] = 'vp8';
   }
