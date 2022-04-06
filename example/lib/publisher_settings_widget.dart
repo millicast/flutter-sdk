@@ -266,6 +266,7 @@ class _PublisherSettingsWidgetState extends State<PublisherSettingsWidget> {
                   if (value == 'vp9' || value == 'av1') {
                     super.setState(() {
                       isSimulcastEnabled = false;
+                      options?['simulcast'] = false;
                     });
                   } else {
                     super.setState(() {
