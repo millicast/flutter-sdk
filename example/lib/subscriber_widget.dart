@@ -1,4 +1,5 @@
-import 'package:example/utils/constants.dart';
+import 'dart:convert';
+
 import 'package:example/viewer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
@@ -77,13 +78,19 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
       }
       setState(() {});
     }));
+    setUserCount();
     setState(() {});
+  }
 
-    Map<String, dynamic> onUserCountOptions = {
-      'accountId': Constants.accountId,
-      'streamName': Constants.streamName,
-      'callback': (countChange) => {refresh(countChange)},
-    };
+  void setUserCount() {
+    // Add listener of broacastEvent to get UserCount
+    _view!.on('broadcastEvent', this, (event, context) {
+      var data = jsonEncode(event.eventData);
+      Map<String, dynamic> dataMap = jsonDecode(data);
+      if (dataMap['name'] == 'viewercount') {
+        refresh(dataMap['data']['viewercount']);
+      }
+    });
   }
 
   void initRenderers() async {
