@@ -488,7 +488,6 @@ class PeerConnection extends EventEmitter {
                     RTCRtpEncoding(
                       rid: '2',
                       numTemporalLayers: 1,
-
                     ),
                     RTCRtpEncoding(
                       rid: '1',
