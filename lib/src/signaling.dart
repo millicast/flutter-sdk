@@ -165,6 +165,9 @@ class Signaling extends EventEmitter {
     if (options?['record'] != null) {
       data['record'] = options?['record'];
     }
+    if (options?['events'] != null) {
+      data['events'] = options?['events'];
+    }
     try {
       await connect();
       _logger.i('Sending publish command');
