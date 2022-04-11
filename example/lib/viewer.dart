@@ -13,7 +13,7 @@ var selectedVideoSource;
 var selectedAudioSource;
 var _logger = getLogger('ViewerDemo');
 
-Future viewConnect(RTCVideoRenderer localRenderer) async {
+Future buildSubscriber(RTCVideoRenderer localRenderer) async {
   // Setting subscriber options
   DirectorSubscriberOptions directorSubscriberOptions =
       DirectorSubscriberOptions(
@@ -100,7 +100,10 @@ Future viewConnect(RTCVideoRenderer localRenderer) async {
       default:
     }
   });
+  return view;
+}
 
+Future viewConnect(View view) async {
   /// Start connection to publisher
   try {
     await view.connect(options: {
@@ -120,6 +123,9 @@ Future viewConnect(RTCVideoRenderer localRenderer) async {
     });
     return view;
   } catch (e) {
-    rethrow;
+    if (view.signaling != null) {
+      rethrow;
+    }
+    _logger.w('Connection closed during initialization');
   }
 }

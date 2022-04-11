@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'dart:io';
 import 'package:example/viewer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
@@ -29,6 +29,7 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
   bool isVideoMuted = false;
   bool isAudioMuted = false;
   bool isConnected = true;
+  bool isDeactivating = false;
 
   @override
   void dispose() {
@@ -43,22 +44,33 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
   }
 
   @override
+  void activate() async {
+    await _view!.stop();
+    super.activate();
+  }
+
+  @override
   void deactivate() async {
+    isDeactivating = true;
     if (_localRenderer != null) {
       await closeCameraStream();
     }
-    if (_view != null) {
-      if (_view?.webRTCPeer != null) {
-        await _view?.webRTCPeer.closeRTCPeer();
-      }
+    if (_view?.signaling != null) {
+      await _view!.stop();
     }
     super.deactivate();
+  }
+
+  void callBuildSubscriber() async {
+    _view = await buildSubscriber(_localRenderer);
+
+    subscribeExample();
   }
 
   @override
   void initState() {
     initRenderers();
-    subscribeExample();
+    callBuildSubscriber();
     super.initState();
   }
 
@@ -69,8 +81,12 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
   }
 
   void subscribeExample() async {
-    _view = await viewConnect(_localRenderer);
-
+    _view?.on(SignalingEvents.connectionSuccess, _view, (ev, context) async {
+      if (isDeactivating) {
+        await _view?.stop();
+      }
+    });
+    await viewConnect(_view!);
     _view?.on('multisource', _view, ((ev, context) {
       if (ev.eventData == false) {
         _projectSourceId(null, 'audio');
@@ -84,13 +100,15 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
 
   void setUserCount() {
     // Add listener of broacastEvent to get UserCount
-    _view!.on('broadcastEvent', this, (event, context) {
-      var data = jsonEncode(event.eventData);
-      Map<String, dynamic> dataMap = jsonDecode(data);
-      if (dataMap['name'] == 'viewercount') {
-        refresh(dataMap['data']['viewercount']);
-      }
-    });
+    _view!.on('broadcastEvent', this, testSetUserCount);
+  }
+
+  void testSetUserCount(event, context) {
+    var data = jsonEncode(event.eventData);
+    Map<String, dynamic> dataMap = jsonDecode(data);
+    if (dataMap['name'] == 'viewercount') {
+      refresh(dataMap['data']['viewercount']);
+    }
   }
 
   void initRenderers() async {
@@ -117,6 +135,11 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
     var minutesStr = ((seconds / 60) % 60).floor().toString().padLeft(2, '0');
     var secondsStr = (seconds % 60).floor().toString().padLeft(2, '0');
     return '$hoursStr:$minutesStr:$secondsStr';
+  }
+
+  refreshStream() async {
+    await _view!.stop();
+    callBuildSubscriber();
   }
 
   @override
@@ -179,25 +202,6 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
                           SubscriberSettingsWidget(
                               view: _view, options: options),
                     ));
-              }),
-          ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                  alignment: const Alignment(0, 0),
-                  primary: Colors.white,
-                  elevation: 0),
-              child: const Icon(
-                Icons.replay_outlined,
-                color: Colors.black,
-                size: 25,
-              ),
-              onPressed: () async {
-                await _view?.webRTCPeer.closeRTCPeer();
-                subscribeExample();
-                setState(() {
-                  isVideoMuted = false;
-                  isAudioMuted = false;
-                  isConnected = true;
-                });
               }),
         ],
       ),
