@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the getPublisher method from the Director class, for the Dart programming language.">
+  <title>getPublisher method - Director class - millicast_flutter_sdk library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../../static-assets/styles.css?v1">
+  <link rel="icon" href="../../static-assets/favicon.png?v1">
+
+  
+</head>
+
+
+<body data-base-href="../../"
+      data-using-base-href="false">
+
+<div id="overlay-under-drawer"></div>
+
+<header id="title">
+  <button id="sidenav-left-toggle" type="button">&nbsp;</button>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../../index.html">millicast_flutter_sdk</a></li>
+    <li><a href="../../millicast_flutter_sdk/millicast_flutter_sdk-library.html">millicast_flutter_sdk</a></li>
+    <li><a href="../../millicast_flutter_sdk/Director-class.html">Director</a></li>
+    <li class="self-crumb">getPublisher method</li>
+  </ol>
+  <div class="self-name">getPublisher</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+
+<main>
+
+
+  <div id="dartdoc-main-content" class="main-content">
+      <div>
+<h1><span class="kind-method">getPublisher</span> method 
+    <a href="https://dart.dev/null-safety" class="feature feature-null-safety" title="Supports the null safety language feature.">Null safety</a>
+</h1></div>
+
+    <section class="multi-line-signature">
+      
+
+<span class="returntype"><a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../../millicast_flutter_sdk/MillicastDirectorResponse-class.html">MillicastDirectorResponse</a></span>&gt;</span></span>
+<span class="name ">getPublisher</span>(<wbr><ol class="parameter-list"><li><span class="parameter" id="getPublisher-param-options"><span class="type-annotation"><a href="../../millicast_flutter_sdk/DirectorPublisherOptions-class.html">DirectorPublisherOptions</a></span> <span class="parameter-name">options</span></span></li>
+</ol>)
+
+      
+
+    </section>
+    
+<section class="desc markdown">
+  <p>Get publisher connection data.</p>
+<p><code>options</code> - Millicast options.
+Returns <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a> object which represents the result of getting the
+publishing connection path.</p>
+<pre class="language-dart"><code class="language-dart">import 'package:millicast_flutter_sdk/millicast_flutter_sdk.dart';
+void main() async {
+  tokenGenerator() =&gt; Director.getPublisher(DirectorPublisherOptions(
+      token: 'Valid Token', streamName: 'Valid Token Name'));
+  MillicastDirectorResponse token = await tokenGenerator();
+  // Use token
+  print(token);
+}
+</code></pre>
+</section>
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">static Future&lt;MillicastDirectorResponse&gt; getPublisher(
+    DirectorPublisherOptions options) async {
+  http.Client client = options.client ?? http.Client();
+  _logger.i(&#39;Getting publisher connection path for stream name: &#39; +
+      options.streamName);
+  Map&lt;String, dynamic&gt; payload = {
+    &#39;streamName&#39;: options.streamName,
+    &#39;streamType&#39;: options.streamType ?? StreamTypes.webRTC
+  };
+  var url = Uri.parse(&#39;${getEndpoint()}&#47;api&#47;director&#47;publish&#39;);
+  Map&lt;String, String&gt; headers = {
+    HttpHeaders.contentTypeHeader: &#39;application&#47;json&#39;,
+    HttpHeaders.authorizationHeader: &#39;Bearer &#39; + options.token
+  };
+  try {
+    http.Response response = await client.post(
+      url,
+      headers: headers,
+      body: jsonEncode(payload),
+    );
+    _logger.i(response.body);
+    final Map&lt;String, dynamic&gt; responseBody =
+        jsonDecode(response.body)[&#39;data&#39;];
+    MillicastDirectorResponse data =
+        MillicastDirectorResponse.fromJson(responseBody);
+    parseIncomingDirectorResponse(data);
+    _logger.d(&#39;Getting publisher response:&#39; + response.body);
+    return data;
+  } catch (e) {
+    _logger
+        .e(&#39;Error while getting publisher connection path:&#39; + e.toString());
+    throw Exception(e);
+  } finally {
+    client.close();
+  }
+}</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+  <li><a href="../../index.html">millicast_flutter_sdk</a></li>
+  <li><a href="../../millicast_flutter_sdk/millicast_flutter_sdk-library.html">millicast_flutter_sdk</a></li>
+  <li><a href="../../millicast_flutter_sdk/Director-class.html">Director</a></li>
+  <li class="self-crumb">getPublisher method</li>
+</ol>
+
+
+    <h5>Director class</h5>
+    <ol>
+
+    <li class="section-title"><a href="../../millicast_flutter_sdk/Director-class.html#constructors">Constructors</a></li>
+    <li><a href="../../millicast_flutter_sdk/Director/Director.html">Director</a></li>
+
+
+    <li class="section-title inherited">
+      <a href="../../millicast_flutter_sdk/Director-class.html#instance-properties">Properties</a>
+    </li>
+    <li class="inherited"><a href="https://api.flutter.dev/flutter/dart-core/Object/hashCode.html">hashCode</a></li>
+    <li class="inherited"><a href="https://api.flutter.dev/flutter/dart-core/Object/runtimeType.html">runtimeType</a></li>
+
+    <li class="section-title inherited"><a href="../../millicast_flutter_sdk/Director-class.html#instance-methods">Methods</a></li>
+    <li class="inherited"><a href="https://api.flutter.dev/flutter/dart-core/Object/noSuchMethod.html">noSuchMethod</a></li>
+    <li class="inherited"><a href="https://api.flutter.dev/flutter/dart-core/Object/toString.html">toString</a></li>
+
+    <li class="section-title inherited"><a href="../../millicast_flutter_sdk/Director-class.html#operators">Operators</a></li>
+    <li class="inherited"><a href="https://api.flutter.dev/flutter/dart-core/Object/operator_equals.html">operator ==</a></li>
+
+
+
+    <li class="section-title"><a href="../../millicast_flutter_sdk/Director-class.html#static-methods">Static methods</a></li>
+    <li><a href="../../millicast_flutter_sdk/Director/getEndpoint.html">getEndpoint</a></li>
+    <li><a href="../../millicast_flutter_sdk/Director/getLiveDomain.html">getLiveDomain</a></li>
+    <li><a href="../../millicast_flutter_sdk/Director/getPublisher.html">getPublisher</a></li>
+    <li><a href="../../millicast_flutter_sdk/Director/getSubscriber.html">getSubscriber</a></li>
+    <li><a href="../../millicast_flutter_sdk/Director/parseIncomingDirectorResponse.html">parseIncomingDirectorResponse</a></li>
+    <li><a href="../../millicast_flutter_sdk/Director/setEndpoint.html">setEndpoint</a></li>
+    <li><a href="../../millicast_flutter_sdk/Director/setLiveDomain.html">setLiveDomain</a></li>
+
+</ol>
+
+  </div><!--/.sidebar-offcanvas-->
+
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+
+</main>
+
+<footer>
+  <span class="no-break">
+    millicast_flutter_sdk
+      0.0.1
+  </span>
+
+  
+</footer>
+
+
+
+<script src="../../static-assets/highlight.pack.js?v1"></script>
+<script src="../../static-assets/script.js?v1"></script>
+
+
+
+</body>
+
+</html>
+

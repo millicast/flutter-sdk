@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the initConnection method from the Publish class, for the Dart programming language.">
+  <title>initConnection method - Publish class - millicast_flutter_sdk library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../../static-assets/styles.css?v1">
+  <link rel="icon" href="../../static-assets/favicon.png?v1">
+
+  
+</head>
+
+
+<body data-base-href="../../"
+      data-using-base-href="false">
+
+<div id="overlay-under-drawer"></div>
+
+<header id="title">
+  <button id="sidenav-left-toggle" type="button">&nbsp;</button>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../../index.html">millicast_flutter_sdk</a></li>
+    <li><a href="../../millicast_flutter_sdk/millicast_flutter_sdk-library.html">millicast_flutter_sdk</a></li>
+    <li><a href="../../millicast_flutter_sdk/Publish-class.html">Publish</a></li>
+    <li class="self-crumb">initConnection method</li>
+  </ol>
+  <div class="self-name">initConnection</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+
+<main>
+
+
+  <div id="dartdoc-main-content" class="main-content">
+      <div>
+<h1><span class="kind-method">initConnection</span> method 
+    <a href="https://dart.dev/null-safety" class="feature feature-null-safety" title="Supports the null safety language feature.">Null safety</a>
+</h1></div>
+
+    <section class="multi-line-signature">
+      
+
+<span class="returntype">dynamic</span>
+<span class="name ">initConnection</span>(<wbr><ol class="parameter-list"><li><span class="parameter" id="initConnection-param-data"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/Map-class.html">Map</a></span> <span class="parameter-name">data</span></span></li>
+</ol>)
+
+      
+
+    </section>
+    
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">initConnection(Map&lt;dynamic, dynamic&gt; data) async {
+  _logger.i(&#39;Broadcast option values: $options&#39;);
+  List futures;
+  MillicastDirectorResponse publisherData;
+  if (options?[&#39;mediaStream&#39;] == null) {
+    _logger.e(&#39;Error while broadcasting. MediaStream required&#39;);
+    throw Exception(&#39;MediaStream required&#39;);
+  }
+  if (isActive() &amp;&amp; data[&#39;migrate&#39;] == false) {
+    throw Exception(&#39;Broadcast curretly active&#39;);
+  }
+  try {
+    publisherData = await tokenGenerator();
+  } catch (error) {
+    _logger.e(&#39;Error generating token.&#39;);
+    rethrow;
+  }
+  if (publisherData.urls.isEmpty &amp;&amp; publisherData.jwt.isEmpty) {
+    _logger.e(&#39;Error while broadcasting. Publisher data required&#39;);
+    throw Exception(&#39;Publisher data is required&#39;);
+  }
+  bool recordingAvailable = Jwt.parseJwt(publisherData.jwt)[
+      utf8.decode(base64.decode(&#39;bWlsbGljYXN0&#39;))][&#39;record&#39;];
+  if (options?[&#39;record&#39;] != null &amp;&amp; !recordingAvailable) {
+    _logger.e(
+        &#39;Error while broadcasting. Record option detected but recording is not available&#39;);
+    throw Exception(&#39;Record option detected but recording is not available&#39;);
+  }
+  var signalingInstance = Signaling({
+    &#39;streamName&#39;: streamName,
+    &#39;url&#39;: &#39;${publisherData.urls[0]}?token=${publisherData.jwt}&#39;
+  });
+
+  var webRTCPeerInstance = data[&#39;migrate&#39;] ? PeerConnection() : webRTCPeer;
+
+  await webRTCPeerInstance.createRTCPeer(options?[&#39;peerConfig&#39;]);
+
+  &#47;&#47; Stop emiting events from the previous instances
+  if (stopReemitingWebRTCPeerInstanceEvents != null) {
+    stopReemitingWebRTCPeerInstanceEvents!();
+  }
+  if (stopReemitingSignalingInstanceEvents != null) {
+    stopReemitingSignalingInstanceEvents!();
+  }
+
+  stopReemitingWebRTCPeerInstanceEvents = reemit(
+      webRTCPeerInstance, this, [webRTCEvents[&#39;connectionStateChange&#39;]]);
+  stopReemitingSignalingInstanceEvents =
+      reemit(signalingInstance, this, [SignalingEvents.broadcastEvent]);
+
+  Future&lt;String?&gt; getLocalSDPFuture =
+      webRTCPeerInstance.getRTCLocalSDP(options: options!);
+  Future signalingConnectFuture = signalingInstance.connect();
+  Iterable&lt;Future&lt;dynamic&gt;&gt; iterFuture = [
+    getLocalSDPFuture,
+    signalingConnectFuture
+  ];
+  futures = await Future.wait(iterFuture);
+  String? localSdp = futures[0];
+
+  var publishFuture = signalingInstance.publish(localSdp, options: options);
+  var setLocalDescriptionFuture = webRTCPeerInstance.peer!
+      .setLocalDescription(webRTCPeerInstance.sessionDescription!);
+  iterFuture = [publishFuture, setLocalDescriptionFuture];
+  futures = await Future.wait(iterFuture);
+  String remoteSdp = futures[0];
+  await setLocalDescriptionFuture;
+
+  if (!options?[&#39;disableVideo&#39;] &amp;&amp; (options?[&#39;bandwidth&#39;] &gt; 0)) {
+    remoteSdp = webRTCPeerInstance.updateBandwidthRestriction(
+        remoteSdp, options?[&#39;bandwidth&#39;]);
+  }
+
+  await webRTCPeerInstance.setRTCRemoteSDP(remoteSdp);
+  _logger.i(&#39;Broadcasting to streamName: $streamName&#39;);
+
+  Signaling? oldSignlaling = signaling;
+  PeerConnection? oldWebRTCPeer = webRTCPeer;
+  signaling = signalingInstance;
+  webRTCPeer = webRTCPeerInstance;
+  setReconnect();
+
+  if (data[&#39;migrate&#39;]) {
+    webRTCPeer.on(webRTCEvents[&#39;connectionStateChange&#39;], webRTCPeer,
+        (ev, context) async {
+      if (ev.eventData ==
+          RTCIceConnectionState.RTCIceConnectionStateConnected) {
+        Timer(const Duration(milliseconds: 1000), () {
+          oldSignlaling?.close();
+          oldWebRTCPeer?.closeRTCPeer();
+          oldSignlaling = null;
+          oldWebRTCPeer = null;
+          _logger.i(&#39;Current connection migrated&#39;);
+        });
+      } else if ([
+        RTCIceConnectionState.RTCIceConnectionStateClosed,
+        RTCIceConnectionState.RTCIceConnectionStateFailed,
+        RTCIceConnectionState.RTCIceConnectionStateDisconnected
+      ].contains(ev.eventData)) {
+        oldSignlaling?.close();
+        oldWebRTCPeer?.closeRTCPeer();
+        oldSignlaling = null;
+        oldWebRTCPeer = null;
+      }
+    });
+  }
+}</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+  <li><a href="../../index.html">millicast_flutter_sdk</a></li>
+  <li><a href="../../millicast_flutter_sdk/millicast_flutter_sdk-library.html">millicast_flutter_sdk</a></li>
+  <li><a href="../../millicast_flutter_sdk/Publish-class.html">Publish</a></li>
+  <li class="self-crumb">initConnection method</li>
+</ol>
+
+
+    <h5>Publish class</h5>
+    <ol>
+
+    <li class="section-title"><a href="../../millicast_flutter_sdk/Publish-class.html#constructors">Constructors</a></li>
+    <li><a href="../../millicast_flutter_sdk/Publish/Publish.html">Publish</a></li>
+
+
+    <li class="section-title">
+      <a href="../../millicast_flutter_sdk/Publish-class.html#instance-properties">Properties</a>
+    </li>
+    <li class="inherited"><a href="../../millicast_flutter_sdk/Publish/alreadyDisconnected.html">alreadyDisconnected</a></li>
+    <li class="inherited"><a href="../../millicast_flutter_sdk/Publish/autoReconnect.html">autoReconnect</a></li>
+    <li class="inherited"><a href="https://pub.dev/documentation/eventify/1.0.0/eventify/EventEmitter/count.html">count</a></li>
+    <li class="inherited"><a href="../../millicast_flutter_sdk/Publish/firstReconnection.html">firstReconnection</a></li>
+    <li class="inherited"><a href="https://api.flutter.dev/flutter/dart-core/Object/hashCode.html">hashCode</a></li>
+    <li class="inherited"><a href="../../millicast_flutter_sdk/Publish/logger.html">logger</a></li>
+    <li class="inherited"><a href="../../millicast_flutter_sdk/Publish/options.html">options</a></li>
+    <li class="inherited"><a href="../../millicast_flutter_sdk/Publish/reconnectionInterval.html">reconnectionInterval</a></li>
+    <li class="inherited"><a href="https://api.flutter.dev/flutter/dart-core/Object/runtimeType.html">runtimeType</a></li>
+    <li class="inherited"><a href="../../millicast_flutter_sdk/Publish/signaling.html">signaling</a></li>
+    <li><a href="../../millicast_flutter_sdk/Publish/stopReemitingSignalingInstanceEvents.html">stopReemitingSignalingInstanceEvents</a></li>
+    <li><a href="../../millicast_flutter_sdk/Publish/stopReemitingWebRTCPeerInstanceEvents.html">stopReemitingWebRTCPeerInstanceEvents</a></li>
+    <li class="inherited"><a href="../../millicast_flutter_sdk/Publish/streamName.html">streamName</a></li>
+    <li class="inherited"><a href="../../millicast_flutter_sdk/Publish/tokenGenerator.html">tokenGenerator</a></li>
+    <li class="inherited"><a href="../../millicast_flutter_sdk/Publish/webRTCPeer.html">webRTCPeer</a></li>
+
+    <li class="section-title"><a href="../../millicast_flutter_sdk/Publish-class.html#instance-methods">Methods</a></li>
+    <li class="inherited"><a href="https://pub.dev/documentation/eventify/1.0.0/eventify/EventEmitter/clear.html">clear</a></li>
+    <li><a href="../../millicast_flutter_sdk/Publish/connect.html">connect</a></li>
+    <li class="inherited"><a href="https://pub.dev/documentation/eventify/1.0.0/eventify/EventEmitter/emit.html">emit</a></li>
+    <li class="inherited"><a href="https://pub.dev/documentation/eventify/1.0.0/eventify/EventEmitter/getListenersCount.html">getListenersCount</a></li>
+    <li class="inherited"><a href="../../millicast_flutter_sdk/Publish/getRTCPeerConnection.html">getRTCPeerConnection</a></li>
+    <li><a href="../../millicast_flutter_sdk/Publish/initConnection.html">initConnection</a></li>
+    <li class="inherited"><a href="../../millicast_flutter_sdk/Publish/isActive.html">isActive</a></li>
+    <li class="inherited"><a href="https://api.flutter.dev/flutter/dart-core/Object/noSuchMethod.html">noSuchMethod</a></li>
+    <li class="inherited"><a href="https://pub.dev/documentation/eventify/1.0.0/eventify/EventEmitter/off.html">off</a></li>
+    <li class="inherited"><a href="https://pub.dev/documentation/eventify/1.0.0/eventify/EventEmitter/on.html">on</a></li>
+    <li><a href="../../millicast_flutter_sdk/Publish/reconnect.html">reconnect</a></li>
+    <li class="inherited"><a href="https://pub.dev/documentation/eventify/1.0.0/eventify/EventEmitter/removeAllByCallback.html">removeAllByCallback</a></li>
+    <li class="inherited"><a href="https://pub.dev/documentation/eventify/1.0.0/eventify/EventEmitter/removeAllByEvent.html">removeAllByEvent</a></li>
+    <li class="inherited"><a href="https://pub.dev/documentation/eventify/1.0.0/eventify/EventEmitter/removeListener.html">removeListener</a></li>
+    <li><a href="../../millicast_flutter_sdk/Publish/replaceConnection.html">replaceConnection</a></li>
+    <li class="inherited"><a href="../../millicast_flutter_sdk/Publish/setReconnect.html">setReconnect</a></li>
+    <li class="inherited"><a href="../../millicast_flutter_sdk/Publish/stop.html">stop</a></li>
+    <li class="inherited"><a href="https://api.flutter.dev/flutter/dart-core/Object/toString.html">toString</a></li>
+
+    <li class="section-title inherited"><a href="../../millicast_flutter_sdk/Publish-class.html#operators">Operators</a></li>
+    <li class="inherited"><a href="https://api.flutter.dev/flutter/dart-core/Object/operator_equals.html">operator ==</a></li>
+
+
+
+
+</ol>
+
+  </div><!--/.sidebar-offcanvas-->
+
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+
+</main>
+
+<footer>
+  <span class="no-break">
+    millicast_flutter_sdk
+      0.0.1
+  </span>
+
+  
+</footer>
+
+
+
+<script src="../../static-assets/highlight.pack.js?v1"></script>
+<script src="../../static-assets/script.js?v1"></script>
+
+
+
+</body>
+
+</html>
+

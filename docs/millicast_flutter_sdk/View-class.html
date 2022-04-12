@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the View class from the millicast_flutter_sdk library, for the Dart programming language.">
+  <title>View class - millicast_flutter_sdk library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../static-assets/styles.css?v1">
+  <link rel="icon" href="../static-assets/favicon.png?v1">
+
+  
+</head>
+
+
+<body data-base-href="../"
+      data-using-base-href="false">
+
+<div id="overlay-under-drawer"></div>
+
+<header id="title">
+  <button id="sidenav-left-toggle" type="button">&nbsp;</button>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../index.html">millicast_flutter_sdk</a></li>
+    <li><a href="../millicast_flutter_sdk/millicast_flutter_sdk-library.html">millicast_flutter_sdk</a></li>
+    <li class="self-crumb">View class</li>
+  </ol>
+  <div class="self-name">View</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+
+<main>
+
+
+  <div id="dartdoc-main-content" class="main-content">
+      <div>
+<h1><span class="kind-class">View</span> class 
+    <a href="https://dart.dev/null-safety" class="feature feature-null-safety" title="Supports the null safety language feature.">Null safety</a>
+ 
+</h1></div>
+
+    
+<section class="desc markdown">
+  <p><a href="../millicast_flutter_sdk/View-class.html">View</a> manages a webSocket connection to view a stream using Millicast.</p>
+<p><a href="../millicast_flutter_sdk/View-class.html">View</a> extends <code>BaseWebRTC</code> class.
+Before you can view an active broadcast, you will need:</p>
+<ul>
+<li>A connection path that you can get from  <a href="../millicast_flutter_sdk/Director-class.html">Director</a> module or from your
+own implementation based on <a href="https://dash.millicast.com/docs.html?pg=how-to-broadcast-in-js#get-connection-paths-sect">Get a Connection Path</a>.
+<a href="../millicast_flutter_sdk/View/streamName.html">streamName</a> - Millicast existing Stream Name where you want to connect.
+<a href="../millicast_flutter_sdk/View/tokenGenerator.html">tokenGenerator</a> - Callback function executed when a new token is needed.
+<code>mediaElement</code> - Target  media element to mount stream.
+<a href="../millicast_flutter_sdk/View/autoReconnect.html">autoReconnect</a> = true - Enable auto reconnect to stream.</li>
+</ul>
+</section>
+
+
+    <section>
+      <dl class="dl-horizontal">
+        <dt>Inheritance</dt>
+        <dd><ul class="gt-separated dark clazz-relationships">
+          <li><a href="https://api.flutter.dev/flutter/dart-core/Object-class.html">Object</a></li>
+          <li><a href="https://pub.dev/documentation/eventify/1.0.0/eventify/EventEmitter-class.html">EventEmitter</a></li>
+          <li>View</li>
+        </ul></dd>
+
+
+
+
+
+      </dl>
+    </section>
+
+    <section class="summary offset-anchor" id="constructors">
+      <h2>Constructors</h2>
+
+      <dl class="constructor-summary-list">
+        <dt id="View" class="callable">
+          <span class="name"><a href="../millicast_flutter_sdk/View/View.html">View</a></span><span class="signature">(<span class="parameter" id="-param-streamName">{<span>required</span> <span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">streamName</span>, </span><span class="parameter" id="-param-tokenGenerator"><span>required</span> <span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/Function-class.html">Function</a></span> <span class="parameter-name">tokenGenerator</span>, </span><span class="parameter" id="-param-mediaElement"><span class="type-annotation"><a href="https://pub.dev/documentation/flutter_webrtc/0.8.5/flutter_webrtc/RTCVideoRenderer-class.html">RTCVideoRenderer</a>?</span> <span class="parameter-name">mediaElement</span>, </span><span class="parameter" id="-param-autoReconnect"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span> <span class="parameter-name">autoReconnect</span> = <span class="default-value">true</span>}</span>)</span>
+        </dt>
+        <dd>
+           
+        </dd>
+      </dl>
+    </section>
+
+    <section class="summary offset-anchor" id="instance-properties">
+      <h2>Properties</h2>
+
+      <dl class="properties">
+        <dt id="alreadyDisconnected" class="property inherited">
+  <span class="name"><a href="../millicast_flutter_sdk/View/alreadyDisconnected.html">alreadyDisconnected</a></span>
+  <span class="signature">&#8596; <a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a>?</span> 
+
+</dt>
+<dd class="inherited">
+   
+  <div class="features">read / write, inherited</div>
+
+</dd>
+
+        <dt id="autoReconnect" class="property inherited">
+  <span class="name"><a href="../millicast_flutter_sdk/View/autoReconnect.html">autoReconnect</a></span>
+  <span class="signature">&#8596; <a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span> 
+
+</dt>
+<dd class="inherited">
+  <a href="../millicast_flutter_sdk/View/autoReconnect.html">autoReconnect</a> - Enable auto reconnect. 
+  <div class="features">read / write, inherited</div>
+
+</dd>
+
+        <dt id="count" class="property inherited">
+  <span class="name"><a href="https://pub.dev/documentation/eventify/1.0.0/eventify/EventEmitter/count.html">count</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span> 
+
+</dt>
+<dd class="inherited">
+  Get the unique count of events registered in the emitter. 
+  <div class="features">read-only, inherited</div>
+
+</dd>
+
+        <dt id="firstReconnection" class="property inherited">
+  <span class="name"><a href="../millicast_flutter_sdk/View/firstReconnection.html">firstReconnection</a></span>
+  <span class="signature">&#8596; <a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a>?</span> 
+
+</dt>
+<dd class="inherited">
+   
+  <div class="features">read / write, inherited</div>
+
+</dd>
+
+        <dt id="hashCode" class="property inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/dart-core/Object/hashCode.html">hashCode</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span> 
+
+</dt>
+<dd class="inherited">
+  The hash code for this object. <a href="https://api.flutter.dev/flutter/dart-core/Object/hashCode.html">[...]</a>
+  <div class="features">read-only, inherited</div>
+
+</dd>
+
+        <dt id="logger" class="property inherited">
+  <span class="name"><a href="../millicast_flutter_sdk/View/logger.html">logger</a></span>
+  <span class="signature">&#8596; <a href="https://pub.dev/documentation/logger/1.1.0/logger/Logger-class.html">Logger</a></span> 
+
+</dt>
+<dd class="inherited">
+  <a href="../millicast_flutter_sdk/View/logger.html">logger</a> - Logger instance from the extended classes. 
+  <div class="features">read / write, inherited</div>
+
+</dd>
+
+        <dt id="options" class="property inherited">
+  <span class="name"><a href="../millicast_flutter_sdk/View/options.html">options</a></span>
+  <span class="signature">&#8596; <a href="https://api.flutter.dev/flutter/dart-core/Map-class.html">Map</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span>, <span class="type-parameter">dynamic</span>&gt;</span>?</span> 
+
+</dt>
+<dd class="inherited">
+   
+  <div class="features">read / write, inherited</div>
+
+</dd>
+
+        <dt id="reconnectionInterval" class="property inherited">
+  <span class="name"><a href="../millicast_flutter_sdk/View/reconnectionInterval.html">reconnectionInterval</a></span>
+  <span class="signature">&#8596; <a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a>?</span> 
+
+</dt>
+<dd class="inherited">
+   
+  <div class="features">read / write, inherited</div>
+
+</dd>
+
+        <dt id="runtimeType" class="property inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/dart-core/Object/runtimeType.html">runtimeType</a></span>
+  <span class="signature">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/Type-class.html">Type</a></span> 
+
+</dt>
+<dd class="inherited">
+  A representation of the runtime type of the object. 
+  <div class="features">read-only, inherited</div>
+
+</dd>
+
+        <dt id="signaling" class="property inherited">
+  <span class="name"><a href="../millicast_flutter_sdk/View/signaling.html">signaling</a></span>
+  <span class="signature">&#8596; <a href="../millicast_flutter_sdk/Signaling-class.html">Signaling</a>?</span> 
+
+</dt>
+<dd class="inherited">
+   
+  <div class="features">read / write, inherited</div>
+
+</dd>
+
+        <dt id="stopReemitingSignalingInstanceEvents" class="property">
+  <span class="name"><a href="../millicast_flutter_sdk/View/stopReemitingSignalingInstanceEvents.html">stopReemitingSignalingInstanceEvents</a></span>
+  <span class="signature">&#8596; <a href="https://api.flutter.dev/flutter/dart-core/Function-class.html">Function</a>?</span> 
+
+</dt>
+<dd>
+   
+  <div class="features">read / write</div>
+
+</dd>
+
+        <dt id="stopReemitingWebRTCPeerInstanceEvents" class="property">
+  <span class="name"><a href="../millicast_flutter_sdk/View/stopReemitingWebRTCPeerInstanceEvents.html">stopReemitingWebRTCPeerInstanceEvents</a></span>
+  <span class="signature">&#8596; <a href="https://api.flutter.dev/flutter/dart-core/Function-class.html">Function</a>?</span> 
+
+</dt>
+<dd>
+   
+  <div class="features">read / write</div>
+
+</dd>
+
+        <dt id="streamName" class="property inherited">
+  <span class="name"><a href="../millicast_flutter_sdk/View/streamName.html">streamName</a></span>
+  <span class="signature">&#8596; <a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> 
+
+</dt>
+<dd class="inherited">
+  <a href="../millicast_flutter_sdk/View/streamName.html">streamName</a> - Millicast existing stream name. 
+  <div class="features">read / write, inherited</div>
+
+</dd>
+
+        <dt id="tokenGenerator" class="property inherited">
+  <span class="name"><a href="../millicast_flutter_sdk/View/tokenGenerator.html">tokenGenerator</a></span>
+  <span class="signature">&#8596; <a href="https://api.flutter.dev/flutter/dart-core/Function-class.html">Function</a></span> 
+
+</dt>
+<dd class="inherited">
+  <a href="../millicast_flutter_sdk/View/tokenGenerator.html">tokenGenerator</a> - Callback function executed when a new token is needed. 
+  <div class="features">read / write, inherited</div>
+
+</dd>
+
+        <dt id="webRTCPeer" class="property inherited">
+  <span class="name"><a href="../millicast_flutter_sdk/View/webRTCPeer.html">webRTCPeer</a></span>
+  <span class="signature">&#8596; <a href="../millicast_flutter_sdk/PeerConnection-class.html">PeerConnection</a></span> 
+
+</dt>
+<dd class="inherited">
+   
+  <div class="features">read / write, inherited</div>
+
+</dd>
+
+      </dl>
+    </section>
+
+    <section class="summary offset-anchor" id="instance-methods">
+      <h2>Methods</h2>
+      <dl class="callables">
+        <dt id="addRemoteTrack" class="callable">
+  <span class="name"><a href="../millicast_flutter_sdk/View/addRemoteTrack.html">addRemoteTrack</a></span><span class="signature">(<wbr><span class="parameter" id="addRemoteTrack-param-media"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">media</span>, </span><span class="parameter" id="addRemoteTrack-param-streams"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://pub.dev/documentation/webrtc_interface/1.0.3/webrtc_interface/MediaStream-class.html">MediaStream</a></span>&gt;</span></span> <span class="parameter-name">streams</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://pub.dev/documentation/webrtc_interface/1.0.3/webrtc_interface/RTCRtpTransceiver-class.html">RTCRtpTransceiver</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Add remote receving track. <a href="../millicast_flutter_sdk/View/addRemoteTrack.html">[...]</a>
+  
+
+</dd>
+
+        <dt id="clear" class="callable inherited">
+  <span class="name"><a href="https://pub.dev/documentation/eventify/1.0.0/eventify/EventEmitter/clear.html">clear</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Clear all subscribers from the cache. 
+  <div class="features">inherited</div>
+
+</dd>
+
+        <dt id="connect" class="callable">
+  <span class="name"><a href="../millicast_flutter_sdk/View/connect.html">connect</a></span><span class="signature">(<wbr><span class="parameter" id="connect-param-options">{<span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/Map-class.html">Map</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span>, <span class="type-parameter">dynamic</span>&gt;</span></span> <span class="parameter-name">options</span> = <span class="default-value">_connectOptions</span>}</span>)
+    <span class="returntype parameter">&#8594; dynamic</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Connects to an active stream as subscriber. <a href="../millicast_flutter_sdk/View/connect.html">[...]</a>
+  
+
+</dd>
+
+        <dt id="emit" class="callable inherited">
+  <span class="name"><a href="https://pub.dev/documentation/eventify/1.0.0/eventify/EventEmitter/emit.html">emit</a></span><span class="signature">(<wbr><span class="parameter" id="emit-param-event"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">event</span>, </span><span class="parameter" id="emit-param-sender">[<span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/Object-class.html">Object</a>?</span> <span class="parameter-name">sender</span>, </span><span class="parameter" id="emit-param-data"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/Object-class.html">Object</a>?</span> <span class="parameter-name">data</span>]</span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  API to emit events.
+event is a required parameter.
+If sender information is sent, it will be used to intimate user about it.
+<code>event</code> - What event needs to be emitted.
+<code>sender</code> - The sender who published the event. Ignore if not required.
+<code>data</code> - Data the event need to carry. Ignore this argument if no data needs to be sent. 
+  <div class="features">inherited</div>
+
+</dd>
+
+        <dt id="getListenersCount" class="callable inherited">
+  <span class="name"><a href="https://pub.dev/documentation/eventify/1.0.0/eventify/EventEmitter/getListenersCount.html">getListenersCount</a></span><span class="signature">(<wbr><span class="parameter" id="getListenersCount-param-event"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">event</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/int-class.html">int</a></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Get the list of subscribers for a particular event. 
+  <div class="features">inherited</div>
+
+</dd>
+
+        <dt id="getRTCPeerConnection" class="callable inherited">
+  <span class="name"><a href="../millicast_flutter_sdk/View/getRTCPeerConnection.html">getRTCPeerConnection</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://pub.dev/documentation/webrtc_interface/1.0.3/webrtc_interface/RTCPeerConnection-class.html">RTCPeerConnection</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Get current RTC peer connection. <a href="../millicast_flutter_sdk/View/getRTCPeerConnection.html">[...]</a>
+  <div class="features">inherited</div>
+
+</dd>
+
+        <dt id="initConnection" class="callable">
+  <span class="name"><a href="../millicast_flutter_sdk/View/initConnection.html">initConnection</a></span><span class="signature">(<wbr><span class="parameter" id="initConnection-param-data"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/Map-class.html">Map</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span>, <span class="type-parameter">dynamic</span>&gt;</span></span> <span class="parameter-name">data</span></span>)
+    <span class="returntype parameter">&#8594; dynamic</span>
+  </span>
+  
+
+</dt>
+<dd>
+   
+  
+
+</dd>
+
+        <dt id="isActive" class="callable inherited">
+  <span class="name"><a href="../millicast_flutter_sdk/View/isActive.html">isActive</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Get if the current connection is active. <a href="../millicast_flutter_sdk/View/isActive.html">[...]</a>
+  <div class="features">inherited</div>
+
+</dd>
+
+        <dt id="noSuchMethod" class="callable inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/dart-core/Object/noSuchMethod.html">noSuchMethod</a></span><span class="signature">(<wbr><span class="parameter" id="noSuchMethod-param-invocation"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/Invocation-class.html">Invocation</a></span> <span class="parameter-name">invocation</span></span>)
+    <span class="returntype parameter">&#8594; dynamic</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Invoked when a non-existent method or property is accessed. <a href="https://api.flutter.dev/flutter/dart-core/Object/noSuchMethod.html">[...]</a>
+  <div class="features">inherited</div>
+
+</dd>
+
+        <dt id="off" class="callable inherited">
+  <span class="name"><a href="https://pub.dev/documentation/eventify/1.0.0/eventify/EventEmitter/off.html">off</a></span><span class="signature">(<wbr><span class="parameter" id="off-param-listener"><span class="type-annotation"><a href="https://pub.dev/documentation/eventify/1.0.0/eventify/Listener-class.html">Listener</a>?</span> <span class="parameter-name">listener</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Remove event listener from emitter.
+This will unsubscribe the caller from the emitter from any future events.
+Listener should be a valid instance.
+<code>listener</code> - <a href="https://pub.dev/documentation/eventify/1.0.0/eventify/Listener-class.html">Listener</a> instance to be removed from the event subscription. 
+  <div class="features">inherited</div>
+
+</dd>
+
+        <dt id="on" class="callable inherited">
+  <span class="name"><a href="https://pub.dev/documentation/eventify/1.0.0/eventify/EventEmitter/on.html">on</a></span><span class="signature">(<wbr><span class="parameter" id="on-param-event"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">event</span>, </span><span class="parameter" id="on-param-context"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/Object-class.html">Object</a>?</span> <span class="parameter-name">context</span>, </span><span class="parameter" id="on-param-callback"><span class="type-annotation"><a href="https://pub.dev/documentation/eventify/1.0.0/eventify/EventCallback.html">EventCallback</a></span> <span class="parameter-name">callback</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://pub.dev/documentation/eventify/1.0.0/eventify/Listener-class.html">Listener</a></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  API to register for notification.
+It is mandatory to pass event name and callback parameters.
+<code>event</code> - Event name used for the subscription. A valid event name is mandatory.
+<code>context</code> - Context information, which need to be sent in all emitted events.
+<code>callback</code> - <a href="https://pub.dev/documentation/eventify/1.0.0/eventify/EventCallback.html">EventCallback</a> function registered to receive events emitted from the publisher. A valid callback function is mandatory. 
+  <div class="features">inherited</div>
+
+</dd>
+
+        <dt id="project" class="callable">
+  <span class="name"><a href="../millicast_flutter_sdk/View/project.html">project</a></span><span class="signature">(<wbr><span class="parameter" id="project-param-sourceId"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">sourceId</span>, </span><span class="parameter" id="project-param-mapping"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/Map-class.html">Map</a></span>&gt;</span></span> <span class="parameter-name">mapping</span></span>)
+    <span class="returntype parameter">&#8594; dynamic</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Start projecting source in selected media ids. <a href="../millicast_flutter_sdk/View/project.html">[...]</a>
+  
+
+</dd>
+
+        <dt id="reconnect" class="callable inherited">
+  <span class="name"><a href="../millicast_flutter_sdk/View/reconnect.html">reconnect</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; dynamic</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Reconnects to last broadcast. 
+  <div class="features">inherited</div>
+
+</dd>
+
+        <dt id="removeAllByCallback" class="callable inherited">
+  <span class="name"><a href="https://pub.dev/documentation/eventify/1.0.0/eventify/EventEmitter/removeAllByCallback.html">removeAllByCallback</a></span><span class="signature">(<wbr><span class="parameter" id="removeAllByCallback-param-callback"><span class="type-annotation"><a href="https://pub.dev/documentation/eventify/1.0.0/eventify/EventCallback.html">EventCallback</a></span> <span class="parameter-name">callback</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Remove all listeners which matches with the callback provided.
+It is possible to register for multiple events with a single callback.
+This mechanism ensure that all event registrations would be cancelled which matches the callback.
+<code>callback</code> - The event callback used during subscription. 
+  <div class="features">inherited</div>
+
+</dd>
+
+        <dt id="removeAllByEvent" class="callable inherited">
+  <span class="name"><a href="https://pub.dev/documentation/eventify/1.0.0/eventify/EventEmitter/removeAllByEvent.html">removeAllByEvent</a></span><span class="signature">(<wbr><span class="parameter" id="removeAllByEvent-param-event"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">event</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Use this mechanism to remove all subscription for a particular event.
+Caution : This will remove all the listeners from multiple files or classes or modules.
+Think twice before calling this API and make sure you know what you are doing!!!
+<code>event</code> - Event name used during subscription. 
+  <div class="features">inherited</div>
+
+</dd>
+
+        <dt id="removeListener" class="callable inherited">
+  <span class="name"><a href="https://pub.dev/documentation/eventify/1.0.0/eventify/EventEmitter/removeListener.html">removeListener</a></span><span class="signature">(<wbr><span class="parameter" id="removeListener-param-eventName"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">eventName</span>, </span><span class="parameter" id="removeListener-param-callback"><span class="type-annotation"><a href="https://pub.dev/documentation/eventify/1.0.0/eventify/EventCallback.html">EventCallback</a></span> <span class="parameter-name">callback</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Unsubscribe from getting any future events from emitter.
+This mechanism uses event name and callback to unsubscribe from all possible events.
+<code>eventName</code> - Event name for the subscription.
+<code>callback</code> - <a href="https://pub.dev/documentation/eventify/1.0.0/eventify/EventCallback.html">EventCallback</a> used when registering subscription using <a href="https://pub.dev/documentation/eventify/1.0.0/eventify/EventEmitter/on.html">on</a> function. 
+  <div class="features">inherited</div>
+
+</dd>
+
+        <dt id="replaceConnection" class="callable">
+  <span class="name"><a href="../millicast_flutter_sdk/View/replaceConnection.html">replaceConnection</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; dynamic</span>
+  </span>
+  
+
+</dt>
+<dd>
+   
+  
+
+</dd>
+
+        <dt id="select" class="callable">
+  <span class="name"><a href="../millicast_flutter_sdk/View/select.html">select</a></span><span class="signature">(<wbr><span class="parameter" id="select-param-layer">{<span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/Map-class.html">Map</a>?</span> <span class="parameter-name">layer</span> = <span class="default-value">const {}</span>}</span>)
+    <span class="returntype parameter">&#8594; dynamic</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Select the simulcast encoding layer and svc layers for the main video
+track. <a href="../millicast_flutter_sdk/View/select.html">[...]</a>
+  
+
+</dd>
+
+        <dt id="setReconnect" class="callable inherited">
+  <span class="name"><a href="../millicast_flutter_sdk/View/setReconnect.html">setReconnect</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; dynamic</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Sets reconnection if autoReconnect is enabled. 
+  <div class="features">inherited</div>
+
+</dd>
+
+        <dt id="stop" class="callable inherited">
+  <span class="name"><a href="../millicast_flutter_sdk/View/stop.html">stop</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; dynamic</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Stops connection. 
+  <div class="features">inherited</div>
+
+</dd>
+
+        <dt id="toString" class="callable inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/dart-core/Object/toString.html">toString</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  A string representation of this object. <a href="https://api.flutter.dev/flutter/dart-core/Object/toString.html">[...]</a>
+  <div class="features">inherited</div>
+
+</dd>
+
+        <dt id="unproject" class="callable">
+  <span class="name"><a href="../millicast_flutter_sdk/View/unproject.html">unproject</a></span><span class="signature">(<wbr><span class="parameter" id="unproject-param-mediaIds"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span>&gt;</span></span> <span class="parameter-name">mediaIds</span></span>)
+    <span class="returntype parameter">&#8594; dynamic</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Stop projecting attached source in selected media ids. <a href="../millicast_flutter_sdk/View/unproject.html">[...]</a>
+  
+
+</dd>
+
+      </dl>
+    </section>
+
+    <section class="summary offset-anchor inherited" id="operators">
+      <h2>Operators</h2>
+      <dl class="callables">
+        <dt id="operator ==" class="callable inherited">
+  <span class="name"><a href="https://api.flutter.dev/flutter/dart-core/Object/operator_equals.html">operator ==</a></span><span class="signature">(<wbr><span class="parameter" id="==-param-other"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/Object-class.html">Object</a></span> <span class="parameter-name">other</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.flutter.dev/flutter/dart-core/bool-class.html">bool</a></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  The equality operator. <a href="https://api.flutter.dev/flutter/dart-core/Object/operator_equals.html">[...]</a>
+  <div class="features">inherited</div>
+
+</dd>
+
+      </dl>
+    </section>
+
+
+
+
+  </div> <!-- /.main-content -->
+
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+  <li><a href="../index.html">millicast_flutter_sdk</a></li>
+  <li><a href="../millicast_flutter_sdk/millicast_flutter_sdk-library.html">millicast_flutter_sdk</a></li>
+  <li class="self-crumb">View class</li>
+</ol>
+
+
+    <h5>millicast_flutter_sdk library</h5>
+    <ol>
+  <li class="section-title"><a href="../millicast_flutter_sdk/millicast_flutter_sdk-library.html#classes">Classes</a></li>
+  <li><a href="../millicast_flutter_sdk/AudioCodec-class.html">AudioCodec</a></li>
+  <li><a href="../millicast_flutter_sdk/BufferMemoryOutput-class.html">BufferMemoryOutput</a></li>
+  <li><a href="../millicast_flutter_sdk/Director-class.html">Director</a></li>
+  <li><a href="../millicast_flutter_sdk/DirectorPublisherOptions-class.html">DirectorPublisherOptions</a></li>
+  <li><a href="../millicast_flutter_sdk/DirectorSubscriberOptions-class.html">DirectorSubscriberOptions</a></li>
+  <li><a href="../millicast_flutter_sdk/InternalLogPrinter-class.html">InternalLogPrinter</a></li>
+  <li><a href="../millicast_flutter_sdk/LayerInfo-class.html">LayerInfo</a></li>
+  <li><a href="../millicast_flutter_sdk/MillicastDirectorResponse-class.html">MillicastDirectorResponse</a></li>
+  <li><a href="../millicast_flutter_sdk/PeerConnection-class.html">PeerConnection</a></li>
+  <li><a href="../millicast_flutter_sdk/Publish-class.html">Publish</a></li>
+  <li><a href="../millicast_flutter_sdk/RTCRtpTransceiverCompleter-class.html">RTCRtpTransceiverCompleter</a></li>
+  <li><a href="../millicast_flutter_sdk/Signaling-class.html">Signaling</a></li>
+  <li><a href="../millicast_flutter_sdk/SignalingEvents-class.html">SignalingEvents</a></li>
+  <li><a href="../millicast_flutter_sdk/StreamTypes-class.html">StreamTypes</a></li>
+  <li><a href="../millicast_flutter_sdk/View-class.html">View</a></li>
+
+
+
+  <li class="section-title"><a href="../millicast_flutter_sdk/millicast_flutter_sdk-library.html#constants">Constants</a></li>
+  <li><a href="../millicast_flutter_sdk/connectOptions-constant.html">connectOptions</a></li>
+  <li><a href="../millicast_flutter_sdk/defaultApiEndpoint-constant.html">defaultApiEndpoint</a></li>
+  <li><a href="../millicast_flutter_sdk/defaultLogHistorySize-constant.html">defaultLogHistorySize</a></li>
+  <li><a href="../millicast_flutter_sdk/localSDPOptions-constant.html">localSDPOptions</a></li>
+  <li><a href="../millicast_flutter_sdk/videoCodec-constant.html">videoCodec</a></li>
+  <li><a href="../millicast_flutter_sdk/webRTCEvents-constant.html">webRTCEvents</a></li>
+
+  <li class="section-title"><a href="../millicast_flutter_sdk/millicast_flutter_sdk-library.html#properties">Properties</a></li>
+  <li><a href="../millicast_flutter_sdk/apiEndpoint.html">apiEndpoint</a></li>
+  <li><a href="../millicast_flutter_sdk/defaultTurnServerLocation.html">defaultTurnServerLocation</a></li>
+  <li><a href="../millicast_flutter_sdk/history.html">history</a></li>
+  <li><a href="../millicast_flutter_sdk/liveWebSocketDomain.html">liveWebSocketDomain</a></li>
+  <li><a href="../millicast_flutter_sdk/maxLogHistorySize.html">maxLogHistorySize</a></li>
+  <li><a href="../millicast_flutter_sdk/memory.html">memory</a></li>
+  <li><a href="../millicast_flutter_sdk/turnServerLocation.html">turnServerLocation</a></li>
+
+  <li class="section-title"><a href="../millicast_flutter_sdk/millicast_flutter_sdk-library.html#functions">Functions</a></li>
+  <li><a href="../millicast_flutter_sdk/getLogger.html">getLogger</a></li>
+
+
+
+</ol>
+
+  </div>
+
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+    <ol>
+
+    <li class="section-title"><a href="../millicast_flutter_sdk/View-class.html#constructors">Constructors</a></li>
+    <li><a href="../millicast_flutter_sdk/View/View.html">View</a></li>
+
+
+    <li class="section-title">
+      <a href="../millicast_flutter_sdk/View-class.html#instance-properties">Properties</a>
+    </li>
+    <li class="inherited"><a href="../millicast_flutter_sdk/View/alreadyDisconnected.html">alreadyDisconnected</a></li>
+    <li class="inherited"><a href="../millicast_flutter_sdk/View/autoReconnect.html">autoReconnect</a></li>
+    <li class="inherited"><a href="https://pub.dev/documentation/eventify/1.0.0/eventify/EventEmitter/count.html">count</a></li>
+    <li class="inherited"><a href="../millicast_flutter_sdk/View/firstReconnection.html">firstReconnection</a></li>
+    <li class="inherited"><a href="https://api.flutter.dev/flutter/dart-core/Object/hashCode.html">hashCode</a></li>
+    <li class="inherited"><a href="../millicast_flutter_sdk/View/logger.html">logger</a></li>
+    <li class="inherited"><a href="../millicast_flutter_sdk/View/options.html">options</a></li>
+    <li class="inherited"><a href="../millicast_flutter_sdk/View/reconnectionInterval.html">reconnectionInterval</a></li>
+    <li class="inherited"><a href="https://api.flutter.dev/flutter/dart-core/Object/runtimeType.html">runtimeType</a></li>
+    <li class="inherited"><a href="../millicast_flutter_sdk/View/signaling.html">signaling</a></li>
+    <li><a href="../millicast_flutter_sdk/View/stopReemitingSignalingInstanceEvents.html">stopReemitingSignalingInstanceEvents</a></li>
+    <li><a href="../millicast_flutter_sdk/View/stopReemitingWebRTCPeerInstanceEvents.html">stopReemitingWebRTCPeerInstanceEvents</a></li>
+    <li class="inherited"><a href="../millicast_flutter_sdk/View/streamName.html">streamName</a></li>
+    <li class="inherited"><a href="../millicast_flutter_sdk/View/tokenGenerator.html">tokenGenerator</a></li>
+    <li class="inherited"><a href="../millicast_flutter_sdk/View/webRTCPeer.html">webRTCPeer</a></li>
+
+    <li class="section-title"><a href="../millicast_flutter_sdk/View-class.html#instance-methods">Methods</a></li>
+    <li><a href="../millicast_flutter_sdk/View/addRemoteTrack.html">addRemoteTrack</a></li>
+    <li class="inherited"><a href="https://pub.dev/documentation/eventify/1.0.0/eventify/EventEmitter/clear.html">clear</a></li>
+    <li><a href="../millicast_flutter_sdk/View/connect.html">connect</a></li>
+    <li class="inherited"><a href="https://pub.dev/documentation/eventify/1.0.0/eventify/EventEmitter/emit.html">emit</a></li>
+    <li class="inherited"><a href="https://pub.dev/documentation/eventify/1.0.0/eventify/EventEmitter/getListenersCount.html">getListenersCount</a></li>
+    <li class="inherited"><a href="../millicast_flutter_sdk/View/getRTCPeerConnection.html">getRTCPeerConnection</a></li>
+    <li><a href="../millicast_flutter_sdk/View/initConnection.html">initConnection</a></li>
+    <li class="inherited"><a href="../millicast_flutter_sdk/View/isActive.html">isActive</a></li>
+    <li class="inherited"><a href="https://api.flutter.dev/flutter/dart-core/Object/noSuchMethod.html">noSuchMethod</a></li>
+    <li class="inherited"><a href="https://pub.dev/documentation/eventify/1.0.0/eventify/EventEmitter/off.html">off</a></li>
+    <li class="inherited"><a href="https://pub.dev/documentation/eventify/1.0.0/eventify/EventEmitter/on.html">on</a></li>
+    <li><a href="../millicast_flutter_sdk/View/project.html">project</a></li>
+    <li class="inherited"><a href="../millicast_flutter_sdk/View/reconnect.html">reconnect</a></li>
+    <li class="inherited"><a href="https://pub.dev/documentation/eventify/1.0.0/eventify/EventEmitter/removeAllByCallback.html">removeAllByCallback</a></li>
+    <li class="inherited"><a href="https://pub.dev/documentation/eventify/1.0.0/eventify/EventEmitter/removeAllByEvent.html">removeAllByEvent</a></li>
+    <li class="inherited"><a href="https://pub.dev/documentation/eventify/1.0.0/eventify/EventEmitter/removeListener.html">removeListener</a></li>
+    <li><a href="../millicast_flutter_sdk/View/replaceConnection.html">replaceConnection</a></li>
+    <li><a href="../millicast_flutter_sdk/View/select.html">select</a></li>
+    <li class="inherited"><a href="../millicast_flutter_sdk/View/setReconnect.html">setReconnect</a></li>
+    <li class="inherited"><a href="../millicast_flutter_sdk/View/stop.html">stop</a></li>
+    <li class="inherited"><a href="https://api.flutter.dev/flutter/dart-core/Object/toString.html">toString</a></li>
+    <li><a href="../millicast_flutter_sdk/View/unproject.html">unproject</a></li>
+
+    <li class="section-title inherited"><a href="../millicast_flutter_sdk/View-class.html#operators">Operators</a></li>
+    <li class="inherited"><a href="https://api.flutter.dev/flutter/dart-core/Object/operator_equals.html">operator ==</a></li>
+
+
+
+
+</ol>
+
+  </div><!--/.sidebar-offcanvas-->
+
+</main>
+
+<footer>
+  <span class="no-break">
+    millicast_flutter_sdk
+      0.0.1
+  </span>
+
+  
+</footer>
+
+
+
+<script src="../static-assets/highlight.pack.js?v1"></script>
+<script src="../static-assets/script.js?v1"></script>
+
+
+
+</body>
+
+</html>
+
