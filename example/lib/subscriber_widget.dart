@@ -105,10 +105,10 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
 
   void setUserCount() {
     // Add listener of broacastEvent to get UserCount
-    _view!.on('broadcastEvent', this, testSetUserCount);
+    _view!.on('broadcastEvent', this, setUserCountHandler);
   }
 
-  void testSetUserCount(event, context) {
+  void setUserCountHandler(event, context) {
     var data = jsonEncode(event.eventData);
     Map<String, dynamic> dataMap = jsonDecode(data);
     if (dataMap['name'] == 'viewercount') {
