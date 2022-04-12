@@ -48,7 +48,7 @@ class _PublisherWidgetState extends State<PublisherWidget>
 
   @override
   void deactivate() async {
-    if (_localRenderer != null) {
+    if (_localRenderer.srcObject != null) {
       await closeCameraStream();
     }
     if (_publisherMedia != null) {
@@ -159,8 +159,7 @@ class _PublisherWidgetState extends State<PublisherWidget>
         isConnected = true;
       });
       stopWatchTimer.onExecute.add(StopWatchExecute.reset);
-      _publisherMedia = await publish(options);
-      return _publisherMedia;
+      await publish(options);
     }
   }
 

@@ -45,7 +45,7 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
 
   @override
   void activate() async {
-    await _view!.stop();
+    await _view!.webRTCPeer.closeRTCPeer();
     super.activate();
   }
 
@@ -56,7 +56,7 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
       await closeCameraStream();
     }
     if (_view?.signaling != null) {
-      await _view!.stop();
+      await _view!.webRTCPeer.closeRTCPeer();
     }
     super.deactivate();
   }
@@ -83,7 +83,7 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
   void subscribeExample() async {
     _view?.on(SignalingEvents.connectionSuccess, _view, (ev, context) async {
       if (isDeactivating) {
-        await _view?.stop();
+        await _view?.webRTCPeer.closeRTCPeer();
       }
     });
     await viewConnect(_view!);
@@ -138,7 +138,7 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
   }
 
   refreshStream() async {
-    await _view!.stop();
+    await _view!.webRTCPeer.closeRTCPeer();
     callBuildSubscriber();
   }
 
