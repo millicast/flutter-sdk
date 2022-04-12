@@ -269,7 +269,7 @@ When you compile the release apk, you need to add the following operations:
 
 ## API Reference
 
-You can find the latest, most up to date SDK documentation at our [API Reference page](https://millicast.github.io/millicast_flutter_sdk/). There are more examples with every module available.
+You can find the latest, most up to date SDK documentation at our [API Reference page](https://millicast.github.io/flutter-sdk/). There are more examples with every module available.
 
 ## Sample
 

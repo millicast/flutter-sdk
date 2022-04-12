@@ -121,7 +121,7 @@ Future viewConnect(RTCVideoRenderer localRenderer) async {
   /// Start connection to publisher
   try {
     await view.connect(options: {
-      'events': ['active', 'inactive', 'layers']
+      'events': ['active', 'inactive', 'layers', 'viewercount']
     });
 
     view.webRTCPeer.initStats();

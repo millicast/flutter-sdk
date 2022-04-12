@@ -1,4 +1,5 @@
-import 'package:example/utils/constants.dart';
+import 'dart:convert';
+
 import 'package:example/viewer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
@@ -28,7 +29,6 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
   bool isVideoMuted = false;
   bool isAudioMuted = false;
   bool isConnected = true;
-  StreamEvents? events;
 
   @override
   void dispose() {
@@ -44,9 +44,6 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
 
   @override
   void deactivate() async {
-    if (events != null) {
-      events?.stop();
-    }
     if (_localRenderer != null) {
       await closeCameraStream();
     }
@@ -87,17 +84,19 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
       _view?.select();
       setState(() {});
     }));
+    setUserCount();
     setState(() {});
+  }
 
-    Map<String, dynamic> onUserCountOptions = {
-      'accountId': Constants.accountId,
-      'streamName': Constants.streamName,
-      'callback': (countChange) => {refresh(countChange)},
-    };
-
-    /// Add UserCount event listener
-    StreamEvents events = await StreamEvents.init();
-    events.onUserCount(onUserCountOptions);
+  void setUserCount() {
+    // Add listener of broacastEvent to get UserCount
+    _view!.on('broadcastEvent', this, (event, context) {
+      var data = jsonEncode(event.eventData);
+      Map<String, dynamic> dataMap = jsonDecode(data);
+      if (dataMap['name'] == 'viewercount') {
+        refresh(dataMap['data']['viewercount']);
+      }
+    });
   }
 
   void initRenderers() async {
