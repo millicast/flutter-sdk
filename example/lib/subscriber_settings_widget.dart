@@ -47,6 +47,7 @@ class _SubscriberSettingsWidgetState extends State<SubscriberSettingsWidget> {
                 title: 'Stream Name',
                 onPressed: (BuildContext context) {
                   popupDialog(
+                      currentValue: Constants.streamName,
                       context: context,
                       formKey: _formKey,
                       handler: (value) {
@@ -60,6 +61,7 @@ class _SubscriberSettingsWidgetState extends State<SubscriberSettingsWidget> {
                 title: 'Account Id',
                 onPressed: (BuildContext context) {
                   popupDialog(
+                      currentValue: Constants.accountId,
                       context: context,
                       formKey: _formKey,
                       handler: (value) {
@@ -110,7 +112,6 @@ class _SubscriberSettingsWidgetState extends State<SubscriberSettingsWidget> {
                                       alignedDropdown: true,
                                       child: DropdownButtonHideUnderline(
                                           child: DropdownButton<String>(
-                                        value: simulcastQualityValue,
                                         icon: const Icon(Icons.arrow_drop_up),
                                         iconEnabledColor: Colors.white,
                                         hint: const Text('Video Quality',
@@ -118,8 +119,8 @@ class _SubscriberSettingsWidgetState extends State<SubscriberSettingsWidget> {
                                                 color: Colors.white,
                                                 fontSize: 15)),
                                         dropdownColor: Colors.purple,
-                                        items: ['Auto', 'High', 'Medium', 'Low']
-                                            .map((String value) {
+                                        items:
+                                            currentLayers.map((String value) {
                                           return DropdownMenuItem<String>(
                                             value: value,
                                             child: Text(
@@ -137,8 +138,16 @@ class _SubscriberSettingsWidgetState extends State<SubscriberSettingsWidget> {
                                                 view?.select();
                                                 break;
                                               case 'High':
-                                                view?.select(
-                                                    layer: {'encodingId': '2'});
+                                                if (currentLayers.length > 3) {
+                                                  view?.select(layer: {
+                                                    'encodingId': '2'
+                                                  });
+                                                } else {
+                                                  view?.select(layer: {
+                                                    'encodingId': '1'
+                                                  });
+                                                }
+
                                                 break;
                                               case 'Medium':
                                                 view?.select(
@@ -152,6 +161,7 @@ class _SubscriberSettingsWidgetState extends State<SubscriberSettingsWidget> {
                                             }
                                           });
                                         },
+                                        value: simulcastQualityValue,
                                       )),
                                     ));
                               })
@@ -171,6 +181,7 @@ class _SubscriberSettingsWidgetState extends State<SubscriberSettingsWidget> {
       required Key formKey,
       required void Function(dynamic) handler,
       bool state = false,
+      String? currentValue,
       bool isTextbox = true,
       bool isDropdown = false}) {
     return showDialog(
@@ -202,6 +213,8 @@ class _SubscriberSettingsWidgetState extends State<SubscriberSettingsWidget> {
                           padding: const EdgeInsets.all(8.0),
                           child: SizedBox(
                               child: TextField(
+                                  controller:
+                                      TextEditingController(text: currentValue),
                                   enableSuggestions: false,
                                   onSubmitted: handler,
                                   autocorrect: false)))

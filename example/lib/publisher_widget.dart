@@ -14,7 +14,6 @@ import 'publisher_settings_widget.dart';
 import 'package:millicast_flutter_sdk/millicast_flutter_sdk.dart';
 
 Logger _logger = getLogger('main');
-bool isConnected = true;
 
 class PublisherWidget extends StatefulWidget {
   const PublisherWidget({Key? key}) : super(key: key);
@@ -22,7 +21,8 @@ class PublisherWidget extends StatefulWidget {
   _PublisherWidgetState createState() => _PublisherWidgetState();
 }
 
-class _PublisherWidgetState extends State<PublisherWidget> {
+class _PublisherWidgetState extends State<PublisherWidget>
+    with WidgetsBindingObserver {
   Map options = {};
 
   _PublisherWidgetState();
@@ -34,23 +34,30 @@ class _PublisherWidgetState extends State<PublisherWidget> {
   late String _viewers = '0';
   late MillicastPublishUserMedia _publisherMedia;
   bool isVideoMuted = false;
+  bool isConnected = false;
+  bool isLoading = false;
   bool isAudioMuted = false;
+  bool _isMirrored = true;
 
   PeerConnection? webRtcPeer;
   @override
   void dispose() {
     super.dispose();
+    WidgetsBinding.instance?.removeObserver(this);
   }
 
   @override
   void deactivate() async {
-    if (_localRenderer != null) {
+    if (_localRenderer.srcObject != null) {
       await closeCameraStream();
     }
     if (_publisherMedia != null) {
-      if (_publisherMedia.webRTCPeer != null) {
-        await _publisherMedia.webRTCPeer.closeRTCPeer();
-      }
+      setState(() {
+        _hangUp(true);
+        isAudioMuted = false;
+        isVideoMuted = false;
+        isConnected = false;
+      });
     }
     super.deactivate();
   }
@@ -65,17 +72,49 @@ class _PublisherWidgetState extends State<PublisherWidget> {
   @override
   void initState() {
     initRenderers();
-    publishExample(options);
+    initPublish();
     super.initState();
+    WidgetsBinding.instance?.addObserver(this);
   }
 
-  void publishExample(Map options) async {
-    _publisherMedia = await publishConnect(_localRenderer, options);
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
+    super.didChangeAppLifecycleState(state);
+    switch (state) {
+      case AppLifecycleState.resumed:
+        _publisherMedia = await buildPublisher(_localRenderer);
+        setState(() {
+          isAudioMuted = false;
+          isVideoMuted = false;
+          isConnected = false;
+        });
+        _logger.i('Resumed');
+        break;
+      case AppLifecycleState.inactive:
+        await _hangUp(true);
+        _logger.i('Inactive');
+        break;
+      case AppLifecycleState.paused:
+        _logger.i('Paused');
+        break;
+      case AppLifecycleState.detached:
+        _logger.i('Detached');
+        break;
+    }
+  }
+
+  Future publish(Map options) async {
+    _publisherMedia = await connectPublisher(_publisherMedia, options);
     setState(() {
       stopWatchTimer.onExecute.add(StopWatchExecute.start);
     });
 
     setUserCount();
+  }
+
+  void initPublish() async {
+    _publisherMedia = await buildPublisher(_localRenderer);
+    setState(() {});
   }
 
   void setUserCount() {
@@ -107,20 +146,24 @@ class _PublisherWidgetState extends State<PublisherWidget> {
 
   _switchCamera() {
     _publisherMedia.mediaManager?.switchCamera();
+    _isMirrored = !_isMirrored;
   }
 
-  _hangUp(bool _isConnected) async {
-    _isConnected = isConnected;
-    setState(() {
-      isConnected = !isConnected;
-    });
+  Future _hangUp([bool? _isConnected]) async {
+    _isConnected ??= isConnected;
     if (_isConnected) {
-      _publisherMedia.hangUp(_isConnected);
+      setState(() {
+        _viewers = '0';
+        isConnected = false;
+      });
+      await _publisherMedia.hangUp(_isConnected);
       stopWatchTimer.onExecute.add(StopWatchExecute.stop);
     } else {
-      _publisherMedia = await publishConnect(_localRenderer, options);
+      setState(() {
+        isConnected = true;
+      });
       stopWatchTimer.onExecute.add(StopWatchExecute.reset);
-      stopWatchTimer.onExecute.add(StopWatchExecute.start);
+      await publish(options);
     }
   }
 
@@ -199,7 +242,8 @@ class _PublisherWidgetState extends State<PublisherWidget> {
                       builder: (BuildContext context) =>
                           PublisherSettingsWidget(
                               publisherMedia: _publisherMedia,
-                              options: options),
+                              options: options,
+                              isConnected: isConnected),
                     ));
               }),
           Container(
@@ -286,17 +330,34 @@ class _PublisherWidgetState extends State<PublisherWidget> {
                           width: 80,
                           child: FloatingActionButton(
                             heroTag: 'HangUp',
-                            tooltip: 'Hangup',
-                            child: Icon(
-                              (isConnected)
-                                  ? Icons.stop_outlined
-                                  : Icons.play_circle_filled_outlined,
-                              color: isConnected ? Colors.red : Colors.white,
-                              size: 50,
-                            ),
-                            onPressed: () {
+                            tooltip: 'HangUp',
+                            child: (isLoading)
+                                ? const CircularProgressIndicator(
+                                    color: Colors.white,
+                                  )
+                                : (isConnected)
+                                    ? Icon(Icons.stop,
+                                        color: isConnected
+                                            ? Colors.red
+                                            : Colors.white,
+                                        size: 50)
+                                    : Icon(
+                                        Icons.play_circle_filled_outlined,
+                                        color: isConnected
+                                            ? Colors.red
+                                            : Colors.white,
+                                        size: 50,
+                                      ),
+                            onPressed: () async {
+                              if (isLoading) {
+                                return;
+                              }
                               setState(() {
-                                _hangUp(isConnected);
+                                isLoading = true;
+                              });
+                              await _hangUp();
+                              setState(() {
+                                isLoading = false;
                               });
                             },
                           ),
@@ -343,7 +404,7 @@ class _PublisherWidgetState extends State<PublisherWidget> {
               margin: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.height,
-              child: RTCVideoView(_localRenderer, mirror: true),
+              child: RTCVideoView(_localRenderer, mirror: _isMirrored),
               decoration: const BoxDecoration(color: Colors.black54),
             ),
           );

@@ -5,35 +5,43 @@ import 'package:logger/logger.dart';
 import 'package:millicast_flutter_sdk/millicast_flutter_sdk.dart';
 
 import 'millicast_publisher_user_media.dart';
-import 'publisher_widget.dart';
 
 Logger _logger = getLogger('PublisherSettings');
 
 class PublisherSettingsWidget extends StatefulWidget {
   final MillicastPublishUserMedia? publisherMedia;
   final Map? options;
-  const PublisherSettingsWidget({this.publisherMedia, this.options, Key? key})
+  final bool isConnected;
+  const PublisherSettingsWidget(
+      {this.publisherMedia, this.options, required this.isConnected, Key? key})
       : super(key: key);
   @override
   _PublisherSettingsWidgetState createState() =>
       // ignore: no_logic_in_create_state
       _PublisherSettingsWidgetState(
-          publisherMedia: publisherMedia, options: options);
+          publisherMedia: publisherMedia,
+          options: options,
+          isConnected: isConnected);
 }
 
 class _PublisherSettingsWidgetState extends State<PublisherSettingsWidget> {
-  int _bitrate = 0;
-  bool _audio = false;
-  bool _simulcast = false;
   Map? options;
+  bool isConnected;
   final _formKey = GlobalKey<FormState>();
   MillicastPublishUserMedia? publisherMedia;
+  bool isSimulcastEnabled = true;
 
   _PublisherSettingsWidgetState(
-      {required this.publisherMedia, required this.options});
+      {required this.publisherMedia,
+      required this.options,
+      required this.isConnected});
 
   @override
   Widget build(BuildContext context) {
+    int _bitrate = options?['bandwidth'] ?? 0;
+    bool _audio = options?['stereo'] ?? false;
+    bool _simulcast = options?['simulcast'] ?? false;
+
     return Scaffold(
       appBar: AppBar(
         foregroundColor: Colors.black,
@@ -68,6 +76,7 @@ class _PublisherSettingsWidgetState extends State<PublisherSettingsWidget> {
                 title: 'BitRate',
                 onPressed: (BuildContext context) {
                   popupDialog(
+                      currentValue: _bitrate.toString(),
                       context: context,
                       formKey: _formKey,
                       isTextbox: true,
@@ -92,7 +101,7 @@ class _PublisherSettingsWidgetState extends State<PublisherSettingsWidget> {
                 },
               ),
               SettingsTile.switchTile(
-                enabled: !isConnected,
+                enabled: (!isConnected && isSimulcastEnabled),
                 onToggle: (bool value) {
                   setState(() {
                     _simulcast = !_simulcast;
@@ -122,6 +131,7 @@ class _PublisherSettingsWidgetState extends State<PublisherSettingsWidget> {
                 title: 'Stream Name',
                 onPressed: (BuildContext context) {
                   popupDialog(
+                      currentValue: Constants.streamName,
                       context: context,
                       formKey: _formKey,
                       handler: (value) {
@@ -136,6 +146,7 @@ class _PublisherSettingsWidgetState extends State<PublisherSettingsWidget> {
                 title: 'Account Id',
                 onPressed: (BuildContext context) {
                   popupDialog(
+                      currentValue: Constants.accountId,
                       context: context,
                       formKey: _formKey,
                       handler: (value) {
@@ -150,6 +161,7 @@ class _PublisherSettingsWidgetState extends State<PublisherSettingsWidget> {
                 title: 'Publish Token',
                 onPressed: (BuildContext context) {
                   popupDialog(
+                      currentValue: Constants.publishToken,
                       context: context,
                       formKey: _formKey,
                       handler: (value) {
@@ -236,11 +248,11 @@ class _PublisherSettingsWidgetState extends State<PublisherSettingsWidget> {
               isExpanded: true,
               icon: const Icon(Icons.arrow_drop_down),
               iconEnabledColor: Colors.white,
-              hint: const Text('Choose Codec',
+              hint: const Text('vp8',
                   style: TextStyle(color: Colors.white, fontSize: 15)),
               dropdownColor: Colors.purple,
               value: options?['codec'],
-              items: ['h264', 'vp8', 'vp9'].map((String value) {
+              items: ['h264', 'vp8', 'vp9', 'av1'].map((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
                   child: Text(
@@ -251,6 +263,16 @@ class _PublisherSettingsWidgetState extends State<PublisherSettingsWidget> {
               }).toList(),
               onChanged: (value) {
                 setState(() {
+                  if (value == 'vp9' || value == 'av1') {
+                    super.setState(() {
+                      isSimulcastEnabled = false;
+                      options?['simulcast'] = false;
+                    });
+                  } else {
+                    super.setState(() {
+                      isSimulcastEnabled = true;
+                    });
+                  }
                   options?['codec'] = value;
                 });
               },

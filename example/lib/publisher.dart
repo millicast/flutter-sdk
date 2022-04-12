@@ -5,8 +5,8 @@ import 'package:millicast_flutter_sdk/millicast_flutter_sdk.dart';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 
-Future<MillicastPublishUserMedia> publishConnect(
-    RTCVideoRenderer localRenderer, Map mainOptions) async {
+Future<MillicastPublishUserMedia> buildPublisher(
+    RTCVideoRenderer localRenderer) async {
   // Setting subscriber options
   DirectorPublisherOptions directorPublisherOptions = DirectorPublisherOptions(
       token: Constants.publishToken, streamName: Constants.streamName);
@@ -19,7 +19,11 @@ Future<MillicastPublishUserMedia> publishConnect(
       {'streamName': Constants.streamName}, tokenGenerator, true);
 
   localRenderer.srcObject = publish.mediaManager?.mediaStream;
+  return publish;
+}
 
+Future<MillicastPublishUserMedia> connectPublisher(
+    MillicastPublishUserMedia publish, Map mainOptions) async {
   /// Start connection to publisher
   try {
     Map<String, dynamic> options = {

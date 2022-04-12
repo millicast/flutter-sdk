@@ -1,6 +1,6 @@
-# Millicast SDK for Flutter
+# Millicast SDK for Flutter (beta)
 
-Flutter SDK for building a realtime broadcaster using the Millicast platform.
+Flutter SDK (currently under beta testing) for building a realtime broadcaster using the Millicast platform.
 This Software Development Kit (SDK) for Flutter allows developers to simplify Millicast services integration into their own Android and iOS apps.
 
 ## Table of Contents
@@ -216,7 +216,7 @@ Future publishConnect(RTCVideoRenderer localRenderer) async {
 
   //Publishing Options
   Map<String, dynamic> broadcastOptions = {'mediaStream': stream};
-  //Android does not support h264 codec for publishing
+  //Some Android devices do not support h264 codec for publishing
   if (Platform.isAndroid) {
     broadcastOptions['codec'] = 'vp8';
   }

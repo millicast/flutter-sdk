@@ -486,18 +486,18 @@ class PeerConnection extends EventEmitter {
             sendEncodings: (options['simulcast'])
                 ? [
                     RTCRtpEncoding(
-                      rid: 'f',
-                      numTemporalLayers: 3,
+                      rid: '2',
+                      numTemporalLayers: 1,
                     ),
                     RTCRtpEncoding(
-                      rid: 'h',
-                      numTemporalLayers: 3,
+                      rid: '1',
+                      numTemporalLayers: 1,
                       maxBitrate: 300000,
                       scaleResolutionDownBy: 2.0,
                     ),
                     RTCRtpEncoding(
-                      rid: 'q',
-                      numTemporalLayers: 3,
+                      rid: '0',
+                      numTemporalLayers: 1,
                       maxBitrate: 100000,
                       scaleResolutionDownBy: 4.0,
                     ),
