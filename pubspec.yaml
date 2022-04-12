@@ -1,7 +1,7 @@
 name: millicast_flutter_sdk
 description: A Flutter SDK that allows developers to simplify Millicast services integration into their own Android and iOS apps.
 version: 0.0.1
-homepage: https://github.com/qualabs/
+homepage: https://github.com/millicast/flutter-sdk
 
 environment:
   sdk: ">=2.15.1 <3.0.0"
@@ -19,8 +19,6 @@ dependencies:
   web_socket_channel: ^2.1.0
   jwt_decode: ^0.3.1
   sdp_transform: ^0.3.2
-dependency_overrides: 
-  webrtc_interface: 1.0.2
 
 dev_dependencies:
   flutter_test:

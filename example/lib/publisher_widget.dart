@@ -83,7 +83,11 @@ class _PublisherWidgetState extends State<PublisherWidget>
     switch (state) {
       case AppLifecycleState.resumed:
         _publisherMedia = await buildPublisher(_localRenderer);
-        setState(() {});
+        setState(() {
+          isAudioMuted = false;
+          isVideoMuted = false;
+          isConnected = false;
+        });
         _logger.i('Resumed');
         break;
       case AppLifecycleState.inactive:

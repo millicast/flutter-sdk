@@ -94,6 +94,12 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
       }
       setState(() {});
     }));
+
+    _view?.on('layerChange', _view, ((ev, context) {
+      simulcastQualityValue = 'Auto';
+      _view?.select();
+      setState(() {});
+    }));
     setUserCount();
     setState(() {});
   }

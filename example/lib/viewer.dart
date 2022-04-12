@@ -7,6 +7,9 @@ import 'package:millicast_flutter_sdk/millicast_flutter_sdk.dart';
 Set<String> sourceIds = {};
 bool isMultisourceEnabled = false;
 bool isSimulcastEnabled = false;
+List<String> currentLayers = [''];
+int? oldLayersSize;
+int? currentLayerSize;
 // ignore: prefer_typing_uninitialized_variables
 var selectedVideoSource;
 // ignore: prefer_typing_uninitialized_variables
@@ -43,6 +46,20 @@ Future buildSubscriber(RTCVideoRenderer localRenderer) async {
       // Case simulcast is enabled
       case 'layers':
         isSimulcastEnabled = true;
+        currentLayerSize = eventDataMap['data']['medias']['0']['active'].length;
+
+        if (currentLayerSize != oldLayersSize) {
+          view.emit('layerChange', view);
+        }
+        if (currentLayerSize == 3) {
+          currentLayers = ['Low', 'Medium', 'High', 'Auto'];
+        } else if (currentLayerSize == 2) {
+          currentLayers = ['Low', 'High', 'Auto'];
+        } else {
+          isSimulcastEnabled = false;
+        }
+        oldLayersSize = currentLayerSize;
+
         break;
 
       // Case you start publishing
