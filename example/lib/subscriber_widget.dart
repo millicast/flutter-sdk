@@ -55,7 +55,7 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
       await closeCameraStream();
     }
     if (_view?.signaling != null) {
-      await _view!.webRTCPeer.closeRTCPeer();
+      await _view!.stop();
     }
     super.deactivate();
   }
