@@ -93,7 +93,7 @@ class Signaling extends EventEmitter {
   /// ```
   void close() {
     _logger.i('Closing connection with Signaling Server.');
-    webSocket?.sink.close();
+    transactionManager?.close();
   }
 
   /// Establish WebRTC connection with Millicast Server as Subscriber role.
