@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:example/utils/constants.dart';
 import 'package:example/viewer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
@@ -29,6 +30,7 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
   bool isAudioMuted = false;
   bool isConnected = true;
   bool isDeactivating = false;
+  StreamEvents? events;
 
   @override
   void dispose() {
@@ -99,7 +101,18 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
       _view?.select();
       setState(() {});
     }));
-    setUserCount();
+    Map<String, dynamic> onUserCountOptions = {
+      'accountId': Constants.accountId,
+      'streamName': Constants.streamName,
+      'callback': (countChange) => {refresh(countChange)},
+    };
+
+    /// Add UserCount event listener
+    StreamEvents events = await StreamEvents.init();
+    events.onUserCount(onUserCountOptions);
+
+    // setUserCount();
+
     setState(() {});
   }
 
