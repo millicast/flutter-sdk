@@ -154,7 +154,7 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
         centerTitle: true,
         backgroundColor: Colors.white,
         // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
+        // the App.build method, and use it to set our AppBar title.
         title: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisSize: MainAxisSize.max,
