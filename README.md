@@ -25,6 +25,24 @@ To add the Millicast Flutter SDK to your dependencies, run:
 $ flutter pub add millicast_flutter_sdk
 ```
 
+> **NOTE**: Until we publish Millicast Flutter SDK in [pub.dev](https://pub.dev), import the millicast_flutter_sdk package using git infromation in pubspec.yaml file as shown below.
+
+```yaml
+dependencies:
+  flutter:
+    sdk: flutter
+  millicast_flutter_sdk:
+    git:
+      url: https://github.com/millicast/flutter-sdk.git
+      ref: beta-test # branch name
+```
+
+Then run the following command to download the dependencies:
+
+```sh
+flutter pub get
+```
+
 With this you will have then access to all the features provided by the SDK to use in your project.
 
 When creating your own app, follow these steps:
