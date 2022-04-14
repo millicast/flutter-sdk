@@ -30,7 +30,6 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
   bool isAudioMuted = false;
   bool isConnected = true;
   bool isDeactivating = false;
-  StreamEvents? events;
 
   @override
   void dispose() {
@@ -101,17 +100,8 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
       _view?.select();
       setState(() {});
     }));
-    Map<String, dynamic> onUserCountOptions = {
-      'accountId': Constants.accountId,
-      'streamName': Constants.streamName,
-      'callback': (countChange) => {refresh(countChange)},
-    };
 
-    /// Add UserCount event listener
-    StreamEvents events = await StreamEvents.init();
-    events.onUserCount(onUserCountOptions);
-
-    // setUserCount();
+    setUserCount();
 
     setState(() {});
   }
