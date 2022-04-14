@@ -38,6 +38,7 @@ class _PublisherWidgetState extends State<PublisherWidget>
   bool isLoading = false;
   bool isAudioMuted = false;
   bool _isMirrored = true;
+  StreamEvents? events;
 
   PeerConnection? webRtcPeer;
   @override
@@ -109,7 +110,17 @@ class _PublisherWidgetState extends State<PublisherWidget>
       stopWatchTimer.onExecute.add(StopWatchExecute.start);
     });
 
-    setUserCount();
+    Map<String, dynamic> onUserCountOptions = {
+      'accountId': Constants.accountId,
+      'streamName': Constants.streamName,
+      'callback': (countChange) => {refresh(countChange)},
+    };
+
+    /// Add UserCount event listener
+    events = await StreamEvents.init();
+    events?.onUserCount(onUserCountOptions);
+
+    // setUserCount();
   }
 
   void initPublish() async {
