@@ -22,7 +22,7 @@ This Software Development Kit (SDK) for Flutter allows developers to simplify Mi
 To add the Millicast Flutter SDK to your dependencies, run:
 
 ```sh
-$ flutter pub add millicast_flutter_sdk
+$ flutter pub add millicast_flutter_sdk --git-url https://github.com/millicast/flutter-sdk.git  --git-ref beta-test
 ```
 
 > **NOTE**: Until we publish Millicast Flutter SDK in [pub.dev](https://pub.dev), import the millicast_flutter_sdk package using git infromation in pubspec.yaml file as shown below.
