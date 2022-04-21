@@ -1,14 +1,15 @@
+import 'dart:async';
 import 'dart:convert';
-import 'package:example/utils/constants.dart';
+
 import 'package:example/viewer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:logger/logger.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 
-import 'subscriber_settings_widget.dart';
-
 import 'package:millicast_flutter_sdk/millicast_flutter_sdk.dart';
+
+import 'subscriber_settings_widget.dart';
 
 Logger _logger = getLogger('SubscriberWidget');
 
@@ -28,7 +29,8 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
   Map options = {};
   bool isVideoMuted = false;
   bool isAudioMuted = false;
-  bool isConnected = true;
+
+  /// Web socket should be closing
   bool isDeactivating = false;
 
   @override
@@ -51,13 +53,12 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
 
   @override
   void deactivate() async {
+    isConnectedSubsc = false;
     isDeactivating = true;
-    if (_localRenderer != null) {
-      await closeCameraStream();
-    }
-    if (_view?.signaling != null) {
-      await _view!.stop();
-    }
+    _view!.stopReconnection = true;
+
+    await closeCameraStream();
+    await _view?.stop();
     super.deactivate();
   }
 
@@ -83,7 +84,8 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
   void subscribeExample() async {
     _view?.on(SignalingEvents.connectionSuccess, _view, (ev, context) async {
       if (isDeactivating) {
-        await _view?.webRTCPeer.closeRTCPeer();
+        isConnectedSubsc = false;
+        await _view?.stop();
       }
     });
     await viewConnect(_view!);
@@ -240,14 +242,32 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
           ])),
       body: OrientationBuilder(
         builder: (context, orientation) {
-          return Center(
-            child: Container(
-              margin: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height,
-              child: RTCVideoView(_localRenderer),
-              decoration: const BoxDecoration(color: Colors.black54),
-            ),
+          return Stack(
+            children: [
+              Container(
+                margin: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: RTCVideoView(_localRenderer),
+                decoration: const BoxDecoration(color: Colors.black54),
+              ),
+              Positioned(
+                  top: 40,
+                  left: 20,
+                  height: 45,
+                  width: isConnectedSubsc ? 50 : 85,
+                  child: FloatingActionButton(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                    child: isConnectedSubsc
+                        ? const Text('LIVE')
+                        : const Text('NOT LIVE'),
+                    backgroundColor:
+                        isConnectedSubsc ? Colors.red : Colors.grey,
+                    heroTag: 1,
+                    onPressed: null,
+                  ))
+            ],
           );
         },
       ),
