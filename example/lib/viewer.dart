@@ -146,10 +146,6 @@ Future viewConnect(View view) async {
     });
     return view;
   } catch (e) {
-    if (view.signaling != null) {
-      rethrow;
-    }
     view.reconnect();
-    _logger.w('Connection closed during initialization');
   }
 }
