@@ -8,6 +8,9 @@ Set<String> sourceIds = {};
 bool isMultisourceEnabled = false;
 bool isSimulcastEnabled = false;
 List<String> currentLayers = [''];
+/// flag for live button
+bool isConnectedSubsc = false;
+
 int? oldLayersSize;
 int? currentLayerSize;
 // ignore: prefer_typing_uninitialized_variables
@@ -64,7 +67,7 @@ Future buildSubscriber(RTCVideoRenderer localRenderer) async {
 
       // Case you start publishing
       case 'active':
-
+        isConnectedSubsc = true;
         // Case no multisource, sourceId will be Main
         if (eventDataMap['data']['sourceId'] == null) {
           isMultisourceEnabled = false;
@@ -101,6 +104,8 @@ Future buildSubscriber(RTCVideoRenderer localRenderer) async {
           } else {
             sourceIds.remove('Main');
           }
+        } else {
+          isConnectedSubsc = false;
         }
 
         // No multisource
@@ -142,7 +147,9 @@ Future viewConnect(View view) async {
   } catch (e) {
     if (view.signaling != null) {
       rethrow;
+
     }
+    view.reconnect();
     _logger.w('Connection closed during initialization');
   }
 }

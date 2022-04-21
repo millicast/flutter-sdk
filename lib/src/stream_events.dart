@@ -35,7 +35,6 @@ class StreamEvents {
     StreamEvents instance = StreamEvents();
     instance.eventSubscriber = EventSubscriber(getEventsLocation());
     await instance.eventSubscriber?.initializeHandshake();
-
     return instance;
   }
 

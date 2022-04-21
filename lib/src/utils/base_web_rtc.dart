@@ -30,7 +30,7 @@ class BaseWebRTC extends EventEmitter {
   int? reconnectionInterval;
   bool? alreadyDisconnected;
   bool? firstReconnection;
-
+  bool stopReconnection = false;
   Map<String, dynamic>? options;
 
   BaseWebRTC({
@@ -113,6 +113,10 @@ class BaseWebRTC extends EventEmitter {
   ///
   reconnect() async {
     try {
+      if (stopReconnection) {
+        return;
+      }
+
       if (!isActive()) {
         stop();
         if (options != null) {
@@ -143,4 +147,9 @@ class BaseWebRTC extends EventEmitter {
 
 int nextReconnectInterval(int interval) {
   return interval < maxReconnectionInterval ? interval * 2 : interval;
+}
+
+
+set stopReconnection(bool value) {
+  stopReconnection = value;
 }

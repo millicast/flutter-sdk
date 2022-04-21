@@ -43,13 +43,10 @@ class EventSubscriber extends EventEmitter {
         _logger.d('WebSocket handshake message: ', parsedResponse);
         isHandshakeResponse = false;
       }
-
       List<String> responses = event.split(recordSeparator);
-      _logger.i('Responses $responses');
       for (var response in responses) {
         if (response.isNotEmpty) {
           final responseParsed = parseSignalRMessage(response);
-          _logger.i('Response parsed $responseParsed');
           emit('message', this, responseParsed);
         }
       }
