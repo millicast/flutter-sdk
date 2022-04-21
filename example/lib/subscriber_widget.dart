@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:example/utils/constants.dart';
 import 'package:example/viewer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
@@ -30,9 +29,9 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
   Map options = {};
   bool isVideoMuted = false;
   bool isAudioMuted = false;
+
   /// Web socket should be closing
   bool isDeactivating = false;
-  StreamEvents? events;
 
   @override
   void dispose() {
@@ -54,11 +53,10 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
 
   @override
   void deactivate() async {
-
     isConnectedSubsc = false;
     isDeactivating = true;
     _view!.stopReconnection = true;
-    
+
     await closeCameraStream();
     await _view?.stop();
     super.deactivate();
@@ -104,20 +102,10 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
       _view?.select();
       setState(() {});
     }));
-    Map<String, dynamic> onUserCountOptions = {
-      'accountId': Constants.accountId,
-      'streamName': Constants.streamName,
-      'callback': (countChange) => {refresh(countChange)},
-    };
 
-    /// Add UserCount event listener
-    events = await StreamEvents.init();
-    events?.onUserCount(onUserCountOptions);
-
-    // setUserCount();
+    setUserCount();
 
     setState(() {});
-    _logger.wtf(events);
   }
 
   void setUserCount() {

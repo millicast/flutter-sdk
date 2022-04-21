@@ -38,7 +38,6 @@ class _PublisherWidgetState extends State<PublisherWidget>
   bool isLoading = false;
   bool isAudioMuted = false;
   bool _isMirrored = true;
-  StreamEvents? events;
 
   PeerConnection? webRtcPeer;
   @override
@@ -116,11 +115,7 @@ class _PublisherWidgetState extends State<PublisherWidget>
       'callback': (countChange) => {refresh(countChange)},
     };
 
-    /// Add UserCount event listener
-    events = await StreamEvents.init();
-    events?.onUserCount(onUserCountOptions);
-
-    // setUserCount();
+    setUserCount();
   }
 
   void initPublish() async {
