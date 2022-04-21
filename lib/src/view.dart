@@ -241,7 +241,6 @@ class View extends BaseWebRTC {
     stopReemitingSignalingInstanceEvents =
         reemit(signalingInstance, this, [SignalingEvents.broadcastEvent]);
 
-    
     Future getLocalSDPFuture = webRTCPeerInstance
         .getRTCLocalSDP(options: {...options!, 'stereo': true});
     Future signalingConnectFuture = signalingInstance.connect();
@@ -269,7 +268,7 @@ class View extends BaseWebRTC {
     signaling = signalingInstance;
     webRTCPeer = webRTCPeerInstance;
 
-    emit(SignalingEvents.connectionSuccess,this);
+    emit(SignalingEvents.connectionSuccess, this);
 
     setReconnect();
 

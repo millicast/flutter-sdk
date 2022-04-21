@@ -149,7 +149,6 @@ int nextReconnectInterval(int interval) {
   return interval < maxReconnectionInterval ? interval * 2 : interval;
 }
 
-
 set stopReconnection(bool value) {
   stopReconnection = value;
 }

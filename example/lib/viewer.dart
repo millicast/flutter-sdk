@@ -8,6 +8,7 @@ Set<String> sourceIds = {};
 bool isMultisourceEnabled = false;
 bool isSimulcastEnabled = false;
 List<String> currentLayers = [''];
+
 /// flag for live button
 bool isConnectedSubsc = false;
 
@@ -147,7 +148,6 @@ Future viewConnect(View view) async {
   } catch (e) {
     if (view.signaling != null) {
       rethrow;
-
     }
     view.reconnect();
     _logger.w('Connection closed during initialization');
