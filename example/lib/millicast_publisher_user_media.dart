@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:millicast_flutter_sdk/millicast_flutter_sdk.dart';
 
@@ -57,10 +59,10 @@ class MillicastPublishUserMedia extends Publish {
     );
   }
 
-  hangUp(bool connected) {
+  hangUp(bool connected) async {
     if (connected) {
       _logger.w('Disconnecting');
-      webRTCPeer.closeRTCPeer();
+      await stop();
     }
     return connected;
   }
@@ -99,6 +101,11 @@ class MillicastMedia {
 
     try {
       mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
+
+      if (Platform.isIOS) {
+        mediaStream?.getAudioTracks()[0].enableSpeakerphone(true);
+      }
+
       return mediaStream;
     } catch (e) {
       throw Error();

@@ -26,7 +26,9 @@ Future<MillicastPublishUserMedia> connectPublisher(
     MillicastPublishUserMedia publish, Map mainOptions) async {
   /// Start connection to publisher
   try {
-    Map<String, dynamic> options = {};
+    Map<String, dynamic> options = {
+      'events': ['active', 'inactive', 'layers', 'viewercount']
+    };
 
     if (!kIsWeb) {
       if (Platform.isAndroid || Platform.isIOS) {

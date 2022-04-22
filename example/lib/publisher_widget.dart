@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
+import 'dart:convert';
 
 import 'millicast_publisher_user_media.dart';
 
@@ -38,8 +39,6 @@ class _PublisherWidgetState extends State<PublisherWidget>
   bool isAudioMuted = false;
   bool _isMirrored = true;
 
-  StreamEvents? events;
-
   PeerConnection? webRtcPeer;
   @override
   void dispose() {
@@ -49,9 +48,6 @@ class _PublisherWidgetState extends State<PublisherWidget>
 
   @override
   void deactivate() async {
-    if (events != null) {
-      events?.stop();
-    }
     if (_localRenderer.srcObject != null) {
       await closeCameraStream();
     }
@@ -119,15 +115,23 @@ class _PublisherWidgetState extends State<PublisherWidget>
       'callback': (countChange) => {refresh(countChange)},
     };
 
-    /// Add UserCount event listener
-    events = await StreamEvents.init();
-    events?.onUserCount(onUserCountOptions);
-    return _publisherMedia;
+    setUserCount();
   }
 
   void initPublish() async {
     _publisherMedia = await buildPublisher(_localRenderer);
     setState(() {});
+  }
+
+  void setUserCount() {
+    // Add listener of broacastEvent to get UserCount
+    _publisherMedia.on('broadcastEvent', this, (event, context) {
+      var data = jsonEncode(event.eventData);
+      Map<String, dynamic> dataMap = jsonDecode(data);
+      if (dataMap['name'] == 'viewercount') {
+        refresh(dataMap['data']['viewercount']);
+      }
+    });
   }
 
   void refresh(countChange) {
@@ -165,8 +169,7 @@ class _PublisherWidgetState extends State<PublisherWidget>
         isConnected = true;
       });
       stopWatchTimer.onExecute.add(StopWatchExecute.reset);
-      _publisherMedia = await publish(options);
-      return _publisherMedia;
+      await publish(options);
     }
   }
 

@@ -12,7 +12,7 @@ class TransactionManager extends EventEmitter {
   num maxId = 0;
   WebSocketChannel transport;
   Map<int, dynamic> transactions = {};
-  Function? listener;
+  StreamSubscription<dynamic>? listener;
   String? sdp;
   TransactionManager(this.transport) {
     onData(dynamic msg) async {
@@ -117,7 +117,7 @@ class TransactionManager extends EventEmitter {
     }
 
     //Add it
-    transport.stream.listen((event) => onData(event),
+    listener = transport.stream.listen((event) => onData(event),
         onError: onError, onDone: onDone, cancelOnError: false);
   }
 
@@ -165,6 +165,7 @@ class TransactionManager extends EventEmitter {
 
   close() {
     //remove listeners
+    listener?.onDone(() {});
     transport.sink.close();
   }
 }

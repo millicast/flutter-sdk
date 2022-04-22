@@ -268,6 +268,8 @@ class View extends BaseWebRTC {
     signaling = signalingInstance;
     webRTCPeer = webRTCPeerInstance;
 
+    emit(SignalingEvents.connectionSuccess, this);
+
     setReconnect();
 
     if (data['migrate']) {

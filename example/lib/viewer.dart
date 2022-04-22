@@ -8,6 +8,10 @@ Set<String> sourceIds = {};
 bool isMultisourceEnabled = false;
 bool isSimulcastEnabled = false;
 List<String> currentLayers = [''];
+
+/// flag for live button
+bool isConnectedSubsc = false;
+
 int? oldLayersSize;
 int? currentLayerSize;
 // ignore: prefer_typing_uninitialized_variables
@@ -16,7 +20,7 @@ var selectedVideoSource;
 var selectedAudioSource;
 var _logger = getLogger('ViewerDemo');
 
-Future viewConnect(RTCVideoRenderer localRenderer) async {
+Future buildSubscriber(RTCVideoRenderer localRenderer) async {
   // Setting subscriber options
   DirectorSubscriberOptions directorSubscriberOptions =
       DirectorSubscriberOptions(
@@ -64,7 +68,7 @@ Future viewConnect(RTCVideoRenderer localRenderer) async {
 
       // Case you start publishing
       case 'active':
-
+        isConnectedSubsc = true;
         // Case no multisource, sourceId will be Main
         if (eventDataMap['data']['sourceId'] == null) {
           isMultisourceEnabled = false;
@@ -101,6 +105,8 @@ Future viewConnect(RTCVideoRenderer localRenderer) async {
           } else {
             sourceIds.remove('Main');
           }
+        } else {
+          isConnectedSubsc = false;
         }
 
         // No multisource
@@ -117,11 +123,14 @@ Future viewConnect(RTCVideoRenderer localRenderer) async {
       default:
     }
   });
+  return view;
+}
 
+Future viewConnect(View view) async {
   /// Start connection to publisher
   try {
     await view.connect(options: {
-      'events': ['active', 'inactive', 'layers']
+      'events': ['active', 'inactive', 'layers', 'viewercount']
     });
 
     view.webRTCPeer.initStats();
@@ -137,6 +146,6 @@ Future viewConnect(RTCVideoRenderer localRenderer) async {
     });
     return view;
   } catch (e) {
-    rethrow;
+    view.reconnect();
   }
 }

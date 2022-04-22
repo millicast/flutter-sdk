@@ -185,8 +185,9 @@ class SdpParser {
       if (bitrate < 1) {
         _logger.i('Remove bitrate restrictions');
         sdp = sdp
-            .replaceAll(RegExp(r'b=AS:.*\r\n'), 'replace')
+            .replaceAll(RegExp(r'b=AS:.*\r\n'), '')
             .replaceAll(RegExp(r'b=TIAS:.*\r\n'), '');
+        return sdp;
       } else {
         _logger.i('Setting video bitrate');
         Map<String, dynamic> parsedSdp = parse(sdp);

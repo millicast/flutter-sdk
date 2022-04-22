@@ -1,13 +1,15 @@
-import 'package:example/utils/constants.dart';
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:example/viewer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:logger/logger.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 
-import 'subscriber_settings_widget.dart';
-
 import 'package:millicast_flutter_sdk/millicast_flutter_sdk.dart';
+
+import 'subscriber_settings_widget.dart';
 
 Logger _logger = getLogger('SubscriberWidget');
 
@@ -27,8 +29,9 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
   Map options = {};
   bool isVideoMuted = false;
   bool isAudioMuted = false;
-  bool isConnected = true;
-  StreamEvents? events;
+
+  /// Web socket should be closing
+  bool isDeactivating = false;
 
   @override
   void dispose() {
@@ -43,25 +46,32 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
   }
 
   @override
+  void activate() async {
+    await _view!.webRTCPeer.closeRTCPeer();
+    super.activate();
+  }
+
+  @override
   void deactivate() async {
-    if (events != null) {
-      events?.stop();
-    }
-    if (_localRenderer != null) {
-      await closeCameraStream();
-    }
-    if (_view != null) {
-      if (_view?.webRTCPeer != null) {
-        await _view?.webRTCPeer.closeRTCPeer();
-      }
-    }
+    isConnectedSubsc = false;
+    isDeactivating = true;
+    _view!.stopReconnection = true;
+
+    await closeCameraStream();
+    await _view?.stop();
     super.deactivate();
+  }
+
+  void callBuildSubscriber() async {
+    _view = await buildSubscriber(_localRenderer);
+
+    subscribeExample();
   }
 
   @override
   void initState() {
     initRenderers();
-    subscribeExample();
+    callBuildSubscriber();
     super.initState();
   }
 
@@ -72,8 +82,13 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
   }
 
   void subscribeExample() async {
-    _view = await viewConnect(_localRenderer);
-
+    _view?.on(SignalingEvents.connectionSuccess, _view, (ev, context) async {
+      if (isDeactivating) {
+        isConnectedSubsc = false;
+        await _view?.stop();
+      }
+    });
+    await viewConnect(_view!);
     _view?.on('multisource', _view, ((ev, context) {
       if (ev.eventData == false) {
         _projectSourceId(null, 'audio');
@@ -87,17 +102,23 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
       _view?.select();
       setState(() {});
     }));
+
+    setUserCount();
+
     setState(() {});
+  }
 
-    Map<String, dynamic> onUserCountOptions = {
-      'accountId': Constants.accountId,
-      'streamName': Constants.streamName,
-      'callback': (countChange) => {refresh(countChange)},
-    };
+  void setUserCount() {
+    // Add listener of broacastEvent to get UserCount
+    _view!.on('broadcastEvent', this, setUserCountHandler);
+  }
 
-    /// Add UserCount event listener
-    StreamEvents events = await StreamEvents.init();
-    events.onUserCount(onUserCountOptions);
+  void setUserCountHandler(event, context) {
+    var data = jsonEncode(event.eventData);
+    Map<String, dynamic> dataMap = jsonDecode(data);
+    if (dataMap['name'] == 'viewercount') {
+      refresh(dataMap['data']['viewercount']);
+    }
   }
 
   void initRenderers() async {
@@ -126,6 +147,11 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
     return '$hoursStr:$minutesStr:$secondsStr';
   }
 
+  refreshStream() async {
+    await _view!.webRTCPeer.closeRTCPeer();
+    callBuildSubscriber();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -133,7 +159,7 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
         centerTitle: true,
         backgroundColor: Colors.white,
         // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
+        // the App.build method, and use it to set our AppBar title.
         title: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisSize: MainAxisSize.max,
@@ -187,25 +213,6 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
                               view: _view, options: options),
                     ));
               }),
-          ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                  alignment: const Alignment(0, 0),
-                  primary: Colors.white,
-                  elevation: 0),
-              child: const Icon(
-                Icons.replay_outlined,
-                color: Colors.black,
-                size: 25,
-              ),
-              onPressed: () async {
-                await _view?.webRTCPeer.closeRTCPeer();
-                subscribeExample();
-                setState(() {
-                  isVideoMuted = false;
-                  isAudioMuted = false;
-                  isConnected = true;
-                });
-              }),
         ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
@@ -235,14 +242,32 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
           ])),
       body: OrientationBuilder(
         builder: (context, orientation) {
-          return Center(
-            child: Container(
-              margin: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height,
-              child: RTCVideoView(_localRenderer),
-              decoration: const BoxDecoration(color: Colors.black54),
-            ),
+          return Stack(
+            children: [
+              Container(
+                margin: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: RTCVideoView(_localRenderer),
+                decoration: const BoxDecoration(color: Colors.black54),
+              ),
+              Positioned(
+                  top: 40,
+                  left: 20,
+                  height: 45,
+                  width: isConnectedSubsc ? 50 : 85,
+                  child: FloatingActionButton(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                    child: isConnectedSubsc
+                        ? const Text('LIVE')
+                        : const Text('NOT LIVE'),
+                    backgroundColor:
+                        isConnectedSubsc ? Colors.red : Colors.grey,
+                    heroTag: 1,
+                    onPressed: null,
+                  ))
+            ],
           );
         },
       ),
