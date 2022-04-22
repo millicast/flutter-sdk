@@ -83,7 +83,9 @@ class _PublisherSettingsWidgetState extends State<PublisherSettingsWidget> {
                       handler: (value) {
                         _bitrate = value != null ? int.parse(value) : 0;
                         options?['bandwidth'] = _bitrate;
-                        _updateBitrate(_bitrate);
+                        if (isConnected) {
+                          _updateBitrate(_bitrate);
+                        }
                       });
                 },
               ),
