@@ -59,10 +59,10 @@ class MillicastPublishUserMedia extends Publish {
     );
   }
 
-  hangUp(bool connected) {
+  hangUp(bool connected) async {
     if (connected) {
       _logger.w('Disconnecting');
-      webRTCPeer.closeRTCPeer();
+      await stop();
     }
     return connected;
   }
