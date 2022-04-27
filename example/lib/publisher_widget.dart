@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'dart:convert';
@@ -120,7 +122,11 @@ class _PublisherWidgetState extends State<PublisherWidget>
 
   void initPublish() async {
     _publisherMedia = await buildPublisher(_localRenderer);
-    setState(() {});
+    setState(() {
+      if (Platform.isIOS) {
+        _isMirrored = false;
+      }
+    });
   }
 
   void setUserCount() {
