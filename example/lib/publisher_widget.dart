@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:logger/logger.dart';
 import 'dart:convert';
 
@@ -23,6 +26,7 @@ class PublisherWidget extends StatefulWidget {
 
 class _PublisherWidgetState extends State<PublisherWidget>
     with WidgetsBindingObserver {
+  static const platform = MethodChannel('sample.millicast.app/fluttersdk');
   Map options = {};
 
   _PublisherWidgetState();
@@ -38,6 +42,7 @@ class _PublisherWidgetState extends State<PublisherWidget>
   bool isLoading = false;
   bool isAudioMuted = false;
   bool _isMirrored = true;
+  List<String> _supportedCodecs = ['h264', 'vp8', 'vp9', 'av1'];
 
   PeerConnection? webRtcPeer;
   @override
@@ -72,6 +77,9 @@ class _PublisherWidgetState extends State<PublisherWidget>
   @override
   void initState() {
     initRenderers();
+    if (Platform.isAndroid) {
+      _setSupportedCodecs();
+    }
     initPublish();
     super.initState();
     WidgetsBinding.instance?.addObserver(this);
@@ -109,18 +117,23 @@ class _PublisherWidgetState extends State<PublisherWidget>
       stopWatchTimer.onExecute.add(StopWatchExecute.start);
     });
 
-    Map<String, dynamic> onUserCountOptions = {
-      'accountId': Constants.accountId,
-      'streamName': Constants.streamName,
-      'callback': (countChange) => {refresh(countChange)},
-    };
-
     setUserCount();
   }
 
   void initPublish() async {
     _publisherMedia = await buildPublisher(_localRenderer);
     setState(() {});
+  }
+
+  _setSupportedCodecs() async {
+    var codecObjects = await platform.invokeMethod('getSupportedCodecs');
+    List<String> codecs = [];
+    for (var codec in codecObjects) {
+      codecs.add((codec as String).toLowerCase());
+    }
+    setState(() {
+      _supportedCodecs = codecs;
+    });
   }
 
   void setUserCount() {
@@ -248,6 +261,7 @@ class _PublisherWidgetState extends State<PublisherWidget>
                       builder: (BuildContext context) =>
                           PublisherSettingsWidget(
                               publisherMedia: _publisherMedia,
+                              supportedCodecs: _supportedCodecs,
                               options: options,
                               isConnected: isConnected),
                     ));

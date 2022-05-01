@@ -15,6 +15,7 @@ const String? sourceId = String.fromEnvironment('sourceId');
 
 class MillicastPublishUserMedia extends Publish {
   MillicastMedia? mediaManager;
+  List<String>? supportedCodecs;
 
   MillicastPublishUserMedia(options, tokenGenerator, autoReconnect)
       : super(
@@ -29,6 +30,7 @@ class MillicastPublishUserMedia extends Publish {
         MillicastPublishUserMedia(options, tokenGenerator, autoReconnect);
 
     await instance.getMediaStream();
+    await instance.webRTCPeer.getRTCLocalSDP(options: options);
     return instance;
   }
 

@@ -12,14 +12,20 @@ class PublisherSettingsWidget extends StatefulWidget {
   final MillicastPublishUserMedia? publisherMedia;
   final Map? options;
   final bool isConnected;
+  final List<String> supportedCodecs;
   const PublisherSettingsWidget(
-      {this.publisherMedia, this.options, required this.isConnected, Key? key})
+      {this.publisherMedia,
+      required this.supportedCodecs,
+      this.options,
+      required this.isConnected,
+      Key? key})
       : super(key: key);
   @override
   _PublisherSettingsWidgetState createState() =>
       // ignore: no_logic_in_create_state
       _PublisherSettingsWidgetState(
           publisherMedia: publisherMedia,
+          supportedCodecs: supportedCodecs,
           options: options,
           isConnected: isConnected);
 }
@@ -30,9 +36,11 @@ class _PublisherSettingsWidgetState extends State<PublisherSettingsWidget> {
   final _formKey = GlobalKey<FormState>();
   MillicastPublishUserMedia? publisherMedia;
   bool isSimulcastEnabled = true;
+  List<String> supportedCodecs = ['h264', 'vp8', 'vp9', 'av1'];
 
   _PublisherSettingsWidgetState(
       {required this.publisherMedia,
+      required this.supportedCodecs,
       required this.options,
       required this.isConnected});
 
@@ -254,7 +262,7 @@ class _PublisherSettingsWidgetState extends State<PublisherSettingsWidget> {
                   style: TextStyle(color: Colors.white, fontSize: 15)),
               dropdownColor: Colors.purple,
               value: options?['codec'],
-              items: ['h264', 'vp8', 'vp9', 'av1'].map((String value) {
+              items: supportedCodecs.map((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
                   child: Text(
