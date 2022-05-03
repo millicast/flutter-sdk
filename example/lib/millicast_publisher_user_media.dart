@@ -31,7 +31,6 @@ class MillicastPublishUserMedia extends Publish {
         MillicastPublishUserMedia(options, tokenGenerator, autoReconnect);
 
     await instance.getMediaStream();
-    await instance.webRTCPeer.getRTCLocalSDP(options: options);
     return instance;
   }
 

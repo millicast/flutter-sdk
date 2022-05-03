@@ -31,14 +31,14 @@ class _PublisherWidgetState extends State<PublisherWidget>
     mode: StopWatchMode.countUp,
   );
   final RTCVideoRenderer _localRenderer = RTCVideoRenderer();
-  late String _viewers = '0';
+  String _viewers = '0';
   late MillicastPublishUserMedia _publisherMedia;
+  late List<String> _supportedCodecs;
   bool isVideoMuted = false;
   bool isConnected = false;
   bool isLoading = false;
   bool isAudioMuted = false;
   bool _isMirrored = true;
-  List<String> _supportedCodecs = ['h264', 'vp8', 'vp9', 'av1'];
 
   PeerConnection? webRtcPeer;
   @override
