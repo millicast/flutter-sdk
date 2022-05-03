@@ -9,7 +9,7 @@ environment:
 
 dependencies:
   eventify: ^1.0.0
-  dotenv: ^3.0.0
+  dotenv: ^4.0.0
   flutter:
     sdk: flutter
   logger: ^1.1.0
@@ -33,6 +33,13 @@ dev_dependencies:
 
 # The following section is specific to Flutter.
 flutter:
+  plugin:
+    platforms:
+      android:
+        package: com.millicast_flutter_sdk
+        pluginClass: MillicastFlutterSdkPlugin
+      ios:
+        pluginClass: MillicastFlutterSdkPlugin
 
   # To add assets to your package, add an assets section, like this:
   # assets:

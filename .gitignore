@@ -28,3 +28,9 @@ example/web
 
 # Env files
 *.env
+
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/

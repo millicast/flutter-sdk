@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:eventify/eventify.dart';
 import 'package:millicast_flutter_sdk/src/peer_connection_stats.dart';
 import 'package:millicast_flutter_sdk/src/utils/sdp_parser.dart';
+import 'utils/channel.dart';
 import 'utils/reemit.dart';
 
 import 'config.dart';
@@ -315,7 +316,14 @@ class PeerConnection extends EventEmitter {
   /// Millicast Media Server.
   /// Bug: This ticket is related to the implementation of
   /// jsTrack.getCapabilities(), https://github.com/dart-lang/sdk/issues/44319
-  static getCapabilities(String kind) {}
+  static Future<Map> getCapabilities(String kind) async {
+    if (kind == 'video') {
+      return {'codec': await NativeChannel.supportedCodecs};
+    } else {
+      // kind is audio
+      return {'codec': []};
+    }
+  }
 
   /// Get sender tracks
   /// Returns [List] of [MediaStreamTrack] with all tracks in sender peer.

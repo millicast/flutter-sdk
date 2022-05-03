@@ -63,7 +63,6 @@ flutter {
 }
 
 dependencies {
-    implementation 'com.github.webrtc-sdk:android:97.4692.01'
     implementation 'androidx.annotation:annotation:1.1.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }

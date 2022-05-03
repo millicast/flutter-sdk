@@ -1,7 +1,4 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:logger/logger.dart';
 import 'dart:convert';
 
@@ -26,7 +23,6 @@ class PublisherWidget extends StatefulWidget {
 
 class _PublisherWidgetState extends State<PublisherWidget>
     with WidgetsBindingObserver {
-  static const platform = MethodChannel('sample.millicast.app/fluttersdk');
   Map options = {};
 
   _PublisherWidgetState();
@@ -77,9 +73,7 @@ class _PublisherWidgetState extends State<PublisherWidget>
   @override
   void initState() {
     initRenderers();
-    if (Platform.isAndroid) {
-      _setSupportedCodecs();
-    }
+    _setSupportedCodecs();
     initPublish();
     super.initState();
     WidgetsBinding.instance?.addObserver(this);
@@ -126,7 +120,7 @@ class _PublisherWidgetState extends State<PublisherWidget>
   }
 
   _setSupportedCodecs() async {
-    var codecObjects = await platform.invokeMethod('getSupportedCodecs');
+    var codecObjects = (await PeerConnection.getCapabilities('video'))['codec'];
     List<String> codecs = [];
     for (var codec in codecObjects) {
       codecs.add((codec as String).toLowerCase());
