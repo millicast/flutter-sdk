@@ -33,8 +33,9 @@ class _PublisherWidgetState extends State<PublisherWidget>
     mode: StopWatchMode.countUp,
   );
   final RTCVideoRenderer _localRenderer = RTCVideoRenderer();
-  late String _viewers = '0';
+  String _viewers = '0';
   late MillicastPublishUserMedia _publisherMedia;
+  late List<String> _supportedCodecs;
   bool isVideoMuted = false;
   bool isConnected = false;
   bool isLoading = false;
@@ -74,6 +75,7 @@ class _PublisherWidgetState extends State<PublisherWidget>
   @override
   void initState() {
     initRenderers();
+    _setSupportedCodecs();
     initPublish();
     super.initState();
     WidgetsBinding.instance?.addObserver(this);
@@ -111,12 +113,6 @@ class _PublisherWidgetState extends State<PublisherWidget>
       stopWatchTimer.onExecute.add(StopWatchExecute.start);
     });
 
-    Map<String, dynamic> onUserCountOptions = {
-      'accountId': Constants.accountId,
-      'streamName': Constants.streamName,
-      'callback': (countChange) => {refresh(countChange)},
-    };
-
     setUserCount();
   }
 
@@ -126,6 +122,17 @@ class _PublisherWidgetState extends State<PublisherWidget>
       if (Platform.isIOS) {
         _isMirrored = false;
       }
+    });
+  }
+
+  _setSupportedCodecs() async {
+    var codecObjects = (await PeerConnection.getCapabilities('video'))['codec'];
+    List<String> codecs = [];
+    for (var codec in codecObjects) {
+      codecs.add((codec as String).toLowerCase());
+    }
+    setState(() {
+      _supportedCodecs = codecs;
     });
   }
 
@@ -254,6 +261,7 @@ class _PublisherWidgetState extends State<PublisherWidget>
                       builder: (BuildContext context) =>
                           PublisherSettingsWidget(
                               publisherMedia: _publisherMedia,
+                              supportedCodecs: _supportedCodecs,
                               options: options,
                               isConnected: isConnected),
                     ));

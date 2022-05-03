@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:millicast_flutter_sdk/millicast_flutter_sdk.dart';
+import 'package:flutter/foundation.dart';
 
 var _logger = getLogger('MillicastPublishUserMedia');
 
@@ -15,6 +16,7 @@ const String? sourceId = String.fromEnvironment('sourceId');
 
 class MillicastPublishUserMedia extends Publish {
   MillicastMedia? mediaManager;
+  List<String>? supportedCodecs;
 
   MillicastPublishUserMedia(options, tokenGenerator, autoReconnect)
       : super(
@@ -102,8 +104,11 @@ class MillicastMedia {
     try {
       mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
 
-      if (Platform.isIOS) {
-        mediaStream?.getAudioTracks()[0].enableSpeakerphone(true);
+      // Adding this check check so we don't lose web support
+      if (!kIsWeb) {
+        if (Platform.isIOS) {
+          mediaStream?.getAudioTracks()[0].enableSpeakerphone(true);
+        }
       }
 
       return mediaStream;

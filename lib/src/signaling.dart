@@ -1,4 +1,5 @@
 import 'package:eventify/eventify.dart';
+import 'package:millicast_flutter_sdk/src/utils/channel.dart';
 import 'package:millicast_flutter_sdk/src/utils/sdp_parser.dart';
 import 'utils/transaction_manager.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -151,6 +152,12 @@ class Signaling extends EventEmitter {
       if (!videoCodec.containsValue(options['codec'])) {
         _logger.e('Invalid codec. Possible values are: $videoCodec');
         throw Exception('Invalid codec. Possible values are: $videoCodec');
+      }
+      List<Object?> codecs = (await NativeChannel.supportedCodecs);
+      if (!codecs.contains(options['codec'])) {
+        options['codec'] = codecs[0];
+        _logger
+            .w('Codec not supported by this device. Fallback to: ${codecs[0]}');
       }
       if (options['codec'] == videoCodec['AV1']) {
         sdp = SdpParser.adaptCodecName(sdp, 'AV1X', videoCodec['AV1']!);

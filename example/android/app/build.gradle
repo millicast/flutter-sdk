@@ -40,9 +40,8 @@ android {
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
     }
-
+    
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.millicast.flutter.example"
         minSdkVersion 21
         targetSdkVersion flutter.targetSdkVersion
@@ -64,5 +63,6 @@ flutter {
 }
 
 dependencies {
+    implementation 'androidx.annotation:annotation:1.1.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }

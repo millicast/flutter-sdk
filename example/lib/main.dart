@@ -65,6 +65,7 @@ class MyApp extends StatelessWidget {
         '/subscriber': (context) => const SubscriberWidget(),
         '/settings': (context) => const PublisherSettingsWidget(
               isConnected: false,
+              supportedCodecs: [],
             )
       },
       home: HomeScreen(),

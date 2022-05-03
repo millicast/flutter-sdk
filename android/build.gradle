@@ -1,0 +1,47 @@
+group 'com.millicast_flutter_sdk'
+version '1.0'
+
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:4.1.3'
+    }
+}
+
+rootProject.allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        jcenter()
+        maven { url 'https://jitpack.io' }
+    }
+}
+
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 31
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    defaultConfig {
+        minSdkVersion 21
+        multiDexEnabled true
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+        consumerProguardFiles 'proguard-rules.pro'
+    }
+}
+
+dependencies {
+    implementation 'com.github.webrtc-sdk:android:97.4692.01'
+    implementation 'androidx.annotation:annotation:1.1.0'
+    implementation 'com.android.support:multidex:2.0.1'
+}
