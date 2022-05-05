@@ -129,11 +129,8 @@ class _PublisherWidgetState extends State<PublisherWidget>
   }
 
   _setSupportedCodecs() async {
-    var codecObjects = (await PeerConnection.getCapabilities('video'))['codec'];
-    List<String> codecs = [];
-    for (var codec in codecObjects) {
-      codecs.add((codec as String).toLowerCase());
-    }
+    List<String> codecs =
+        (await PeerConnection.getCapabilities('video'))['codec'];
     setState(() {
       _supportedCodecs = codecs;
     });
