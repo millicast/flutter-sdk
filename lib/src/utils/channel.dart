@@ -24,9 +24,9 @@ class NativeChannel {
         List<Object?> codecsObject =
             await _channel.invokeMethod('getSupportedCodecs');
         List<String> codecs = [];
-        for (var codec in codecsObject) {
-          codecs.add((codec as String).toLowerCase());
-        }
+        codecs = codecsObject
+            .map((codec) => (codec as String).toLowerCase())
+            .toList();
         return codecs;
       }
     }
