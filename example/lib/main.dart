@@ -15,7 +15,7 @@ void main() async {
   Logger.level = Level.info;
   await dotenv.load(fileName: '.env');
   await initUniLinks();
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 Future<bool> initUniLinks() async {
@@ -48,7 +48,7 @@ Future<bool> initUniLinks() async {
 }
 
 class MyApp extends StatelessWidget {
-  MyApp({Key? key}) : super(key: key);
+  const MyApp({Key? key}) : super(key: key);
 
   // This widget is the root of your application.
   @override
