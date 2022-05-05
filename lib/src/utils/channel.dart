@@ -12,8 +12,8 @@ class NativeChannel {
     return version;
   }
 
-  static Future<List<Object?>> get supportedCodecs async {
-    List<Object?> codecs = [
+  static Future<List<String>> get supportedCodecs async {
+    List<String> codecs = [
       'vp8',
       'vp9',
       'h264',
@@ -21,7 +21,13 @@ class NativeChannel {
     ];
     if (!kIsWeb) {
       if (Platform.isAndroid) {
-        codecs = await _channel.invokeMethod('getSupportedCodecs');
+        List<Object?> codecsObject =
+            await _channel.invokeMethod('getSupportedCodecs');
+        List<String> codecs = [];
+        for (var codec in codecsObject) {
+          codecs.add((codec as String).toLowerCase());
+        }
+        return codecs;
       }
     }
     return codecs;

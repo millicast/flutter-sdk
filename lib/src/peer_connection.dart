@@ -318,7 +318,9 @@ class PeerConnection extends EventEmitter {
   /// jsTrack.getCapabilities(), https://github.com/dart-lang/sdk/issues/44319
   static Future<Map> getCapabilities(String kind) async {
     if (kind == 'video') {
-      return {'codec': await NativeChannel.supportedCodecs};
+      List<String> codecs = await NativeChannel.supportedCodecs;
+      _logger.i('Supported video codecs for this device are $codecs');
+      return {'codec': codecs};
     } else {
       // kind is audio
       return {'codec': []};
