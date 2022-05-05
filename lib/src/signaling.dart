@@ -153,7 +153,7 @@ class Signaling extends EventEmitter {
         _logger.e('Invalid codec. Possible values are: $videoCodec');
         throw Exception('Invalid codec. Possible values are: $videoCodec');
       }
-      List<Object?> codecs = (await NativeChannel.supportedCodecs);
+      List<String?> codecs = (await NativeChannel.supportedCodecs);
       if (!codecs.contains(options['codec'])) {
         options['codec'] = codecs[0];
         _logger
