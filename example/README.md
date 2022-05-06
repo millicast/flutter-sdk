@@ -61,8 +61,9 @@ You need to set up an emulator or connect a device in order to run the app.
 ```
 1) Plug in your iPhone, sign in with your iCloud account in XCode.
 2) Change the bundle identifier. 
-2) Change the device in your IDE.
-3) Run flutter in the detected device.
+3) Change the device in your IDE.
+4) Run flutter in the detected device.
+5)[Optional] Open XCode => Runner => Build Settings => Enable bitcode => No
 ```
 #### Setting Up Emulator with Android Studio
 
