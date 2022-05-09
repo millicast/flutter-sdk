@@ -1,7 +1,10 @@
 ## 0.2.1
 
+This is the first official release of the Millicast Flutter SDK.
+
 ### Added
 
+- Now the SDK can be directly downloaded from pub.dev package repository.
 - getCapabilities initial implementation now returns supported video codecs.
 
 ### Changed

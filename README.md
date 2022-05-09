@@ -1,40 +1,29 @@
-# Millicast SDK for Flutter (beta)
+# Millicast SDK for Flutter
 
-Flutter SDK (currently under beta testing) for building a realtime broadcaster using the Millicast platform.
+Flutter SDK for building a realtime broadcaster using the Millicast platform.
 This Software Development Kit (SDK) for Flutter allows developers to simplify Millicast services integration into their own Android and iOS apps.
 
 ## Table of Contents
-* [Installation](#installation)
-  + [iOS](#ios)
-  + [Android](#android)
-* [Basic Usage](#basic-usage)
-  + [Main app](#main-app)
-  + [Publisher app](#publisher-app)
-  + [Viewer app](#viewer-app)
-  + [Important reminder](#important-reminder)
-* [API Reference](#api-reference)
-* [Sample](#sample)
-* [SDK developer information](#sdk-developer-information)
-* [License](#license)
+
+- [Installation](#installation)
+  - [iOS](#ios)
+  - [Android](#android)
+- [Basic Usage](#basic-usage)
+  - [Main app](#main-app)
+  - [Publisher app](#publisher-app)
+  - [Viewer app](#viewer-app)
+  - [Important reminder](#important-reminder)
+- [API Reference](#api-reference)
+- [Sample](#sample)
+- [SDK developer information](#sdk-developer-information)
+- [License](#license)
 
 ## Installation
 
 To add the Millicast Flutter SDK to your dependencies, run:
 
 ```sh
-flutter pub add millicast_flutter_sdk --git-url https://github.com/millicast/flutter-sdk.git  --git-ref beta-test
-```
-
-> **NOTE**: Until we publish Millicast Flutter SDK in [pub.dev](https://pub.dev), import the millicast_flutter_sdk package using git information in pubspec.yaml file as shown below.
-
-```yaml
-dependencies:
-  flutter:
-    sdk: flutter
-  millicast_flutter_sdk:
-    git:
-      url: https://github.com/millicast/flutter-sdk.git
-      ref: beta-test # branch name
+flutter pub add millicast_flutter_sdk
 ```
 
 Then run the following command to download the dependencies:
