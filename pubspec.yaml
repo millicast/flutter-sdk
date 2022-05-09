@@ -9,13 +9,11 @@ environment:
 
 dependencies:
   eventify: ^1.0.0
-  dotenv: ^4.0.0
   flutter:
     sdk: flutter
   logger: ^1.1.0
   flutter_webrtc: ^0.8.1
   http: ^0.13.4
-  mockito: ^5.0.17
   web_socket_channel: ^2.1.0
   jwt_decode: ^0.3.1
   sdp_transform: ^0.3.2
@@ -27,6 +25,8 @@ dev_dependencies:
   dartdoc: ^4.1.0
   test: ^1.17.12
   build_runner: ^2.1.7
+  mockito: ^5.0.17
+  dotenv: ^4.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
