@@ -1,3 +1,13 @@
+## 0.2.2
+
+### Changed
+
+- Added information needed in order to properly run the README.md Getting Started example app.
+
+### Fixed
+
+- Moved Mockito and dotenv depenencies as dev dependencies
+
 ## 0.2.1
 
 This is the first official release of the Millicast Flutter SDK.

@@ -191,7 +191,7 @@ packages:
     source: hosted
     version: "4.1.0"
   dotenv:
-    dependency: "direct main"
+    dependency: "direct dev"
     description:
       name: dotenv
       url: "https://pub.dartlang.org"
@@ -390,7 +390,7 @@ packages:
     source: hosted
     version: "1.0.2"
   mockito:
-    dependency: "direct main"
+    dependency: "direct dev"
     description:
       name: mockito
       url: "https://pub.dartlang.org"
