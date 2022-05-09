@@ -140,6 +140,9 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     initRenderers();
+    // Run application with --dart-define type flag like:
+    // flutter run --dart-define=type="subscribe||publish"
+    // To choose wether you want to publishe or subscribe.
     switch (type) {
       case 'subscribe':
         subscribeExample();
@@ -148,6 +151,7 @@ class _MyHomePageState extends State<MyHomePage> {
         publishExample();
         break;
       default:
+        publishExample();
     }
     super.initState();
   }
@@ -269,6 +273,14 @@ Future viewConnect(RTCVideoRenderer localRenderer) async {
 }
 ```
 
+### Run the application
+
+Set `type` environment variable `publish` or `subscribe` to decide wether you want to run the publisher or viewer app.
+
+```bash
+flutter run --dart-define=type='publish'
+```
+
 ### Important reminder
 
 When you compile the release apk, you need to add the following operations:
@@ -276,7 +288,7 @@ When you compile the release apk, you need to add the following operations:
 
 ## API Reference
 
-You can find the latest, most up to date SDK documentation at our [API Reference page](https://millicast.github.io/flutter-sdk/). There are more examples with every module available.
+You can find the latest, most up to date SDK documentation at our [API Reference page](https://pub.dev/documentation/millicast_flutter_sdk/latest/). There are more examples with every module available.
 
 ## Sample
 
