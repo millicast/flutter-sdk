@@ -83,6 +83,12 @@ Returns Future object which represents the SDP command response.</p>
       _logger.e(&#39;Invalid codec. Possible values are: $videoCodec&#39;);
       throw Exception(&#39;Invalid codec. Possible values are: $videoCodec&#39;);
     }
+    List&lt;String?&gt; codecs = (await NativeChannel.supportedCodecs);
+    if (!codecs.contains(options[&#39;codec&#39;])) {
+      options[&#39;codec&#39;] = codecs[0];
+      _logger
+          .w(&#39;Codec not supported by this device. Fallback to: ${codecs[0]}&#39;);
+    }
     if (options[&#39;codec&#39;] == videoCodec[&#39;AV1&#39;]) {
       sdp = SdpParser.adaptCodecName(sdp, &#39;AV1X&#39;, videoCodec[&#39;AV1&#39;]!);
     }
@@ -184,7 +190,7 @@ Returns Future object which represents the SDP command response.</p>
 <footer>
   <span class="no-break">
     millicast_flutter_sdk
-      0.0.1
+      0.2.2
   </span>
 
   

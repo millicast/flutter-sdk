@@ -99,18 +99,18 @@
           sendEncodings: (options[&#39;simulcast&#39;])
               ? [
                   RTCRtpEncoding(
-                    rid: &#39;f&#39;,
-                    numTemporalLayers: 3,
+                    rid: &#39;2&#39;,
+                    numTemporalLayers: 1,
                   ),
                   RTCRtpEncoding(
-                    rid: &#39;h&#39;,
-                    numTemporalLayers: 3,
+                    rid: &#39;1&#39;,
+                    numTemporalLayers: 1,
                     maxBitrate: 300000,
                     scaleResolutionDownBy: 2.0,
                   ),
                   RTCRtpEncoding(
-                    rid: &#39;q&#39;,
-                    numTemporalLayers: 3,
+                    rid: &#39;0&#39;,
+                    numTemporalLayers: 1,
                     maxBitrate: 100000,
                     scaleResolutionDownBy: 4.0,
                   ),
@@ -220,7 +220,7 @@
 <footer>
   <span class="no-break">
     millicast_flutter_sdk
-      0.0.1
+      0.2.2
   </span>
 
   

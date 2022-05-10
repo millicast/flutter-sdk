@@ -30,7 +30,7 @@
 <header id="title">
   <button id="sidenav-left-toggle" type="button">&nbsp;</button>
   <ol class="breadcrumbs gt-separated dark hidden-xs">
-    <li><a href="https://github.com/qualabs/">millicast_flutter_sdk package</a></li>
+    <li><a href="https://github.com/millicast/flutter-sdk">millicast_flutter_sdk package</a></li>
   </ol>
   <div class="self-name">millicast_flutter_sdk</div>
   <form class="search navbar-right" role="search">
@@ -70,7 +70,10 @@ This Software Development Kit (SDK) for Flutter allows developers to simplify Mi
 </ul>
 <h2 id="installation">Installation</h2>
 <p>To add the Millicast Flutter SDK to your dependencies, run:</p>
-<pre class="language-sh"><code class="language-sh">$ flutter pub add millicast_flutter_sdk
+<pre class="language-sh"><code class="language-sh">flutter pub add millicast_flutter_sdk
+</code></pre>
+<p>Then run the following command to download the dependencies:</p>
+<pre class="language-sh"><code class="language-sh">flutter pub get
 </code></pre>
 <p>With this you will have then access to all the features provided by the SDK to use in your project.</p>
 <p>When creating your own app, follow these steps:
@@ -157,6 +160,9 @@ class _MyHomePageState extends State&lt;MyHomePage&gt; {
   @override
   void initState() {
     initRenderers();
+    // Run application with --dart-define type flag like:
+    // flutter run --dart-define=type="subscribe||publish"
+    // To choose wether you want to publishe or subscribe.
     switch (type) {
       case 'subscribe':
         subscribeExample();
@@ -165,6 +171,7 @@ class _MyHomePageState extends State&lt;MyHomePage&gt; {
         publishExample();
         break;
       default:
+        publishExample();
     }
     super.initState();
   }
@@ -237,7 +244,7 @@ Future publishConnect(RTCVideoRenderer localRenderer) async {
 
   //Publishing Options
   Map&lt;String, dynamic&gt; broadcastOptions = {'mediaStream': stream};
-  //Android does not support h264 codec for publishing
+  //Some Android devices do not support h264 codec for publishing
   if (Platform.isAndroid) {
     broadcastOptions['codec'] = 'vp8';
   }
@@ -279,11 +286,15 @@ Future viewConnect(RTCVideoRenderer localRenderer) async {
   }
 }
 </code></pre>
+<h3 id="run-the-application">Run the application</h3>
+<p>Set <code>type</code> environment variable <code>publish</code> or <code>subscribe</code> to decide wether you want to run the publisher or viewer app.</p>
+<pre class="language-bash"><code class="language-bash">flutter run --dart-define=type='publish'
+</code></pre>
 <h3 id="important-reminder">Important reminder</h3>
 <p>When you compile the release apk, you need to add the following operations:
 <a href="https://github.com/flutter-webrtc/flutter-webrtc/commit/d32dab13b5a0bed80dd9d0f98990f107b9b514f4">Setup Proguard Rules</a></p>
 <h2 id="api-reference">API Reference</h2>
-<p>You can find the latest, most up to date SDK documentation at our <a href="https://millicast.github.io/millicast_flutter_sdk/">API Reference page</a>. There are more examples with every module available.</p>
+<p>You can find the latest, most up to date SDK documentation at our <a href="https://pub.dev/documentation/millicast_flutter_sdk/latest/">API Reference page</a>. There are more examples with every module available.</p>
 <h2 id="sample">Sample</h2>
 <p>Example can be found in <a href="example">example</a> folder.</p>
 <h2 id="sdk-developer-information">SDK developer information</h2>
@@ -316,7 +327,7 @@ Future viewConnect(RTCVideoRenderer localRenderer) async {
 </header>
 
 <ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
-  <li><a href="https://github.com/qualabs/">millicast_flutter_sdk package</a></li>
+  <li><a href="https://github.com/millicast/flutter-sdk">millicast_flutter_sdk package</a></li>
 </ol>
 
 
@@ -336,7 +347,7 @@ Future viewConnect(RTCVideoRenderer localRenderer) async {
 <footer>
   <span class="no-break">
     millicast_flutter_sdk
-      0.0.1
+      0.2.2
   </span>
 
   

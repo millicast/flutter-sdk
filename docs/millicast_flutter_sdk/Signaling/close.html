@@ -71,7 +71,7 @@
   <h2><span>Implementation</span></h2>
   <pre class="language-dart"><code class="language-dart">void close() {
   _logger.i(&#39;Closing connection with Signaling Server.&#39;);
-  webSocket?.sink.close();
+  transactionManager?.close();
 }</code></pre>
 </section>
 
@@ -148,7 +148,7 @@
 <footer>
   <span class="no-break">
     millicast_flutter_sdk
-      0.0.1
+      0.2.2
   </span>
 
   

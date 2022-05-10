@@ -52,7 +52,7 @@
     <section class="multi-line-signature">
       
 
-<span class="returntype">dynamic</span>
+<span class="returntype"><a href="https://api.flutter.dev/flutter/dart-async/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.flutter.dev/flutter/dart-core/Map-class.html">Map</a></span>&gt;</span></span>
 <span class="name ">getCapabilities</span>(<wbr><ol class="parameter-list"><li><span class="parameter" id="getCapabilities-param-kind"><span class="type-annotation"><a href="https://api.flutter.dev/flutter/dart-core/String-class.html">String</a></span> <span class="parameter-name">kind</span></span></li>
 </ol>)
 
@@ -64,7 +64,7 @@
   <p>Gets user's mobile media capabilities compared with
 Millicast Media Server support.</p>
 <p><code>kind</code> - Type of media for which you wish to get sender capabilities.
-Returns <a href="https://api.flutter.dev/flutter/dart-core/Map-class.html">Map</a> with all capabilities supported by user's mobile and
+Returns <code>Map</code> with all capabilities supported by user's mobile and
 Millicast Media Server.
 Bug: This ticket is related to the implementation of
 jsTrack.getCapabilities(), <a href="https://github.com/dart-lang/sdk/issues/44319">https://github.com/dart-lang/sdk/issues/44319</a></p>
@@ -74,7 +74,16 @@ jsTrack.getCapabilities(), <a href="https://github.com/dart-lang/sdk/issues/4431
     
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
-  <pre class="language-dart"><code class="language-dart">static getCapabilities(String kind) {}</code></pre>
+  <pre class="language-dart"><code class="language-dart">static Future&lt;Map&gt; getCapabilities(String kind) async {
+  if (kind == &#39;video&#39;) {
+    List&lt;String&gt; codecs = await NativeChannel.supportedCodecs;
+    _logger.i(&#39;Supported video codecs for this device are $codecs&#39;);
+    return {&#39;codec&#39;: codecs};
+  } else {
+    &#47;&#47; kind is audio
+    return {&#39;codec&#39;: []};
+  }
+}</code></pre>
 </section>
 
 
@@ -168,7 +177,7 @@ jsTrack.getCapabilities(), <a href="https://github.com/dart-lang/sdk/issues/4431
 <footer>
   <span class="no-break">
     millicast_flutter_sdk
-      0.0.1
+      0.2.2
   </span>
 
   
