@@ -300,7 +300,7 @@ class PeerConnection extends EventEmitter {
     try {
       RTCRtpSender? currentSender = (await peer!.getSenders()).firstWhere(
           (s) => s.track?.kind == mediaStreamTrack.kind,
-          orElse: () => ());
+          orElse: () => throw Exception());
       currentSender.replaceTrack(mediaStreamTrack);
     } catch (e) {
       _logger
