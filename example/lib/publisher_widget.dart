@@ -27,6 +27,9 @@ class PublisherWidget extends StatefulWidget {
 class _PublisherWidgetState extends State<PublisherWidget>
     with WidgetsBindingObserver {
   Map options = {};
+
+  /// This allows a value of type T or T?
+  /// to be treated as a value of type T?.
   T? _ambiguate<T>(T? value) => value;
 
   _PublisherWidgetState();
