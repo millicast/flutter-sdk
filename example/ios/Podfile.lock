@@ -2,12 +2,10 @@ PODS:
   - Flutter (1.0.0)
   - flutter_webrtc (0.7.1):
     - Flutter
-    - Libyuv (= 1703)
-    - WebRTC-SDK (= 97.4692.02)
-  - Libyuv (1703)
+    - WebRTC-SDK (= 97.4692.05)
   - millicast_flutter_sdk (0.2.0):
     - Flutter
-    - WebRTC-SDK (= 97.4692.02)
+    - WebRTC-SDK (= 97.4692.05)
   - path_provider_ios (0.0.1):
     - Flutter
   - share_plus (0.0.1):
@@ -16,7 +14,7 @@ PODS:
     - Flutter
   - url_launcher_ios (0.0.1):
     - Flutter
-  - WebRTC-SDK (97.4692.02)
+  - WebRTC-SDK (97.4692.05)
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
@@ -29,7 +27,6 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - Libyuv
     - WebRTC-SDK
 
 EXTERNAL SOURCES:
@@ -50,15 +47,14 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
-  flutter_webrtc: 3fd57d5bd9b6ce85d12d37f6f68d97be3b80509f
-  Libyuv: 5f79ced0ee66e60a612ca97de1e6ccacd187a437
-  millicast_flutter_sdk: 88180386ee6d6b3ab731552be1a970b01eb17406
+  flutter_webrtc: c4d09b864e7a8e93ad931bb84eed0ceb1ed51444
+  millicast_flutter_sdk: 67876905ec0beb8a779cbf5f3e1f364268ad99e1
   path_provider_ios: 14f3d2fd28c4fdb42f44e0f751d12861c43cee02
   share_plus: 056a1e8ac890df3e33cb503afffaf1e9b4fbae68
   uni_links: d97da20c7701486ba192624d99bffaaffcfc298a
   url_launcher_ios: 839c58cdb4279282219f5e248c3321761ff3c4de
-  WebRTC-SDK: dda4e50186f9eed672dc6bcf4faafb30c6ce48e3
+  WebRTC-SDK: a6ee40bda0e3f7dba057907c3897374005c5715b
 
 PODFILE CHECKSUM: ad10b5a11daf7326a4887259fa4650ba66d69f77
 
-COCOAPODS: 1.11.2
+COCOAPODS: 1.11.3
