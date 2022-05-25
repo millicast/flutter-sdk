@@ -4,14 +4,12 @@ import 'dart:convert';
 import 'package:example/viewer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
-import 'package:logger/logger.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 
 import 'package:millicast_flutter_sdk/millicast_flutter_sdk.dart';
 
 import 'subscriber_settings_widget.dart';
 
-Logger _logger = getLogger('SubscriberWidget');
 
 class SubscriberWidget extends StatefulWidget {
   const SubscriberWidget({Key? key}) : super(key: key);
