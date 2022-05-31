@@ -129,11 +129,17 @@ Future buildSubscriber(RTCVideoRenderer localRenderer) async {
 Future viewConnect(View view) async {
   /// Start connection to publisher
   try {
+    _logger.wtf('the pep');
     await view.connect(options: {
       'events': ['active', 'inactive', 'layers', 'viewercount']
     });
 
     view.webRTCPeer.initStats();
+    MediaStream mediaStream = await createLocalMediaStream('remoteStream');
+    List<MediaStream> streams = [mediaStream];
+    RTCRtpTransceiver transceiver = await view.addRemoteTrack(RTCRtpMediaType.RTCRtpMediaTypeVideo, streams);
+    _logger.wtf('Transceiver generated: ${transceiver.mid}');
+    _logger.wtf('Transceiver 2: ${transceiver.transceiverId}');
 
     view.webRTCPeer.on('stats', view, (stats, context) {
       if (stats.eventData != null) {
@@ -146,6 +152,7 @@ Future viewConnect(View view) async {
     });
     return view;
   } catch (e) {
+    _logger.wtf(e.toString());
     view.reconnect();
   }
 }

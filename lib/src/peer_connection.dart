@@ -35,6 +35,7 @@ class PeerConnection extends EventEmitter {
   RTCSessionDescription? sessionDescription;
   RTCPeerConnection? peer;
   PeerConnectionStats? peerConnectionStats;
+  List<RTCRtpTransceiverCompleter> pendingTransceivers = [];
 
   PeerConnection() : super();
 
@@ -230,23 +231,26 @@ class PeerConnection extends EventEmitter {
   /// [streams] - Streams the track will belong to.
   /// [Future] that will be resolved when the [RTCRtpTransceiver]
   /// is assigned an mid value.
-  addRemoteTrack(media, List<MediaStream> streams) async {
-    Completer completer = Completer();
-    var transceiverCompleter = RTCRtpTransceiverCompleter(completer);
+  Future<RTCRtpTransceiver> addRemoteTrack(media, List<MediaStream> streams) async {
+    _logger.wtf('EL PEPEEEEEEEEEEEEEEEEEEEEEE');
     try {
-      for (var stream in streams) {
-        stream.getTracks().forEach((track) async {
-          transceiverCompleter.transceiver = await peer!.addTransceiver(
-              track: track,
+      RTCRtpTransceiver transceiverLocal = await peer!.addTransceiver(
               kind: media,
               init: RTCRtpTransceiverInit(
-                  direction: TransceiverDirection.RecvOnly));
-          stream.addTrack(transceiverCompleter.transceiver!.receiver.track!);
-          transceiverCompleter.completer = completer;
-          return completer.future;
-        });
+                  direction: TransceiverDirection.RecvOnly,
+                  streams: streams));
+      for (var stream in streams) {
+        stream.addTrack(transceiverLocal.receiver.track!);
       }
+      _logger.wtf('LOCAL MID ${transceiverLocal.mid}');
+      _logger.wtf('LOCAL TRANSCEIVERID ${transceiverLocal.transceiverId}');
+      RTCRtpTransceiverCompleter completer = RTCRtpTransceiverCompleter();
+      Future<RTCRtpTransceiver> t = completer.createTransceiver(transceiverLocal);
+      pendingTransceivers.add(completer);
+
+      return transceiverLocal;
     } catch (e) {
+      _logger.wtf(e.toString());
       throw Exception(e);
     }
   }
@@ -439,9 +443,21 @@ class PeerConnection extends EventEmitter {
       _logger.d('Track event value: $event');
 
       // Listen for remote tracks events for resolving pending addRemoteTrack calls.
-      // TO DO
-      // if (event.transceiver != null) {}
-      // ;
+      if(event.transceiver != null) {
+        _logger.wtf('SOMETHINGGGGGGGGG ${event.transceiver!.mid}');
+        _logger.wtf('SOMETHINGGGGGGGGG ID ${event.transceiver!.transceiverId}');
+        var tIndex = pendingTransceivers.indexWhere((t) => t.transceiver.transceiverId == event.transceiver!.mid);
+        if (tIndex != -1) {
+          _logger.wtf('ENTREE');
+          RTCRtpTransceiverCompleter transceiverCompleter = pendingTransceivers.elementAt(tIndex);
+          transceiverCompleter.completeTransceiver(event.transceiver!);
+        }
+        if(pendingTransceivers.isNotEmpty) {
+          _logger.wtf('EL PEPE ESTA RE CURIOSO DE ESTO ${pendingTransceivers[0].transceiver.mid}');
+        } else {
+          _logger.wtf('WTF');
+        }
+      }
 
       instanceClass.emit(webRTCEvents['track'], this, event.streams[0]);
     };
@@ -565,7 +581,19 @@ class PeerConnection extends EventEmitter {
 }
 
 class RTCRtpTransceiverCompleter {
-  Completer completer;
-  RTCRtpTransceiver? transceiver;
-  RTCRtpTransceiverCompleter(this.completer, [this.transceiver]);
+  final Completer _completer = Completer<RTCRtpTransceiver>();
+  late RTCRtpTransceiver transceiver;
+  
+  /* RTCRtpTransceiver? transceiver; */
+  Future<RTCRtpTransceiver> createTransceiver(RTCRtpTransceiver newTransceiver) {
+    transceiver = newTransceiver;
+    _logger.wtf('Transceiver agregado con id ${transceiver.transceiverId}');
+    return _completer.future as Future<RTCRtpTransceiver>;
+  }
+
+  void completeTransceiver(RTCRtpTransceiver transceiverWithMid) {
+    _completer.complete(transceiverWithMid);
+  }
+  
+  /* RTCRtpTransceiverCompleter(this.completer, [this.transceiver]); */
 }
