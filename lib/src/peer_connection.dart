@@ -247,8 +247,7 @@ class PeerConnection extends EventEmitter {
       RTCRtpTransceiverCompleter completer = RTCRtpTransceiverCompleter();
       Future<RTCRtpTransceiver> t = completer.createTransceiver(transceiverLocal);
       pendingTransceivers.add(completer);
-
-      return transceiverLocal;
+      return t;
     } catch (e) {
       _logger.wtf(e.toString());
       throw Exception(e);
