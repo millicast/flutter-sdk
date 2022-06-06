@@ -72,6 +72,7 @@ class _PublisherWidgetState extends State<PublisherWidget>
   void setState(fn) {
     if (mounted) {
       super.setState(fn);
+      setUserCount();
     }
   }
 
