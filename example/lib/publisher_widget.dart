@@ -72,7 +72,6 @@ class _PublisherWidgetState extends State<PublisherWidget>
   void setState(fn) {
     if (mounted) {
       super.setState(fn);
-      setUserCount();
     }
   }
 
@@ -129,6 +128,7 @@ class _PublisherWidgetState extends State<PublisherWidget>
         }
       }
     });
+    setUserCount();
   }
 
   _setSupportedCodecs() async {
