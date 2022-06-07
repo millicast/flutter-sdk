@@ -10,7 +10,6 @@ import 'package:millicast_flutter_sdk/millicast_flutter_sdk.dart';
 
 import 'subscriber_settings_widget.dart';
 
-
 class SubscriberWidget extends StatefulWidget {
   const SubscriberWidget({Key? key}) : super(key: key);
   @override

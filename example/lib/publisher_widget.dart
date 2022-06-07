@@ -128,6 +128,7 @@ class _PublisherWidgetState extends State<PublisherWidget>
         }
       }
     });
+    setUserCount();
   }
 
   _setSupportedCodecs() async {
