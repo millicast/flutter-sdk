@@ -44,7 +44,10 @@ class View extends BaseWebRTC {
             logger: _logger) {
     if (mediaElement != null) {
       webRTCPeer.on(webRTCEvents['track'], this, (ev, context) {
-        mediaElement.srcObject = ev.eventData as MediaStream?;
+        RTCTrackEvent track = ev.eventData as RTCTrackEvent;
+        if (track.streams.isNotEmpty) {
+          mediaElement.srcObject = track.streams[0];
+        }
       });
     }
   }

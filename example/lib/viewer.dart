@@ -37,7 +37,13 @@ Future buildSubscriber(RTCVideoRenderer localRenderer) async {
       mediaElement: localRenderer);
 
   view.on(webRTCEvents['track'], view, (ev, context) {
-    localRenderer.srcObject = ev.eventData as MediaStream?;
+    RTCTrackEvent track =ev.eventData as RTCTrackEvent;
+            _logger.wtf('track: ${track}');
+
+            if (track.streams.isNotEmpty) {
+                  localRenderer.srcObject = track.streams[0];
+            }
+
   });
 
   // Based on broadcast events control different(multisource,simulcast) flows with flags and events in the ui
@@ -46,6 +52,7 @@ Future buildSubscriber(RTCVideoRenderer localRenderer) async {
     Map<String, dynamic> eventDataMap = jsonDecode(eventData);
 
     switch (eventDataMap['name']) {
+
 
       // Case simulcast is enabled
       case 'layers':
@@ -136,10 +143,14 @@ Future viewConnect(View view) async {
 
     view.webRTCPeer.initStats();
     MediaStream mediaStream = await createLocalMediaStream('remoteStream');
-    List<MediaStream> streams = [mediaStream];
+     MediaStream mediaStream1 = await createLocalMediaStream('remoteStream');
+    List<MediaStream> streams = [mediaStream,mediaStream1];
     RTCRtpTransceiver transceiver = await view.addRemoteTrack(RTCRtpMediaType.RTCRtpMediaTypeVideo, streams);
     _logger.wtf('Transceiver generated: ${transceiver.mid}');
     _logger.wtf('Transceiver 2: ${transceiver.transceiverId}');
+    //     await view.project('pip2', [
+    //   {'trackId': 'video', 'mediaId':transceiver.mid },
+    // ]);
 
     view.webRTCPeer.on('stats', view, (stats, context) {
       if (stats.eventData != null) {

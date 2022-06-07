@@ -1,7 +1,9 @@
+
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
 import '../logger.dart';
 import 'package:sdp_transform/sdp_transform.dart';
+
 
 var _logger = getLogger('SdpParser');
 
@@ -331,42 +333,38 @@ class SdpParser {
   /// [remoteDescription] - Previous remote sdp
   static String? renegotiate(
       String? localDescription, String? remoteDescription) {
+
     if (localDescription != null && remoteDescription != null) {
+      
+
       Map<String, dynamic> offer = parse(localDescription);
-      Map<String, dynamic> answer = parse(remoteDescription);
-      List<Map<String, dynamic>>? answeredMedias = [];
+      Map<String, dynamic> answerRemote = parse(remoteDescription);
+
+
       // Check all transceivers on the offer are on the answer
       for (var offeredMedia in offer['media']) {
+
         Map<String, dynamic> answer = parse(remoteDescription);
+
         // Get associated mid on the answer
         (answer['media'] as List<dynamic>)
             .removeWhere((element) => element['mid'] == offeredMedia['mid']);
 
-        Map<String, dynamic>? answeredMedia = answer['media'][0];
-        // If not found in answer
-        if (answeredMedia == {}) {
-          int? type = getMediaId(answer['media'], offeredMedia['type']);
-          // Set direction
-          if (type != null) {
-            answeredMedia = answer['media'][type];
-            answeredMedia?['direction'] =
-                reverseDirection(offeredMedia['direction']);
-            // Find first media line for same kind
-            Map<String, dynamic>? first = answer['media'][type];
-            // If found
-            if (first != null) {
-              // Copy codec info
-              answeredMedia?['rtp'] = first['rtp'] as List;
-              // Copy extension info
-              (answeredMedia?['ext'] as List).addAll(first['ext'] as List);
-            }
-          }
-        }
-        // Add it to answer
-        answeredMedias.add(answeredMedia!);
-        answer['media'] = answeredMedias;
+        // Get associated mid on the answer
+        if (answer['media'].length == answerRemote['media'].length) {
+          
+          offeredMedia['setup']='passive';
+          offeredMedia['direction']='sendonly';
+
+           answer['media'].add(offeredMedia);
+           answerRemote['media']= answer['media'];
+
+        }    
+
+        
+
       }
-      remoteDescription = write(answer, null);
+      remoteDescription = write(answerRemote, null);
       return remoteDescription;
     } else {
       return localDescription;

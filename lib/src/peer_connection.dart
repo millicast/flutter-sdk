@@ -232,7 +232,6 @@ class PeerConnection extends EventEmitter {
   /// [Future] that will be resolved when the [RTCRtpTransceiver]
   /// is assigned an mid value.
   Future<RTCRtpTransceiver> addRemoteTrack(media, List<MediaStream> streams) async {
-    _logger.wtf('EL PEPEEEEEEEEEEEEEEEEEEEEEE');
     try {
       RTCRtpTransceiver transceiverLocal = await peer!.addTransceiver(
               kind: media,
@@ -442,13 +441,9 @@ class PeerConnection extends EventEmitter {
       _logger.d('Track event value: $event');
 
       // Listen for remote tracks events for resolving pending addRemoteTrack calls.
-      if(event.transceiver != null) {
-        _logger.wtf('SOMETHINGGGGGGGGG ${event.transceiver!.mid}');
-        _logger.wtf('SOMETHINGGGGGGGGG ID ${event.transceiver!.transceiverId}');
-        var tIndex = pendingTransceivers.indexWhere((t) => t.transceiver.transceiverId == event.transceiver!.mid);
-        if (tIndex != -1) {
-          _logger.wtf('ENTREE');
-          RTCRtpTransceiverCompleter transceiverCompleter = pendingTransceivers.elementAt(tIndex);
+      if(event.transceiver != null && event.streams.isEmpty) {
+        if (pendingTransceivers.isNotEmpty) {
+          RTCRtpTransceiverCompleter transceiverCompleter = pendingTransceivers.first;
           transceiverCompleter.completeTransceiver(event.transceiver!);
         }
         if(pendingTransceivers.isNotEmpty) {
@@ -458,7 +453,7 @@ class PeerConnection extends EventEmitter {
         }
       }
 
-      instanceClass.emit(webRTCEvents['track'], this, event.streams[0]);
+      instanceClass.emit(webRTCEvents['track'], this, event);
     };
     if (peer.connectionState != null) {
       peer.onConnectionState = (event) {
@@ -475,8 +470,23 @@ class PeerConnection extends EventEmitter {
       };
     }
 
-    // No renegotationNeeded
-    peer.onRenegotiationNeeded = () async {};
+    peer.onRenegotiationNeeded = () async {
+      RTCSessionDescription? remoteSdp = await peer.getRemoteDescription();
+      if (remoteSdp == null) {
+        return;
+      }
+      _logger.i('Peer onnegotiationneeded, updating local description');
+      RTCSessionDescription offer = await peer.createOffer();
+      _logger.i('Peer onnegotiationneeded, got local offer', offer.sdp);
+      await peer.setLocalDescription(offer);
+      String? sdp = SdpParser.renegotiate(offer.sdp, remoteSdp.sdp);
+      _logger.i('Peer onnegotiationneeded, updating remote description', sdp);
+      await peer.setRemoteDescription(RTCSessionDescription(sdp, 'offer'));
+      _logger.i('Peer onnegotiationneeded, renegotiation done');
+
+
+    };
+    
   }
 
   void addMediaStreamToPeer(RTCPeerConnection? peer, MediaStream? mediaStream,
