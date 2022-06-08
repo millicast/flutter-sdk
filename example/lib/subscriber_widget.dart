@@ -4,12 +4,14 @@ import 'dart:convert';
 import 'package:example/viewer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
+import 'package:logger/logger.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 
 import 'package:millicast_flutter_sdk/millicast_flutter_sdk.dart';
 
 import 'subscriber_settings_widget.dart';
 
+Logger _logger = getLogger('subsc_widg');
 
 class SubscriberWidget extends StatefulWidget {
   const SubscriberWidget({Key? key}) : super(key: key);
@@ -103,7 +105,21 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
 
     setUserCount();
 
-    setState(() {});
+    MediaStream mediaStream = await createLocalMediaStream('remoteStream');
+    List<MediaStream> streams = [mediaStream];
+
+    RTCRtpTransceiver? transceiver = await _view?.addRemoteTrack(
+        RTCRtpMediaType.RTCRtpMediaTypeVideo, streams);
+    _logger.wtf('Transceiver generated: ${transceiver?.mid}');
+    _logger.wtf('Transceiver 2: ${transceiver?.transceiverId}');
+
+    _localRenderer.srcObject = mediaStream;
+    await _view?.project('PIP1', [
+      {'trackId': 'video', 'mediaId': transceiver?.mid},
+    ]);
+    
+    setState(() {
+    });
   }
 
   void setUserCount() {
@@ -149,6 +165,30 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
     await _view!.webRTCPeer.closeRTCPeer();
     callBuildSubscriber();
   }
+
+  SizedBox videoRenderers() => SizedBox(
+          child: Row(
+        children: [
+          Flexible(
+            child: Container(
+            margin: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+            child: RTCVideoView(_localRenderer),
+            decoration: const BoxDecoration(color: Colors.black54),
+          ),
+          ),
+          Flexible(
+            child: Container(
+            margin: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+            child: RTCVideoView(_localRenderer),
+            decoration: const BoxDecoration(color: Colors.black54),
+          ))
+
+        ],
+      ));
 
   @override
   Widget build(BuildContext context) {

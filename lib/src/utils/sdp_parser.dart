@@ -364,6 +364,9 @@ class SdpParser {
         
 
       }
+      //Add correct bundle
+      answerRemote['groups'][0]['mids']=offer['groups'][0]['mids'];
+      
       remoteDescription = write(answerRemote, null);
       return remoteDescription;
     } else {

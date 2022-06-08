@@ -38,7 +38,6 @@ Future buildSubscriber(RTCVideoRenderer localRenderer) async {
 
   view.on(webRTCEvents['track'], view, (ev, context) {
     RTCTrackEvent track =ev.eventData as RTCTrackEvent;
-            _logger.wtf('track: ${track}');
 
             if (track.streams.isNotEmpty) {
                   localRenderer.srcObject = track.streams[0];
@@ -138,19 +137,11 @@ Future viewConnect(View view) async {
   try {
     _logger.wtf('the pep');
     await view.connect(options: {
-      'events': ['active', 'inactive', 'layers', 'viewercount']
+      'events': ['active', 'inactive', 'layers', 'viewercount'],
+      
     });
 
     view.webRTCPeer.initStats();
-    MediaStream mediaStream = await createLocalMediaStream('remoteStream');
-     MediaStream mediaStream1 = await createLocalMediaStream('remoteStream');
-    List<MediaStream> streams = [mediaStream,mediaStream1];
-    RTCRtpTransceiver transceiver = await view.addRemoteTrack(RTCRtpMediaType.RTCRtpMediaTypeVideo, streams);
-    _logger.wtf('Transceiver generated: ${transceiver.mid}');
-    _logger.wtf('Transceiver 2: ${transceiver.transceiverId}');
-    //     await view.project('pip2', [
-    //   {'trackId': 'video', 'mediaId':transceiver.mid },
-    // ]);
 
     view.webRTCPeer.on('stats', view, (stats, context) {
       if (stats.eventData != null) {

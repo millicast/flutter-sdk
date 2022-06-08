@@ -481,7 +481,7 @@ class PeerConnection extends EventEmitter {
       await peer.setLocalDescription(offer);
       String? sdp = SdpParser.renegotiate(offer.sdp, remoteSdp.sdp);
       _logger.i('Peer onnegotiationneeded, updating remote description', sdp);
-      await peer.setRemoteDescription(RTCSessionDescription(sdp, 'offer'));
+      await peer.setRemoteDescription(RTCSessionDescription(sdp, 'answer'));
       _logger.i('Peer onnegotiationneeded, renegotiation done');
 
 
