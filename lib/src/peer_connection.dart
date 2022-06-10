@@ -239,10 +239,10 @@ class PeerConnection extends EventEmitter {
                   direction: TransceiverDirection.RecvOnly,
                   streams: streams));
       for (var stream in streams) {
-        stream.addTrack(transceiverLocal.receiver.track!);
+          stream.addTrack(transceiverLocal.receiver.track!);
       }
-      _logger.wtf('LOCAL MID ${transceiverLocal.mid}');
-      _logger.wtf('LOCAL TRANSCEIVERID ${transceiverLocal.transceiverId}');
+      // _logger.wtf('LOCAL MID ${transceiverLocal.mid}');
+      // _logger.wtf('LOCAL TRANSCEIVERID ${transceiverLocal.transceiverId}');
       RTCRtpTransceiverCompleter completer = RTCRtpTransceiverCompleter();
       Future<RTCRtpTransceiver> t = completer.createTransceiver(transceiverLocal);
       pendingTransceivers.add(completer);
@@ -446,12 +446,8 @@ class PeerConnection extends EventEmitter {
           RTCRtpTransceiverCompleter transceiverCompleter = pendingTransceivers.first;
           transceiverCompleter.completeTransceiver(event.transceiver!);
         }
-        if(pendingTransceivers.isNotEmpty) {
-          _logger.wtf('EL PEPE ESTA RE CURIOSO DE ESTO ${pendingTransceivers[0].transceiver.mid}');
-        } else {
-          _logger.wtf('WTF');
-        }
       }
+
 
       instanceClass.emit(webRTCEvents['track'], this, event);
     };
@@ -596,7 +592,7 @@ class RTCRtpTransceiverCompleter {
   /* RTCRtpTransceiver? transceiver; */
   Future<RTCRtpTransceiver> createTransceiver(RTCRtpTransceiver newTransceiver) {
     transceiver = newTransceiver;
-    _logger.wtf('Transceiver agregado con id ${transceiver.transceiverId}');
+    // _logger.wtf('Transceiver agregado con id ${transceiver.transceiverId}');
     return _completer.future as Future<RTCRtpTransceiver>;
   }
 

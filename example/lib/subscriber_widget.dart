@@ -83,8 +83,23 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
 
   void subscribeExample() async {
     _view?.on(SignalingEvents.connectionSuccess, _view, (ev, context) async {
+      MediaStream mediaStream = await createLocalMediaStream('remoteStream');
+      List<MediaStream> streams = [mediaStream];
+      RTCRtpTransceiver? transceiver = await _view?.addRemoteTrack(
+          RTCRtpMediaType.RTCRtpMediaTypeVideo, streams);
+      _logger.wtf('Transceiver generated: ${transceiver?.mid}');
+      _logger.wtf('Transceiver 2: ${transceiver?.transceiverId}');
+
+      // Break the code in android
+      _localRenderer.srcObject = mediaStream;
+
+      await _view?.project('pip', [
+        {'trackId': 'video', 'mediaId': transceiver?.mid},
+      ]);
+
       if (isDeactivating) {
         isConnectedSubsc = false;
+        _logger.wtf('pepe');
         await _view?.stop();
       }
     });
@@ -94,6 +109,7 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
         _projectSourceId(null, 'audio');
         _projectSourceId(null, 'video');
       }
+
       setState(() {});
     }));
 
@@ -105,21 +121,7 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
 
     setUserCount();
 
-    MediaStream mediaStream = await createLocalMediaStream('remoteStream');
-    List<MediaStream> streams = [mediaStream];
-
-    RTCRtpTransceiver? transceiver = await _view?.addRemoteTrack(
-        RTCRtpMediaType.RTCRtpMediaTypeVideo, streams);
-    _logger.wtf('Transceiver generated: ${transceiver?.mid}');
-    _logger.wtf('Transceiver 2: ${transceiver?.transceiverId}');
-
-    _localRenderer.srcObject = mediaStream;
-    await _view?.project('PIP1', [
-      {'trackId': 'video', 'mediaId': transceiver?.mid},
-    ]);
-    
-    setState(() {
-    });
+    setState(() {});
   }
 
   void setUserCount() {
@@ -171,22 +173,21 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
         children: [
           Flexible(
             child: Container(
-            margin: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height,
-            child: RTCVideoView(_localRenderer),
-            decoration: const BoxDecoration(color: Colors.black54),
-          ),
+              margin: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              child: RTCVideoView(_localRenderer),
+              decoration: const BoxDecoration(color: Colors.black54),
+            ),
           ),
           Flexible(
-            child: Container(
+              child: Container(
             margin: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
             width: MediaQuery.of(context).size.width,
             height: MediaQuery.of(context).size.height,
             child: RTCVideoView(_localRenderer),
             decoration: const BoxDecoration(color: Colors.black54),
           ))
-
         ],
       ));
 

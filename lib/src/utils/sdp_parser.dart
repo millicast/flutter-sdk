@@ -1,9 +1,7 @@
-
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
 import '../logger.dart';
 import 'package:sdp_transform/sdp_transform.dart';
-
 
 var _logger = getLogger('SdpParser');
 
@@ -333,44 +331,48 @@ class SdpParser {
   /// [remoteDescription] - Previous remote sdp
   static String? renegotiate(
       String? localDescription, String? remoteDescription) {
-
     if (localDescription != null && remoteDescription != null) {
-      
-
       Map<String, dynamic> offer = parse(localDescription);
       Map<String, dynamic> answerRemote = parse(remoteDescription);
 
+      String remoteSinEdit = write(answerRemote, null);
 
       // Check all transceivers on the offer are on the answer
       for (var offeredMedia in offer['media']) {
-
         Map<String, dynamic> answer = parse(remoteDescription);
 
-        // Get associated mid on the answer
-        (answer['media'] as List<dynamic>)
-            .removeWhere((element) => element['mid'] == offeredMedia['mid']);
 
         // Get associated mid on the answer
-        if (answer['media'].length == answerRemote['media'].length) {
-          
-          offeredMedia['setup']='passive';
-          offeredMedia['direction']='sendonly';
+        bool isMidOnAnswer = (answer['media'] as List<dynamic>)
+            .any((answerMedia) => answerMedia['mid'] == offeredMedia['mid']);
 
-           answer['media'].add(offeredMedia);
-           answerRemote['media']= answer['media'];
+        // If not found in answer
+        if (!isMidOnAnswer) {
+          // Find first media line for same kind
+          var first = (answer['media'] as List<dynamic>).firstWhere(
+              (answerMedia) => answerMedia['type'] == offeredMedia['type']);
 
-        }    
+          // If found
+          if (!first.isEmpty) {
 
-        
+            // Set mid
+            first['mid']=offeredMedia['mid'];
+
+            // Set direction
+            first['direction']=reverseDirection(offeredMedia['direction']);
+            first['ssrcs'] = null;
+            first['msid'] = null;
+            answerRemote['media'].add(first);
+          }
+          //Add correct bundle
+          answerRemote['groups'][0]['mids'] = offer['groups'][0]['mids'];
+        }
 
       }
-      //Add correct bundle
-      answerRemote['groups'][0]['mids']=offer['groups'][0]['mids'];
-      
       remoteDescription = write(answerRemote, null);
       return remoteDescription;
     } else {
-      return localDescription;
+      return remoteDescription;
     }
   }
 
