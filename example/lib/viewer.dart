@@ -135,7 +135,6 @@ Future buildSubscriber(RTCVideoRenderer localRenderer) async {
 Future viewConnect(View view) async {
   /// Start connection to publisher
   try {
-    _logger.wtf('the pep');
     await view.connect(options: {
       'events': ['active', 'inactive', 'layers', 'viewercount'],
       
@@ -154,7 +153,6 @@ Future viewConnect(View view) async {
     });
     return view;
   } catch (e) {
-    _logger.wtf(e.toString());
     view.reconnect();
   }
 }

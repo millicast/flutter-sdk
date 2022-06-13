@@ -83,19 +83,7 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
 
   void subscribeExample() async {
     _view?.on(SignalingEvents.connectionSuccess, _view, (ev, context) async {
-      MediaStream mediaStream = await createLocalMediaStream('remoteStream');
-      List<MediaStream> streams = [mediaStream];
-      RTCRtpTransceiver? transceiver = await _view?.addRemoteTrack(
-          RTCRtpMediaType.RTCRtpMediaTypeVideo, streams);
-      _logger.wtf('Transceiver generated: ${transceiver?.mid}');
-      _logger.wtf('Transceiver 2: ${transceiver?.transceiverId}');
 
-      // Break the code in android
-      _localRenderer.srcObject = mediaStream;
-
-      await _view?.project('pip', [
-        {'trackId': 'video', 'mediaId': transceiver?.mid},
-      ]);
 
       if (isDeactivating) {
         isConnectedSubsc = false;
@@ -167,29 +155,6 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
     await _view!.webRTCPeer.closeRTCPeer();
     callBuildSubscriber();
   }
-
-  SizedBox videoRenderers() => SizedBox(
-          child: Row(
-        children: [
-          Flexible(
-            child: Container(
-              margin: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height,
-              child: RTCVideoView(_localRenderer),
-              decoration: const BoxDecoration(color: Colors.black54),
-            ),
-          ),
-          Flexible(
-              child: Container(
-            margin: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height,
-            child: RTCVideoView(_localRenderer),
-            decoration: const BoxDecoration(color: Colors.black54),
-          ))
-        ],
-      ));
 
   @override
   Widget build(BuildContext context) {

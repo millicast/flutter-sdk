@@ -335,8 +335,6 @@ class SdpParser {
       Map<String, dynamic> offer = parse(localDescription);
       Map<String, dynamic> answerRemote = parse(remoteDescription);
 
-      String remoteSinEdit = write(answerRemote, null);
-
       // Check all transceivers on the offer are on the answer
       for (var offeredMedia in offer['media']) {
         Map<String, dynamic> answer = parse(remoteDescription);
@@ -372,7 +370,7 @@ class SdpParser {
       remoteDescription = write(answerRemote, null);
       return remoteDescription;
     } else {
-      return remoteDescription;
+      return localDescription;
     }
   }
 

@@ -241,14 +241,11 @@ class PeerConnection extends EventEmitter {
       for (var stream in streams) {
           stream.addTrack(transceiverLocal.receiver.track!);
       }
-      // _logger.wtf('LOCAL MID ${transceiverLocal.mid}');
-      // _logger.wtf('LOCAL TRANSCEIVERID ${transceiverLocal.transceiverId}');
       RTCRtpTransceiverCompleter completer = RTCRtpTransceiverCompleter();
       Future<RTCRtpTransceiver> t = completer.createTransceiver(transceiverLocal);
       pendingTransceivers.add(completer);
       return t;
     } catch (e) {
-      _logger.wtf(e.toString());
       throw Exception(e);
     }
   }
@@ -589,10 +586,8 @@ class RTCRtpTransceiverCompleter {
   final Completer _completer = Completer<RTCRtpTransceiver>();
   late RTCRtpTransceiver transceiver;
   
-  /* RTCRtpTransceiver? transceiver; */
   Future<RTCRtpTransceiver> createTransceiver(RTCRtpTransceiver newTransceiver) {
     transceiver = newTransceiver;
-    // _logger.wtf('Transceiver agregado con id ${transceiver.transceiverId}');
     return _completer.future as Future<RTCRtpTransceiver>;
   }
 
@@ -600,5 +595,4 @@ class RTCRtpTransceiverCompleter {
     _completer.complete(transceiverWithMid);
   }
   
-  /* RTCRtpTransceiverCompleter(this.completer, [this.transceiver]); */
 }
