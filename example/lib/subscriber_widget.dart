@@ -11,8 +11,6 @@ import 'package:millicast_flutter_sdk/millicast_flutter_sdk.dart';
 
 import 'subscriber_settings_widget.dart';
 
-Logger _logger = getLogger('subsc_widg');
-
 class SubscriberWidget extends StatefulWidget {
   const SubscriberWidget({Key? key}) : super(key: key);
   @override
@@ -87,7 +85,6 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
 
       if (isDeactivating) {
         isConnectedSubsc = false;
-        _logger.wtf('pepe');
         await _view?.stop();
       }
     });
