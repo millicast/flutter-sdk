@@ -231,18 +231,19 @@ class PeerConnection extends EventEmitter {
   /// [streams] - Streams the track will belong to.
   /// [Future] that will be resolved when the [RTCRtpTransceiver]
   /// is assigned an mid value.
-  Future<RTCRtpTransceiver> addRemoteTrack(media, List<MediaStream> streams) async {
+  Future<RTCRtpTransceiver> addRemoteTrack(
+      media, List<MediaStream> streams) async {
     try {
       RTCRtpTransceiver transceiverLocal = await peer!.addTransceiver(
-              kind: media,
-              init: RTCRtpTransceiverInit(
-                  direction: TransceiverDirection.RecvOnly,
-                  streams: streams));
+          kind: media,
+          init: RTCRtpTransceiverInit(
+              direction: TransceiverDirection.RecvOnly, streams: streams));
       for (var stream in streams) {
-          stream.addTrack(transceiverLocal.receiver.track!);
+        stream.addTrack(transceiverLocal.receiver.track!);
       }
       RTCRtpTransceiverCompleter completer = RTCRtpTransceiverCompleter();
-      Future<RTCRtpTransceiver> t = completer.createTransceiver(transceiverLocal);
+      Future<RTCRtpTransceiver> t =
+          completer.createTransceiver(transceiverLocal);
       pendingTransceivers.add(completer);
       return t;
     } catch (e) {
@@ -438,13 +439,13 @@ class PeerConnection extends EventEmitter {
       _logger.d('Track event value: $event');
 
       // Listen for remote tracks events for resolving pending addRemoteTrack calls.
-      if(event.transceiver != null && event.streams.isEmpty) {
+      if (event.transceiver != null && event.streams.isEmpty) {
         if (pendingTransceivers.isNotEmpty) {
-          RTCRtpTransceiverCompleter transceiverCompleter = pendingTransceivers.first;
+          RTCRtpTransceiverCompleter transceiverCompleter =
+              pendingTransceivers.first;
           transceiverCompleter.completeTransceiver(event.transceiver!);
         }
       }
-
 
       instanceClass.emit(webRTCEvents['track'], this, event);
     };
@@ -476,10 +477,7 @@ class PeerConnection extends EventEmitter {
       _logger.i('Peer onnegotiationneeded, updating remote description', sdp);
       await peer.setRemoteDescription(RTCSessionDescription(sdp, 'answer'));
       _logger.i('Peer onnegotiationneeded, renegotiation done');
-
-
     };
-    
   }
 
   void addMediaStreamToPeer(RTCPeerConnection? peer, MediaStream? mediaStream,
@@ -585,8 +583,9 @@ class PeerConnection extends EventEmitter {
 class RTCRtpTransceiverCompleter {
   final Completer _completer = Completer<RTCRtpTransceiver>();
   late RTCRtpTransceiver transceiver;
-  
-  Future<RTCRtpTransceiver> createTransceiver(RTCRtpTransceiver newTransceiver) {
+
+  Future<RTCRtpTransceiver> createTransceiver(
+      RTCRtpTransceiver newTransceiver) {
     transceiver = newTransceiver;
     return _completer.future as Future<RTCRtpTransceiver>;
   }
@@ -594,5 +593,4 @@ class RTCRtpTransceiverCompleter {
   void completeTransceiver(RTCRtpTransceiver transceiverWithMid) {
     _completer.complete(transceiverWithMid);
   }
-  
 }

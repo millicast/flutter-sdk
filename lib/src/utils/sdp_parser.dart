@@ -339,7 +339,6 @@ class SdpParser {
       for (var offeredMedia in offer['media']) {
         Map<String, dynamic> answer = parse(remoteDescription);
 
-
         // Get associated mid on the answer
         bool isMidOnAnswer = (answer['media'] as List<dynamic>)
             .any((answerMedia) => answerMedia['mid'] == offeredMedia['mid']);
@@ -352,12 +351,11 @@ class SdpParser {
 
           // If found
           if (!first.isEmpty) {
-
             // Set mid
-            first['mid']=offeredMedia['mid'];
+            first['mid'] = offeredMedia['mid'];
 
             // Set direction
-            first['direction']=reverseDirection(offeredMedia['direction']);
+            first['direction'] = reverseDirection(offeredMedia['direction']);
             first['ssrcs'] = null;
             first['msid'] = null;
             answerRemote['media'].add(first);
@@ -365,7 +363,6 @@ class SdpParser {
           //Add correct bundle
           answerRemote['groups'][0]['mids'] = offer['groups'][0]['mids'];
         }
-
       }
       remoteDescription = write(answerRemote, null);
       return remoteDescription;

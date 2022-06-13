@@ -81,8 +81,6 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
 
   void subscribeExample() async {
     _view?.on(SignalingEvents.connectionSuccess, _view, (ev, context) async {
-
-
       if (isDeactivating) {
         isConnectedSubsc = false;
         await _view?.stop();

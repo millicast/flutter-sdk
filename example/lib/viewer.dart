@@ -37,12 +37,11 @@ Future buildSubscriber(RTCVideoRenderer localRenderer) async {
       mediaElement: localRenderer);
 
   view.on(webRTCEvents['track'], view, (ev, context) {
-    RTCTrackEvent track =ev.eventData as RTCTrackEvent;
+    RTCTrackEvent track = ev.eventData as RTCTrackEvent;
 
-            if (track.streams.isNotEmpty) {
-                  localRenderer.srcObject = track.streams[0];
-            }
-
+    if (track.streams.isNotEmpty) {
+      localRenderer.srcObject = track.streams[0];
+    }
   });
 
   // Based on broadcast events control different(multisource,simulcast) flows with flags and events in the ui
@@ -51,7 +50,6 @@ Future buildSubscriber(RTCVideoRenderer localRenderer) async {
     Map<String, dynamic> eventDataMap = jsonDecode(eventData);
 
     switch (eventDataMap['name']) {
-
 
       // Case simulcast is enabled
       case 'layers':
@@ -137,7 +135,6 @@ Future viewConnect(View view) async {
   try {
     await view.connect(options: {
       'events': ['active', 'inactive', 'layers', 'viewercount'],
-      
     });
 
     view.webRTCPeer.initStats();
