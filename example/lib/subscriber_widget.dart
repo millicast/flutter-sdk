@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'package:example/viewer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
-import 'package:logger/logger.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 
 import 'package:millicast_flutter_sdk/millicast_flutter_sdk.dart';

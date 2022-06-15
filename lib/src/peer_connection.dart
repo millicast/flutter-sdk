@@ -273,7 +273,7 @@ class PeerConnection extends EventEmitter {
         (await peer!.getRemoteDescription())?.sdp, bitrate);
     await setRTCRemoteSDP(sdp);
     _logger.i(
-        'Bitrate restirctions updated:  ${bitrate > 0 ? bitrate : 'unlimited'} kbps');
+        'Bitrate restrictions updated:  ${bitrate > 0 ? bitrate : 'unlimited'} kbps');
   }
 
   String? getRTCPeerStatus() {
@@ -282,7 +282,7 @@ class PeerConnection extends EventEmitter {
       return null;
     }
     String connectionState = getConnectionState(peer!);
-    _logger.i('RTC peer status getted, value: $connectionState');
+    _logger.i('RTC peer status got, value: $connectionState');
     return connectionState;
   }
 
