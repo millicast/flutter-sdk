@@ -139,7 +139,11 @@ class View extends BaseWebRTC {
   Future<RTCRtpTransceiver> addRemoteTrack(
       RTCRtpMediaType media, List<MediaStream> streams) async {
     _logger.i('Viewer adding remote  track $media');
-    return webRTCPeer.addRemoteTrack(media, streams);
+     RTCRtpTransceiver transceiverLocal =await webRTCPeer.addRemoteTrack(media, streams);
+    for (var stream in streams) {
+        stream.addTrack(transceiverLocal.receiver.track!);
+      }
+    return transceiverLocal;
   }
 
   /// Start projecting source in selected media ids.

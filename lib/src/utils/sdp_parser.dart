@@ -357,11 +357,13 @@ class SdpParser {
             // Set direction
             first['direction'] = reverseDirection(offeredMedia['direction']);
             first['ssrcs'] = null;
+            first['ssrcGroups'] = null;
             first['msid'] = null;
             answerRemote['media'].add(first);
           }
           //Add correct bundle
           answerRemote['groups'][0]['mids'] = offer['groups'][0]['mids'];
+          answerRemote['origin']['sessionId'] += 1;
         }
       }
       remoteDescription = write(answerRemote, null);

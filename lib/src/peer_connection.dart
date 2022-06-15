@@ -237,10 +237,8 @@ class PeerConnection extends EventEmitter {
       RTCRtpTransceiver transceiverLocal = await peer!.addTransceiver(
           kind: media,
           init: RTCRtpTransceiverInit(
-              direction: TransceiverDirection.RecvOnly, streams: streams));
-      for (var stream in streams) {
-        stream.addTrack(transceiverLocal.receiver.track!);
-      }
+              direction: TransceiverDirection.RecvOnly,streams: streams));
+
       RTCRtpTransceiverCompleter completer = RTCRtpTransceiverCompleter();
       Future<RTCRtpTransceiver> t =
           completer.createTransceiver(transceiverLocal);
@@ -442,7 +440,7 @@ class PeerConnection extends EventEmitter {
       if (event.transceiver != null && event.streams.isEmpty) {
         if (pendingTransceivers.isNotEmpty) {
           RTCRtpTransceiverCompleter transceiverCompleter =
-              pendingTransceivers.first;
+              pendingTransceivers.last;
           transceiverCompleter.completeTransceiver(event.transceiver!);
         }
       }
