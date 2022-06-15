@@ -237,7 +237,7 @@ class PeerConnection extends EventEmitter {
       RTCRtpTransceiver transceiverLocal = await peer!.addTransceiver(
           kind: media,
           init: RTCRtpTransceiverInit(
-              direction: TransceiverDirection.RecvOnly,streams: streams));
+              direction: TransceiverDirection.RecvOnly, streams: streams));
 
       RTCRtpTransceiverCompleter completer = RTCRtpTransceiverCompleter();
       Future<RTCRtpTransceiver> t =
