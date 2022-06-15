@@ -4,7 +4,6 @@ import 'package:millicast_flutter_sdk/src/utils/sdp_parser.dart';
 import 'utils/transaction_manager.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'logger.dart';
-import './utils/sdp_parser.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
 var _logger = getLogger('Signaling');

@@ -44,7 +44,10 @@ class View extends BaseWebRTC {
             logger: _logger) {
     if (mediaElement != null) {
       webRTCPeer.on(webRTCEvents['track'], this, (ev, context) {
-        mediaElement.srcObject = ev.eventData as MediaStream?;
+        RTCTrackEvent track = ev.eventData as RTCTrackEvent;
+        if (track.streams.isNotEmpty) {
+          mediaElement.srcObject = track.streams[0];
+        }
       });
     }
   }
@@ -134,9 +137,14 @@ class View extends BaseWebRTC {
   /// RTCRtpTransceiver is assigned an mid value.
 
   Future<RTCRtpTransceiver> addRemoteTrack(
-      String media, List<MediaStream> streams) async {
+      RTCRtpMediaType media, List<MediaStream> streams) async {
     _logger.i('Viewer adding remote  track $media');
-    return webRTCPeer.addRemoteTrack(media, streams);
+    RTCRtpTransceiver transceiverLocal =
+        await webRTCPeer.addRemoteTrack(media, streams);
+    for (var stream in streams) {
+      stream.addTrack(transceiverLocal.receiver.track!);
+    }
+    return transceiverLocal;
   }
 
   /// Start projecting source in selected media ids.

@@ -91,6 +91,7 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
         _projectSourceId(null, 'audio');
         _projectSourceId(null, 'video');
       }
+
       setState(() {});
     }));
 
