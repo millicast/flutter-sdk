@@ -68,7 +68,7 @@ class MyApp extends StatelessWidget {
               supportedCodecs: [],
             )
       },
-      home: HomeScreen(),
+      home: const HomeScreen(),
     );
   }
 }

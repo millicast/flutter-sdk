@@ -77,7 +77,7 @@ class PeerConnection extends EventEmitter {
       RTCSessionDescription? currentRemoteDescription =
           await peer!.getRemoteDescription();
       _logger.d(
-          'getRTCPeer return: {$connectionState, $currentLocalDescription, $currentRemoteDescription}');
+          '''getRTCPeer return: {$connectionState, $currentLocalDescription, $currentRemoteDescription}''');
     }
     return peer!;
   }
@@ -273,7 +273,7 @@ class PeerConnection extends EventEmitter {
         (await peer!.getRemoteDescription())?.sdp, bitrate);
     await setRTCRemoteSDP(sdp);
     _logger.i(
-        'Bitrate restrictions updated:  ${bitrate > 0 ? bitrate : 'unlimited'} kbps');
+        '''Bitrate restrictions updated:  ${bitrate > 0 ? bitrate : 'unlimited'} kbps''');
   }
 
   String? getRTCPeerStatus() {
@@ -282,7 +282,7 @@ class PeerConnection extends EventEmitter {
       return null;
     }
     String connectionState = getConnectionState(peer!);
-    _logger.i('RTC peer status got, value: $connectionState');
+    _logger.i('Got RTC peer status, value: $connectionState');
     return connectionState;
   }
 
@@ -436,6 +436,7 @@ class PeerConnection extends EventEmitter {
       _logger.i('New track from peer.');
       _logger.d('Track event value: $event');
 
+      // ignore: lines_longer_than_80_chars
       // Listen for remote tracks events for resolving pending addRemoteTrack calls.
       if (event.transceiver != null && event.streams.isEmpty) {
         if (pendingTransceivers.isNotEmpty) {

@@ -88,6 +88,7 @@ class PeerConnectionStats extends EventEmitter {
         getBaseRtpReportData(report as Map<String, dynamic>, mediaType);
     additionalData['totalBytesSent'] = report['bytesSent'];
     additionalData['id'] = report['id'];
+    // ignore: prefer_typing_uninitialized_variables
     var previousBytesSent;
     if ((previousStats != null)) {
       previousBytesSent = previousStats[mediaType]['outbounds'].firstWhere(
@@ -257,6 +258,7 @@ class ConnectionStats {
   /// [video] - Parsed video information.
   Map<String, List<dynamic>>? video;
 
+  // ignore: lines_longer_than_80_chars
   /// [availableOutgoingBitrate] - The available outbound capacity of the network
   /// connection. The higher the value, the more bandwidth you can assume is
   /// available for outgoing data. The value is reported in bits per second.
@@ -264,6 +266,7 @@ class ConnectionStats {
   double? availableOutgoingBitrate;
 
   /// [totalRoundTripTime] - Total round trip time is the total time in seconds
+  // ignore: lines_longer_than_80_chars
   /// that has elapsed between sending STUN requests and receiving the responses.
   /// This value comes from the nominated candidate-pair.
   double? totalRoundTripTime;

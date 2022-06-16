@@ -89,7 +89,7 @@ class Publish extends BaseWebRTC {
         utf8.decode(base64.decode('bWlsbGljYXN0'))]['record'];
     if (options?['record'] != null && !recordingAvailable) {
       _logger.e(
-          'Error while broadcasting. Record option detected but recording is not available');
+          '''Error while broadcasting. Record option detected but recording is not available''');
       throw Exception('Record option detected but recording is not available');
     }
     var signalingInstance = Signaling({
