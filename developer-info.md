@@ -55,3 +55,13 @@ $ dhttpd --path doc/api
 ```
 
 Navigate to `http://localhost:8080` in your browser; the search function should now work.
+
+### Changing classes
+
+Whenever a class is changed, the mock generator should be executed to maintain the test suite working properly.
+
+To do that, in the terminal you should run:
+
+```sh
+$ flutter pub run build_runner build
+```
