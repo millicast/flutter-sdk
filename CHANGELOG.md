@@ -1,3 +1,20 @@
+## 1.0.0
+
+## Initial stable release.
+### Added
+- Millicast Flutter SDK now supports Flutter version 3.
+
+### Changed
+
+- iOS example app configuration files where modified so it works out of the box in M1 macOS devices.
+
+### Fixed
+
+- addRemoteTrack method is now properly renegotating the SDPs it now returns a valid mid transceiver both for audio/video.
+- Fixed a bug where viewer count where misrepresented in example app.
+- Flutter analyze fixes where performed to avoid warnings and info messages.
+
+## Upgrading from 0.2.x.
 ## 0.2.2
 
 ### Changed
