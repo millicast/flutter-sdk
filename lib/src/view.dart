@@ -135,15 +135,40 @@ class View extends BaseWebRTC {
   /// [List<MediaStream>] streams - Streams the track will belong to.
   /// Return [Future<RTCRtpTransceiver>] Future that will be resolved when the
   /// RTCRtpTransceiver is assigned an mid value.
-
+  ///
+  /// Note: For Android, when adding both Audio & Video tracks, you must add
+  /// Audio tracks first. If you add Video Tracks first,
+  /// your transceiver will get disposed.
+  ///
+  /// @example
+  /// ```dart
+  /// import 'package:flutter_webrtc/flutter_webrtc.dart';
+  /// import 'package:millicast_flutter_sdk/millicast_flutter_sdk.dart';
+  ///
+  /// // ... initialize connection and renderers using view object
+  /// // ...
+  /// MediaStream stream = await createLocalMediaStream('myStream');
+  /// RTCRtpTransceiver transceiver1 = await view!
+  ///     .addRemoteTrack(RTCRtpMediaType.RTCRtpMediaTypeAudio, [stream]);
+  /// RTCRtpTransceiver transceiver = await view!
+  ///     .addRemoteTrack(RTCRtpMediaType.RTCRtpMediaTypeVideo, [stream]);
+  /// await view!.project('mySourceId', [
+  ///   {'trackId': 'audio', 'mediaId': transceiver1.mid}
+  /// ]);
+  /// await view!.project('pip', [
+  ///   {'trackId': 'video', 'mediaId': transceiver.mid}
+  /// ]);
+  ///
+  /// stream.addTrack(transceiver1.receiver.track!);
+  /// stream.addTrack(transceiver.receiver.track!);
+  /// _localRenderer.srcObject = stream;
+  /// // ...
+  /// ```
   Future<RTCRtpTransceiver> addRemoteTrack(
       RTCRtpMediaType media, List<MediaStream> streams) async {
     _logger.i('Viewer adding remote  track $media');
     RTCRtpTransceiver transceiverLocal =
         await webRTCPeer.addRemoteTrack(media, streams);
-    for (var stream in streams) {
-      stream.addTrack(transceiverLocal.receiver.track!);
-    }
     return transceiverLocal;
   }
 

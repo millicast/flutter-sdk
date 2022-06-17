@@ -435,13 +435,11 @@ class PeerConnection extends EventEmitter {
     peer.onTrack = (event) async {
       _logger.i('New track from peer.');
       _logger.d('Track event value: $event');
-
-      // ignore: lines_longer_than_80_chars
-      // Listen for remote tracks events for resolving pending addRemoteTrack calls.
+      // Listen for remote track events to resolve pending addRemoteTrack calls.
       if (event.transceiver != null && event.streams.isEmpty) {
         if (pendingTransceivers.isNotEmpty) {
           RTCRtpTransceiverCompleter transceiverCompleter =
-              pendingTransceivers.last;
+              pendingTransceivers.removeLast();
           transceiverCompleter.completeTransceiver(event.transceiver!);
         }
       }
