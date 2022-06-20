@@ -28,6 +28,10 @@ class _PublisherWidgetState extends State<PublisherWidget>
     with WidgetsBindingObserver {
   Map options = {};
 
+  /// This allows a value of type T or T?
+  /// to be treated as a value of type T?.
+  T? _ambiguate<T>(T? value) => value;
+
   _PublisherWidgetState();
 
   final stopWatchTimer = StopWatchTimer(
@@ -47,7 +51,7 @@ class _PublisherWidgetState extends State<PublisherWidget>
   @override
   void dispose() {
     super.dispose();
-    WidgetsBinding.instance?.removeObserver(this);
+    _ambiguate(WidgetsBinding.instance)!.removeObserver(this);
   }
 
   @override
@@ -77,7 +81,7 @@ class _PublisherWidgetState extends State<PublisherWidget>
     _setSupportedCodecs();
     initPublish();
     super.initState();
-    WidgetsBinding.instance?.addObserver(this);
+    _ambiguate(WidgetsBinding.instance)!.addObserver(this);
   }
 
   @override
@@ -124,6 +128,7 @@ class _PublisherWidgetState extends State<PublisherWidget>
         }
       }
     });
+    setUserCount();
   }
 
   _setSupportedCodecs() async {

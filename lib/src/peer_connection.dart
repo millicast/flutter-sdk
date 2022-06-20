@@ -35,6 +35,7 @@ class PeerConnection extends EventEmitter {
   RTCSessionDescription? sessionDescription;
   RTCPeerConnection? peer;
   PeerConnectionStats? peerConnectionStats;
+  List<RTCRtpTransceiverCompleter> pendingTransceivers = [];
 
   PeerConnection() : super();
 
@@ -76,7 +77,7 @@ class PeerConnection extends EventEmitter {
       RTCSessionDescription? currentRemoteDescription =
           await peer!.getRemoteDescription();
       _logger.d(
-          'getRTCPeer return: {$connectionState, $currentLocalDescription, $currentRemoteDescription}');
+          '''getRTCPeer return: {$connectionState, $currentLocalDescription, $currentRemoteDescription}''');
     }
     return peer!;
   }
@@ -230,22 +231,19 @@ class PeerConnection extends EventEmitter {
   /// [streams] - Streams the track will belong to.
   /// [Future] that will be resolved when the [RTCRtpTransceiver]
   /// is assigned an mid value.
-  addRemoteTrack(media, List<MediaStream> streams) async {
-    Completer completer = Completer();
-    var transceiverCompleter = RTCRtpTransceiverCompleter(completer);
+  Future<RTCRtpTransceiver> addRemoteTrack(
+      media, List<MediaStream> streams) async {
     try {
-      for (var stream in streams) {
-        stream.getTracks().forEach((track) async {
-          transceiverCompleter.transceiver = await peer!.addTransceiver(
-              track: track,
-              kind: media,
-              init: RTCRtpTransceiverInit(
-                  direction: TransceiverDirection.RecvOnly));
-          stream.addTrack(transceiverCompleter.transceiver!.receiver.track!);
-          transceiverCompleter.completer = completer;
-          return completer.future;
-        });
-      }
+      RTCRtpTransceiver transceiverLocal = await peer!.addTransceiver(
+          kind: media,
+          init: RTCRtpTransceiverInit(
+              direction: TransceiverDirection.RecvOnly, streams: streams));
+
+      RTCRtpTransceiverCompleter completer = RTCRtpTransceiverCompleter();
+      Future<RTCRtpTransceiver> t =
+          completer.createTransceiver(transceiverLocal);
+      pendingTransceivers.add(completer);
+      return t;
     } catch (e) {
       throw Exception(e);
     }
@@ -275,7 +273,7 @@ class PeerConnection extends EventEmitter {
         (await peer!.getRemoteDescription())?.sdp, bitrate);
     await setRTCRemoteSDP(sdp);
     _logger.i(
-        'Bitrate restirctions updated:  ${bitrate > 0 ? bitrate : 'unlimited'} kbps');
+        '''Bitrate restrictions updated:  ${bitrate > 0 ? bitrate : 'unlimited'} kbps''');
   }
 
   String? getRTCPeerStatus() {
@@ -284,7 +282,7 @@ class PeerConnection extends EventEmitter {
       return null;
     }
     String connectionState = getConnectionState(peer!);
-    _logger.i('RTC peer status getted, value: $connectionState');
+    _logger.i('Got RTC peer status, value: $connectionState');
     return connectionState;
   }
 
@@ -300,7 +298,7 @@ class PeerConnection extends EventEmitter {
     try {
       RTCRtpSender? currentSender = (await peer!.getSenders()).firstWhere(
           (s) => s.track?.kind == mediaStreamTrack.kind,
-          orElse: () => ());
+          orElse: () => throw Exception());
       currentSender.replaceTrack(mediaStreamTrack);
     } catch (e) {
       _logger
@@ -437,13 +435,16 @@ class PeerConnection extends EventEmitter {
     peer.onTrack = (event) async {
       _logger.i('New track from peer.');
       _logger.d('Track event value: $event');
+      // Listen for remote track events to resolve pending addRemoteTrack calls.
+      if (event.transceiver != null && event.streams.isEmpty) {
+        if (pendingTransceivers.isNotEmpty) {
+          RTCRtpTransceiverCompleter transceiverCompleter =
+              pendingTransceivers.removeLast();
+          transceiverCompleter.completeTransceiver(event.transceiver!);
+        }
+      }
 
-      // Listen for remote tracks events for resolving pending addRemoteTrack calls.
-      // TO DO
-      // if (event.transceiver != null) {}
-      // ;
-
-      instanceClass.emit(webRTCEvents['track'], this, event.streams[0]);
+      instanceClass.emit(webRTCEvents['track'], this, event);
     };
     if (peer.connectionState != null) {
       peer.onConnectionState = (event) {
@@ -460,8 +461,20 @@ class PeerConnection extends EventEmitter {
       };
     }
 
-    // No renegotationNeeded
-    peer.onRenegotiationNeeded = () async {};
+    peer.onRenegotiationNeeded = () async {
+      RTCSessionDescription? remoteSdp = await peer.getRemoteDescription();
+      if (remoteSdp == null) {
+        return;
+      }
+      _logger.i('Peer onnegotiationneeded, updating local description');
+      RTCSessionDescription offer = await peer.createOffer();
+      _logger.i('Peer onnegotiationneeded, got local offer', offer.sdp);
+      await peer.setLocalDescription(offer);
+      String? sdp = SdpParser.renegotiate(offer.sdp, remoteSdp.sdp);
+      _logger.i('Peer onnegotiationneeded, updating remote description', sdp);
+      await peer.setRemoteDescription(RTCSessionDescription(sdp, 'answer'));
+      _logger.i('Peer onnegotiationneeded, renegotiation done');
+    };
   }
 
   void addMediaStreamToPeer(RTCPeerConnection? peer, MediaStream? mediaStream,
@@ -565,7 +578,16 @@ class PeerConnection extends EventEmitter {
 }
 
 class RTCRtpTransceiverCompleter {
-  Completer completer;
-  RTCRtpTransceiver? transceiver;
-  RTCRtpTransceiverCompleter(this.completer, [this.transceiver]);
+  final Completer _completer = Completer<RTCRtpTransceiver>();
+  late RTCRtpTransceiver transceiver;
+
+  Future<RTCRtpTransceiver> createTransceiver(
+      RTCRtpTransceiver newTransceiver) {
+    transceiver = newTransceiver;
+    return _completer.future as Future<RTCRtpTransceiver>;
+  }
+
+  void completeTransceiver(RTCRtpTransceiver transceiverWithMid) {
+    _completer.complete(transceiverWithMid);
+  }
 }

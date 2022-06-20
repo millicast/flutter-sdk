@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatelessWidget {
-  bool? isOpenedWithLink;
-  HomeScreen({
+  final bool? isOpenedWithLink;
+  const HomeScreen({
     Key? key,
+    this.isOpenedWithLink,
   }) : super(key: key);
 
   @override

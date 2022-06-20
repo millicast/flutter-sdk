@@ -333,40 +333,40 @@ class SdpParser {
       String? localDescription, String? remoteDescription) {
     if (localDescription != null && remoteDescription != null) {
       Map<String, dynamic> offer = parse(localDescription);
-      Map<String, dynamic> answer = parse(remoteDescription);
-      List<Map<String, dynamic>>? answeredMedias = [];
+      Map<String, dynamic> answerRemote = parse(remoteDescription);
+
       // Check all transceivers on the offer are on the answer
       for (var offeredMedia in offer['media']) {
         Map<String, dynamic> answer = parse(remoteDescription);
-        // Get associated mid on the answer
-        (answer['media'] as List<dynamic>)
-            .removeWhere((element) => element['mid'] == offeredMedia['mid']);
 
-        Map<String, dynamic>? answeredMedia = answer['media'][0];
+        // Get associated mid on the answer
+        bool isMidOnAnswer = (answer['media'] as List<dynamic>)
+            .any((answerMedia) => answerMedia['mid'] == offeredMedia['mid']);
+
         // If not found in answer
-        if (answeredMedia == {}) {
-          int? type = getMediaId(answer['media'], offeredMedia['type']);
-          // Set direction
-          if (type != null) {
-            answeredMedia = answer['media'][type];
-            answeredMedia?['direction'] =
-                reverseDirection(offeredMedia['direction']);
-            // Find first media line for same kind
-            Map<String, dynamic>? first = answer['media'][type];
-            // If found
-            if (first != null) {
-              // Copy codec info
-              answeredMedia?['rtp'] = first['rtp'] as List;
-              // Copy extension info
-              (answeredMedia?['ext'] as List).addAll(first['ext'] as List);
-            }
+        if (!isMidOnAnswer) {
+          // Find first media line for same kind
+          var first = (answer['media'] as List<dynamic>).firstWhere(
+              (answerMedia) => answerMedia['type'] == offeredMedia['type']);
+
+          // If found
+          if (!first.isEmpty) {
+            // Set mid
+            first['mid'] = offeredMedia['mid'];
+
+            // Set direction
+            first['direction'] = reverseDirection(offeredMedia['direction']);
+            first['ssrcs'] = null;
+            first['ssrcGroups'] = null;
+            first['msid'] = null;
+            answerRemote['media'].add(first);
           }
+          //Add correct bundle
+          answerRemote['groups'][0]['mids'] = offer['groups'][0]['mids'];
+          answerRemote['origin']['sessionId'] += 1;
         }
-        // Add it to answer
-        answeredMedias.add(answeredMedia!);
-        answer['media'] = answeredMedias;
       }
-      remoteDescription = write(answer, null);
+      remoteDescription = write(answerRemote, null);
       return remoteDescription;
     } else {
       return localDescription;

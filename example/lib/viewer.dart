@@ -37,7 +37,11 @@ Future buildSubscriber(RTCVideoRenderer localRenderer) async {
       mediaElement: localRenderer);
 
   view.on(webRTCEvents['track'], view, (ev, context) {
-    localRenderer.srcObject = ev.eventData as MediaStream?;
+    RTCTrackEvent track = ev.eventData as RTCTrackEvent;
+
+    if (track.streams.isNotEmpty) {
+      localRenderer.srcObject = track.streams[0];
+    }
   });
 
   // Based on broadcast events control different(multisource,simulcast) flows with flags and events in the ui
@@ -130,7 +134,7 @@ Future viewConnect(View view) async {
   /// Start connection to publisher
   try {
     await view.connect(options: {
-      'events': ['active', 'inactive', 'layers', 'viewercount']
+      'events': ['active', 'inactive', 'layers', 'viewercount'],
     });
 
     view.webRTCPeer.initStats();
