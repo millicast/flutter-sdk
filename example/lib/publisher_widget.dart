@@ -21,10 +21,10 @@ Logger _logger = getLogger('main');
 class PublisherWidget extends StatefulWidget {
   const PublisherWidget({Key? key}) : super(key: key);
   @override
-  _PublisherWidgetState createState() => _PublisherWidgetState();
+  PublisherWidgetState createState() => PublisherWidgetState();
 }
 
-class _PublisherWidgetState extends State<PublisherWidget>
+class PublisherWidgetState extends State<PublisherWidget>
     with WidgetsBindingObserver {
   Map options = {};
 
@@ -32,7 +32,7 @@ class _PublisherWidgetState extends State<PublisherWidget>
   /// to be treated as a value of type T?.
   T? _ambiguate<T>(T? value) => value;
 
-  _PublisherWidgetState();
+  PublisherWidgetState();
 
   final stopWatchTimer = StopWatchTimer(
     mode: StopWatchMode.countUp,
@@ -113,7 +113,7 @@ class _PublisherWidgetState extends State<PublisherWidget>
   Future publish(Map options) async {
     _publisherMedia = await connectPublisher(_publisherMedia, options);
     setState(() {
-      stopWatchTimer.onExecute.add(StopWatchExecute.start);
+      stopWatchTimer.onStartTimer();
     });
 
     setUserCount();
@@ -171,20 +171,20 @@ class _PublisherWidgetState extends State<PublisherWidget>
     _isMirrored = !_isMirrored;
   }
 
-  Future _hangUp([bool? _isConnected]) async {
-    _isConnected ??= isConnected;
-    if (_isConnected) {
+  Future _hangUp([bool? isConnectedState]) async {
+    isConnectedState ??= isConnected;
+    if (isConnectedState) {
       setState(() {
         _viewers = '0';
         isConnected = false;
       });
-      await _publisherMedia.hangUp(_isConnected);
-      stopWatchTimer.onExecute.add(StopWatchExecute.stop);
+      await _publisherMedia.hangUp(isConnectedState);
+      stopWatchTimer.onStopTimer();
     } else {
       setState(() {
         isConnected = true;
       });
-      stopWatchTimer.onExecute.add(StopWatchExecute.reset);
+      stopWatchTimer.onResetTimer();
       await publish(options);
     }
   }
@@ -250,8 +250,8 @@ class _PublisherWidgetState extends State<PublisherWidget>
             ),
           ),
           ElevatedButton(
-              style:
-                  ElevatedButton.styleFrom(primary: Colors.white, elevation: 0),
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white, elevation: 0),
               child: const Icon(
                 Icons.settings,
                 color: Colors.black,
@@ -427,8 +427,8 @@ class _PublisherWidgetState extends State<PublisherWidget>
               margin: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.height,
-              child: RTCVideoView(_localRenderer, mirror: _isMirrored),
               decoration: const BoxDecoration(color: Colors.black54),
+              child: RTCVideoView(_localRenderer, mirror: _isMirrored),
             ),
           );
         },

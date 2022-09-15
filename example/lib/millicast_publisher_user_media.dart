@@ -12,7 +12,7 @@ const connectOptions = {
   'disableAudio': false,
 };
 
-const String? sourceId = String.fromEnvironment('sourceId');
+const String sourceId = String.fromEnvironment('sourceId');
 
 class MillicastPublishUserMedia extends Publish {
   MillicastMedia? mediaManager;
