@@ -17,7 +17,6 @@ void main() async {
       Permission.camera,
       Permission.microphone,
     ].request();
-    print(statuses[Permission.location]);
   }
   runApp(const MyApp());
 }
