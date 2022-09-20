@@ -43,6 +43,7 @@ dependencies:
   stop_watch_timer: ^2.0.0
   share_plus: ^4.0.4
   flutter_settings_ui: ^2.0.1
+  permission_handler: ^10.0.0
 dev_dependencies:
   flutter_launcher_icons: ^0.10.0
   flutter_lints: ^2.0.1

@@ -111,7 +111,16 @@ class PublisherWidgetState extends State<PublisherWidget>
   }
 
   Future publish(Map options) async {
-    _publisherMedia = await connectPublisher(_publisherMedia, options);
+    try {
+      _publisherMedia = await connectPublisher(_publisherMedia, options);
+    } catch (e) {
+      _publisherMedia = await buildPublisher(_localRenderer);
+      setState(() {
+        _viewers = '0';
+        isConnected = false;
+        isLoading = false;
+      });
+    }
     setState(() {
       stopWatchTimer.onStartTimer();
     });
