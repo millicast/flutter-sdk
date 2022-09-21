@@ -21,16 +21,16 @@ class PublisherSettingsWidget extends StatefulWidget {
       Key? key})
       : super(key: key);
   @override
-  _PublisherSettingsWidgetState createState() =>
+  PublisherSettingsWidgetState createState() =>
       // ignore: no_logic_in_create_state
-      _PublisherSettingsWidgetState(
+      PublisherSettingsWidgetState(
           publisherMedia: publisherMedia,
           supportedCodecs: supportedCodecs,
           options: options,
           isConnected: isConnected);
 }
 
-class _PublisherSettingsWidgetState extends State<PublisherSettingsWidget> {
+class PublisherSettingsWidgetState extends State<PublisherSettingsWidget> {
   Map? options;
   bool isConnected;
   final _formKey = GlobalKey<FormState>();
@@ -38,7 +38,7 @@ class _PublisherSettingsWidgetState extends State<PublisherSettingsWidget> {
   bool isSimulcastEnabled = true;
   List<String> supportedCodecs = ['h264', 'vp8', 'vp9', 'av1'];
 
-  _PublisherSettingsWidgetState(
+  PublisherSettingsWidgetState(
       {required this.publisherMedia,
       required this.supportedCodecs,
       required this.options,
@@ -46,9 +46,9 @@ class _PublisherSettingsWidgetState extends State<PublisherSettingsWidget> {
 
   @override
   Widget build(BuildContext context) {
-    int _bitrate = options?['bandwidth'] ?? 0;
-    bool _audio = options?['stereo'] ?? false;
-    bool _simulcast = options?['simulcast'] ?? false;
+    int bitrate = options?['bandwidth'] ?? 0;
+    bool audio = options?['stereo'] ?? false;
+    bool simulcast = options?['simulcast'] ?? false;
 
     return Scaffold(
       appBar: AppBar(
@@ -84,15 +84,15 @@ class _PublisherSettingsWidgetState extends State<PublisherSettingsWidget> {
                 title: 'BitRate',
                 onPressed: (BuildContext context) {
                   popupDialog(
-                      currentValue: _bitrate.toString(),
+                      currentValue: bitrate.toString(),
                       context: context,
                       formKey: _formKey,
                       isTextbox: true,
                       handler: (value) {
-                        _bitrate = value != null ? int.parse(value) : 0;
-                        options?['bandwidth'] = _bitrate;
+                        bitrate = value != null ? int.parse(value) : 0;
+                        options?['bandwidth'] = bitrate;
                         if (isConnected) {
-                          _updateBitrate(_bitrate);
+                          _updateBitrate(bitrate);
                         }
                       });
                 },
@@ -114,24 +114,24 @@ class _PublisherSettingsWidgetState extends State<PublisherSettingsWidget> {
                 enabled: (!isConnected && isSimulcastEnabled),
                 onToggle: (bool value) {
                   setState(() {
-                    _simulcast = !_simulcast;
-                    options?['simulcast'] = _simulcast;
+                    simulcast = !simulcast;
+                    options?['simulcast'] = simulcast;
                   });
                 },
-                switchValue: _simulcast,
-                leading: _simulcast
+                switchValue: simulcast,
+                leading: simulcast
                     ? const Icon(Icons.splitscreen_sharp)
                     : const Icon(Icons.splitscreen),
                 title: 'Simulcast',
               ),
               SettingsTile.switchTile(
                 enabled: !isConnected,
-                switchValue: _audio,
+                switchValue: audio,
                 leading: const Icon(Icons.headset),
                 title: 'Audio',
                 onToggle: (bool value) {
-                  _audio = !_audio;
-                  options?['stereo'] = _audio;
+                  audio = !audio;
+                  options?['stereo'] = audio;
                   setState(() {});
                 },
               ),
@@ -210,8 +210,8 @@ class _PublisherSettingsWidgetState extends State<PublisherSettingsWidget> {
                       Navigator.of(context).pop();
                     },
                     child: const CircleAvatar(
-                      child: Icon(Icons.close),
                       backgroundColor: Colors.purple,
+                      child: Icon(Icons.close),
                     ),
                   ),
                 ),

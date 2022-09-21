@@ -87,8 +87,8 @@ class Director {
   static Future<MillicastDirectorResponse> getPublisher(
       DirectorPublisherOptions options) async {
     http.Client client = options.client ?? http.Client();
-    _logger.i('Getting publisher connection path for stream name: ' +
-        options.streamName);
+    _logger.i(
+        '''Getting publisher connection path for stream name: ${options.streamName}''');
     Map<String, dynamic> payload = {
       'streamName': options.streamName,
       'streamType': options.streamType ?? StreamTypes.webRTC
@@ -96,7 +96,7 @@ class Director {
     var url = Uri.parse('${getEndpoint()}/api/director/publish');
     Map<String, String> headers = {
       HttpHeaders.contentTypeHeader: 'application/json',
-      HttpHeaders.authorizationHeader: 'Bearer ' + options.token
+      HttpHeaders.authorizationHeader: 'Bearer ${options.token}'
     };
     try {
       http.Response response = await client.post(
@@ -110,11 +110,10 @@ class Director {
       MillicastDirectorResponse data =
           MillicastDirectorResponse.fromJson(responseBody);
       parseIncomingDirectorResponse(data);
-      _logger.d('Getting publisher response:' + response.body);
+      _logger.d('Getting publisher response:${response.body}');
       return data;
     } catch (e) {
-      _logger
-          .e('Error while getting publisher connection path:' + e.toString());
+      _logger.e('Error while getting publisher connection path:$e');
       throw Exception(e);
     } finally {
       client.close();
@@ -140,10 +139,8 @@ class Director {
   static Future<MillicastDirectorResponse> getSubscriber(
       DirectorSubscriberOptions options) async {
     http.Client client = options.client ?? http.Client();
-    _logger.i('Getting subscriber connection data for stream name: ' +
-        options.streamName +
-        ' and account id: ' +
-        options.streamAccountId);
+    _logger.i(
+        '''Getting subscriber connection data for stream name: ${options.streamName} and account id: ${options.streamAccountId}''');
     Map<String, dynamic> payload = {
       'streamAccountId': options.streamAccountId,
       'streamName': options.streamName
@@ -155,7 +152,7 @@ class Director {
     if (options.subscriberToken != null) {
       // Cast to string as subscriberToken may be null
       String subscriberToken = options.subscriberToken as String;
-      headers[HttpHeaders.authorizationHeader] = 'Bearer ' + subscriberToken;
+      headers[HttpHeaders.authorizationHeader] = 'Bearer $subscriberToken';
     }
     _logger.i(payload);
     try {
@@ -170,11 +167,10 @@ class Director {
       MillicastDirectorResponse data =
           MillicastDirectorResponse.fromJson(responseBody);
       parseIncomingDirectorResponse(data);
-      _logger.d('Getting subscriber response:' + response.body);
+      _logger.d('Getting subscriber response:${response.body}');
       return data;
     } catch (e) {
-      _logger
-          .e('Error while getting subscriber connection path:' + e.toString());
+      _logger.e('Error while getting subscriber connection path:$e');
       throw Exception(e);
     } finally {
       client.close();

@@ -14,17 +14,17 @@ class SubscriberSettingsWidget extends StatefulWidget {
   const SubscriberSettingsWidget({this.view, this.options, Key? key})
       : super(key: key);
   @override
-  _SubscriberSettingsWidgetState createState() =>
+  SubscriberSettingsWidgetState createState() =>
       // ignore: no_logic_in_create_state
-      _SubscriberSettingsWidgetState(view: view, options: options);
+      SubscriberSettingsWidgetState(view: view, options: options);
 }
 
-class _SubscriberSettingsWidgetState extends State<SubscriberSettingsWidget> {
+class SubscriberSettingsWidgetState extends State<SubscriberSettingsWidget> {
   Map? options;
   final _formKey = GlobalKey<FormState>();
   View? view;
 
-  _SubscriberSettingsWidgetState({required this.view, required this.options});
+  SubscriberSettingsWidgetState({required this.view, required this.options});
 
   @override
   Widget build(BuildContext context) {
@@ -199,8 +199,8 @@ class _SubscriberSettingsWidgetState extends State<SubscriberSettingsWidget> {
                       Navigator.of(context).pop();
                     },
                     child: const CircleAvatar(
-                      child: Icon(Icons.close),
                       backgroundColor: Colors.purple,
+                      child: Icon(Icons.close),
                     ),
                   ),
                 ),
