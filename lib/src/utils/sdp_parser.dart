@@ -101,9 +101,9 @@ class SdpParser {
               'a=ssrc:${rtx.toString()} label:$label\r\n';
         }
         // Conference flag
-        sdp = sdp! + 'a=x-google-flag:conference\r\n';
+        sdp = '${sdp!}a=x-google-flag:conference\r\n';
         // Add SIM group
-        sdp += 'a=ssrc-group:SIM ' + ssrcs.join(' ') + '\r\n';
+        sdp += 'a=ssrc-group:SIM ${ssrcs.join(' ')}\r\n';
         _logger.i('Simulcast setted');
         _logger.d('Simulcast SDP: $sdp');
         return sdp;
@@ -260,16 +260,8 @@ class SdpParser {
         if (audio == null) {
           return sdp;
         }
-        var multiopus = audio.replaceAll(RegExp(r'\n'), ' ') +
-            pt.toString() +
-            '\r\n' +
-            'a=rtpmap:' +
-            pt.toString() +
-            ' multiopus/48000/6\r\n' +
-            'a=fmtp:' +
-            pt.toString() +
-            ' channel_mapping=0,4,1,2,3,5;coupled_streams=2;' +
-            'minptime=10;num_streams=4;useinbandfec=1\r\n';
+        var multiopus =
+            '${audio.replaceAll(RegExp(r'\n'), ' ')}$pt\r\na=rtpmap:$pt multiopus/48000/6\r\na=fmtp:$pt channel_mapping=0,4,1,2,3,5;coupled_streams=2;minptime=10;num_streams=4;useinbandfec=1\r\n';
         // Change sdp
         sdp = sdp.replaceAll(RegExp(audio), multiopus);
         _logger.i('Multiopus offer created');

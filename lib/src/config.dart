@@ -5,5 +5,5 @@ class Config {
       'https://turn.millicast.com/webrtc/_turn';
   static const String millicastEventsLocation =
       'wss://streamevents.millicast.com/ws';
-  static const String? millicastFixedAccountId = '';
+  static const String millicastFixedAccountId = '';
 }

@@ -1,7 +1,24 @@
+## 1.1.0
+
+### Added
+
+- flutter_webrtc version upgraded to 0.9.7 (Uses WebRTC release m104).
+
+### Changed
+
+- Now example app asks for all the permission required during startup.
+- Updated all dependencies to latest versions.
+- Updated min iOS min version 10 to 11.
+
+### Removed
+
+- Removed uni_links dependency from example app.
+
 ## 1.0.0
 
 ## Initial stable release.
 ### Added
+
 - Millicast Flutter SDK now supports Flutter version 3.
 
 ### Changed

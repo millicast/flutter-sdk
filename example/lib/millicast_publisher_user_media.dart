@@ -12,7 +12,7 @@ const connectOptions = {
   'disableAudio': false,
 };
 
-const String? sourceId = String.fromEnvironment('sourceId');
+const String sourceId = String.fromEnvironment('sourceId');
 
 class MillicastPublishUserMedia extends Publish {
   MillicastMedia? mediaManager;
@@ -56,6 +56,9 @@ class MillicastPublishUserMedia extends Publish {
 
   @override
   connect({Map<String, dynamic> options = connectOptions}) async {
+    if (mediaManager == null) {
+      throw Exception('mediaManager not initialized correctly');
+    }
     await super.connect(
       options: {...options, 'mediaStream': mediaManager?.mediaStream},
     );

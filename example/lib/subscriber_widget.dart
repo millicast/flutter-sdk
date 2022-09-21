@@ -13,10 +13,10 @@ import 'subscriber_settings_widget.dart';
 class SubscriberWidget extends StatefulWidget {
   const SubscriberWidget({Key? key}) : super(key: key);
   @override
-  _SubscriberWidgetState createState() => _SubscriberWidgetState();
+  SubscriberWidgetState createState() => SubscriberWidgetState();
 }
 
-class _SubscriberWidgetState extends State<SubscriberWidget> {
+class SubscriberWidgetState extends State<SubscriberWidget> {
   final stopWatchTimer = StopWatchTimer(
     mode: StopWatchMode.countUp,
   );
@@ -194,7 +194,7 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
           ElevatedButton(
               style: ElevatedButton.styleFrom(
                 alignment: const Alignment(0, 0),
-                primary: Colors.white,
+                backgroundColor: Colors.white,
                 elevation: 0,
               ),
               child: const Icon(
@@ -246,8 +246,8 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
                 margin: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
                 width: MediaQuery.of(context).size.width,
                 height: MediaQuery.of(context).size.height,
-                child: RTCVideoView(_localRenderer),
                 decoration: const BoxDecoration(color: Colors.black54),
+                child: RTCVideoView(_localRenderer),
               ),
               Positioned(
                   top: 40,
@@ -257,13 +257,13 @@ class _SubscriberWidgetState extends State<SubscriberWidget> {
                   child: FloatingActionButton(
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10)),
-                    child: isConnectedSubsc
-                        ? const Text('LIVE')
-                        : const Text('NOT LIVE'),
                     backgroundColor:
                         isConnectedSubsc ? Colors.red : Colors.grey,
                     heroTag: 1,
                     onPressed: null,
+                    child: isConnectedSubsc
+                        ? const Text('LIVE')
+                        : const Text('NOT LIVE'),
                   ))
             ],
           );

@@ -9,6 +9,7 @@ Assuming that you have succesfully run `flutter doctor`, that your flutter versi
 $ flutter pub get
 ```
 
+> **Note for iOS**: Each time WebRTC dependency gets upgraded, dependency `WebRTC-SDK` has to be updated to the required version in the `ios/millicast_flutter_sdk.podspec` file.
 ### Running demo
 
 If you want to add, fix or edit features in SDK, or just try our demo, follow these steps:
