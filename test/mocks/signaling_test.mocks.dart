@@ -22,15 +22,15 @@ import 'package:web_socket_channel/web_socket_channel.dart' as _i2;
 // ignore_for_file: unnecessary_parenthesis
 // ignore_for_file: camel_case_types
 
-class _FakeWebSocketChannel_0 extends _i1.Fake implements _i2.WebSocketChannel {
-}
+class _FakeWebSocketChannel_0 extends _i1.Fake
+    implements _i2.WebSocketChannel {}
 
 class _FakeListener_1 extends _i1.Fake implements _i3.Listener {}
 
 class _FakeWebSocketSink_2 extends _i1.Fake implements _i2.WebSocketSink {}
 
-class _FakeStreamChannel_3<T> extends _i1.Fake implements _i4.StreamChannel<T> {
-}
+class _FakeStreamChannel_3<T> extends _i1.Fake
+    implements _i4.StreamChannel<T> {}
 
 /// A class which mocks [TransactionManager].
 ///

@@ -50,7 +50,6 @@ Future buildSubscriber(RTCVideoRenderer localRenderer) async {
     Map<String, dynamic> eventDataMap = jsonDecode(eventData);
 
     switch (eventDataMap['name']) {
-
       // Case simulcast is enabled
       case 'layers':
         isSimulcastEnabled = true;
