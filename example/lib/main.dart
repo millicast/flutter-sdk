@@ -11,13 +11,6 @@ import 'package:permission_handler/permission_handler.dart';
 void main() async {
   Logger.level = Level.info;
   await dotenv.load(fileName: '.env');
-  if (!kIsWeb) {
-    Map<Permission, PermissionStatus> statuses = await [
-      Permission.bluetoothConnect,
-      Permission.camera,
-      Permission.microphone,
-    ].request();
-  }
   runApp(const MyApp());
 }
 
