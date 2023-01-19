@@ -1,4 +1,4 @@
-#include "include/flu/millicast_flutter_sdk_plugin.h"
+#include "include/millicast_flutter_sdk/millicast_flutter_sdk_plugin.h"
 
 #include <flutter_linux/flutter_linux.h>
 #include <gtk/gtk.h>
