@@ -3,6 +3,7 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  flutter_webrtc
   millicast_flutter_sdk
   url_launcher_linux
 )
