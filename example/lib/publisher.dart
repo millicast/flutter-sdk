@@ -30,11 +30,7 @@ Future<MillicastPublishUserMedia> connectPublisher(
       'events': ['active', 'inactive', 'layers', 'viewercount']
     };
 
-    if (!kIsWeb) {
-      if (Platform.isAndroid || Platform.isIOS) {
-        options['codec'] = 'vp8';
-      }
-    }
+    options['codec'] = 'vp8';
 
     if (mainOptions.containsKey('sourceId')) {
       options['sourceId'] = mainOptions['sourceId'];
