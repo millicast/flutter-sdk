@@ -29,6 +29,10 @@ class NativeChannel {
             .toList();
         return codecs;
       }
+      if (Platform.isMacOS) {
+        // Not supported, needs further investigation
+        codecs.remove('vp9');
+      }
     }
     return codecs;
   }
