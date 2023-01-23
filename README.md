@@ -54,7 +54,7 @@ This entry allows your app to access the camera and microphone.
 
 ### MacOS 
 
-To add specific capabilities or services on your macOS app, such as access to internet, capture media from the integrated camera and microphone devices, then you must set up specific entitlements to your _DebugProfile.entitlements_ (for debug and profile builds) and Runner.entitlements_ (for release builds) files.
+To add specific capabilities or services on your macOS app, such as access to internet, capture media from the integrated camera and microphone devices, then you must set up specific entitlements to your _DebugProfile.entitlements_ (for debug and profile builds) and _Runner.entitlements_ (for release builds) files.
 
 Add at `<project root>/macos/Runner/DebugProfile.entitlements` and `<project root>/macos/Runner/Release.entitlements`:
 
