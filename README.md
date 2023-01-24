@@ -1,12 +1,13 @@
 # Millicast SDK for Flutter
 
 Flutter SDK for building a realtime broadcaster using the Millicast platform.
-This Software Development Kit (SDK) for Flutter allows developers to simplify Millicast services integration into their own Android and iOS apps.
+This Software Development Kit (SDK) for Flutter allows developers to simplify Millicast services integration into their own Android and iOS mobile apps, and Windows, Linux and MacOS desktop apps.
 
 ## Table of Contents
 
 - [Installation](#installation)
-  - [iOS](#ios)
+  - [iOS and MacOS](#ios-and-macos)
+  - [MacOS](#macos)
   - [Android](#android)
 - [Basic Usage](#basic-usage)
   - [Main app](#main-app)
@@ -56,7 +57,7 @@ This entry allows your app to access the camera and microphone.
 
 To add specific capabilities or services on your macOS app, such as access to internet, capture media from the integrated camera and microphone devices, then you must set up specific entitlements to your _DebugProfile.entitlements_ (for debug and profile builds) and _Runner.entitlements_ (for release builds) files.
 
-Add at `<project root>/macos/Runner/DebugProfile.entitlements` and `<project root>/macos/Runner/Release.entitlements`:
+At `<project root>/macos/Runner/DebugProfile.entitlements` and `<project root>/macos/Runner/Release.entitlements` add the following entrys:
 
 ```xml
 <key>com.apple.security.network.server</key>
