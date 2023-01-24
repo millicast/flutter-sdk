@@ -68,6 +68,8 @@ Add at `<project root>/macos/Runner/DebugProfile.entitlements` and `<project roo
 <key>com.apple.security.network.client</key>
 ```
 
+Also give your app access to use your camera and mic. Go to **Apple menu  > System Preferences > Privacy & Security > Privacy**. There unlock the lock icon in the lower-left to allow you to make changes to your preferences. Then, for both the camera and the microphone, select the respective icon and then enable the toggle next to your app to allow access to the device.
+
 ### Android
 
 Ensure the following permission is present in your Android Manifest file, located in `<project root>/android/app/src/main/AndroidManifest.xml`:
