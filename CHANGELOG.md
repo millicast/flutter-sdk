@@ -1,3 +1,13 @@
+### 1.2.0
+
+### Added
+
+- Millicast Flutter SDK now allow desktop support on all three platforms MacOS, Linux and Windows.
+
+### Changed
+
+- Updated all dependencies to latest resolvable versions.
+
 ## 1.1.0
 
 ### Added

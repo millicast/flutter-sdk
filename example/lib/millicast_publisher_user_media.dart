@@ -113,7 +113,6 @@ class MillicastMedia {
           mediaStream?.getAudioTracks()[0].enableSpeakerphone(true);
         }
       }
-
       return mediaStream;
     } catch (e) {
       throw Error();

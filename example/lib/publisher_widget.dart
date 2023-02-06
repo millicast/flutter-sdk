@@ -59,8 +59,8 @@ class PublisherWidgetState extends State<PublisherWidget>
     if (_localRenderer.srcObject != null) {
       await closeCameraStream();
     }
-    await _hangUp(true);
     setState(() {
+      _hangUp(true);
       isAudioMuted = false;
       isVideoMuted = false;
       isConnected = false;
