@@ -41,7 +41,7 @@ android {
 }
 
 dependencies {
-    implementation 'com.github.webrtc-sdk:android:97.4692.01'
+    implementation 'io.github.webrtc-sdk:android:104.5112.09'
     implementation 'androidx.annotation:annotation:1.1.0'
     implementation 'com.android.support:multidex:2.0.1'
 }

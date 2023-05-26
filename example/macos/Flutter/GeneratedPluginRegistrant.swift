@@ -7,7 +7,7 @@ import Foundation
 
 import flutter_webrtc
 import millicast_flutter_sdk
-import path_provider_macos
+import path_provider_foundation
 import share_plus
 
 func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {

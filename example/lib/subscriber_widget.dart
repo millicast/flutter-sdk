@@ -7,6 +7,7 @@ import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 
 import 'package:millicast_flutter_sdk/millicast_flutter_sdk.dart';
+import 'package:millicast_flutter_sdk/src/view.dart' as millicast_view;
 
 import 'subscriber_settings_widget.dart';
 
@@ -22,7 +23,7 @@ class SubscriberWidgetState extends State<SubscriberWidget> {
   );
   final RTCVideoRenderer _localRenderer = RTCVideoRenderer();
   late String _viewers = '0';
-  View? _view;
+  millicast_view.View? _view;
   Map options = {};
   bool isVideoMuted = false;
   bool isAudioMuted = false;
