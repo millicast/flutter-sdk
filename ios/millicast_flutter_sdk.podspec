@@ -12,7 +12,6 @@ Pod::Spec.new do |s|
   s.source           = { :path => '.' }
   s.source_files = 'Classes/**/*'
   s.dependency 'Flutter'
-  # s.dependency 'WebRTC-SDK', '104.5112.09'
   s.dependency 'WebRTC-SDK', '104.5112.17'
   s.platform = :ios, '11.0'
 
