@@ -22,7 +22,7 @@ class InternalLogPrinter extends LogPrinter {
     var logResult = color!(
         // ignore: lines_longer_than_80_chars
         '[$className] ${DateTime.now()} - ${(event.level).toString().toUpperCase().split('.')[1]} - ${event.message}');
-    OutputEvent output = OutputEvent(event.level, [logResult]);
+    OutputEvent output = OutputEvent(event, [logResult]);
     memory.output(output);
     return [logResult];
   }
@@ -32,8 +32,7 @@ class BufferMemoryOutput extends MemoryOutput {
   @override
   // ignore: overridden_fields
   int bufferSize;
-  BufferMemoryOutput({required this.bufferSize, LogOutput? secondOutput})
-      : super(bufferSize: bufferSize, secondOutput: secondOutput);
+  BufferMemoryOutput({required this.bufferSize, LogOutput? secondOutput}) : super(bufferSize: bufferSize, secondOutput: secondOutput);
 
   void setBufferSize(int val) {
     bufferSize = val;
