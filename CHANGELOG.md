@@ -7,6 +7,11 @@
 ### Changed
 
 - Updated all dependencies to latest resolvable versions.
+- Updated webRTC versions for iOS (104.5112.17) and Android (104.5112.09)
+
+### Fixed
+
+- Fixes for Dart 3 and Flutter 3.10 support.
 
 ## 1.1.0
 
