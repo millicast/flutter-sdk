@@ -3,7 +3,7 @@
 Flutter SDK for building a realtime broadcaster using the Millicast platform.
 This Software Development Kit (SDK) for Flutter allows developers to simplify Millicast services integration into their own Android and iOS mobile apps, and Windows, Linux and MacOS desktop apps.
 
-> **Note**: Desktop support (Windows, Linux and MacOS) is still on beta state as it's under development. You should be able to run this project in these platforms, however we do not assure full feature support for them.
+> **Note**: Desktop support (Windows, Linux and MacOS) is still on beta state as it's under development.
 
 ## Table of Contents
 
