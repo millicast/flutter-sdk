@@ -1,12 +1,15 @@
 # Millicast SDK for Flutter
 
 Flutter SDK for building a realtime broadcaster using the Millicast platform.
-This Software Development Kit (SDK) for Flutter allows developers to simplify Millicast services integration into their own Android and iOS apps.
+This Software Development Kit (SDK) for Flutter allows developers to simplify Millicast services integration into their own Android and iOS mobile apps, and Windows, Linux and MacOS desktop apps.
+
+> **Note**: Desktop support (Windows, Linux and MacOS) is still on beta state as it's under development.
 
 ## Table of Contents
 
 - [Installation](#installation)
-  - [iOS](#ios)
+  - [iOS and MacOS](#ios-and-macos)
+  - [MacOS](#macos)
   - [Android](#android)
 - [Basic Usage](#basic-usage)
   - [Main app](#main-app)
@@ -39,9 +42,9 @@ Add `flutter_webrtc` as a [dependency in your pubspec.yaml file](https://flutter
 
 You will need a Millicast account and a valid publishing token that you can find it in your dashboard ([link here](https://dash.millicast.com/#/signin)).
 
-### iOS
+### iOS and MacOS
 
-Add the following entry to your _Info.plist_ file, located in `<project root>/ios/Runner/Info.plist`:
+Add the following entry to your _Info.plist_ file, located in `<project root>/ios/Runner/Info.plist` and `<project root>/macos/Runner/Info.plist`:
 
 ```xml
 <key>NSCameraUsageDescription</key>
@@ -51,6 +54,24 @@ Add the following entry to your _Info.plist_ file, located in `<project root>/io
 ```
 
 This entry allows your app to access the camera and microphone.
+
+### MacOS 
+
+To add specific capabilities or services on your macOS app, such as access to internet, capture media from the integrated camera and microphone devices, then you must set up specific entitlements to your _DebugProfile.entitlements_ (for debug and profile builds) and _Runner.entitlements_ (for release builds) files.
+
+At `<project root>/macos/Runner/DebugProfile.entitlements` and `<project root>/macos/Runner/Release.entitlements` add the following entrys:
+
+```xml
+<key>com.apple.security.network.server</key>
+<true/>
+<key>com.apple.security.device.camera</key>
+<true/>
+<key>com.apple.security.device.audio-input</key>
+<true/>
+<key>com.apple.security.network.client</key>
+```
+
+Also give your app access to use your camera and mic. Go to **Apple menu  > System Preferences > Privacy & Security > Privacy**. There unlock the lock icon in the lower-left to allow you to make changes to your preferences. Then, for both the camera and the microphone, select the respective icon and then enable the toggle next to your app to allow access to the device.
 
 ### Android
 

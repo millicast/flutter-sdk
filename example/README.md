@@ -42,7 +42,7 @@ MILLICAST_ACCOUNT_ID=yourAccountId
 MILLICAST_PUBLISH_TOKEN=yourPublishToken
 ```
 
-> You will need to find or create a new stream name with a token in your Millicast Dashboard. You can do that following this [link](https://docs.millicast.com/docs/managing-your-tokens).
+> You will need to find or create a new stream name with a token in your Millicast Dashboard. You can do that following this [link](https://docs.dolby.io/streaming-apis/docs/managing-your-tokens).
 
 You need to set up an emulator or connect a device in order to run the app.
 

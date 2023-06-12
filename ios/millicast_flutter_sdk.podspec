@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'millicast_flutter_sdk'
-  s.version          = '1.1.0'
+  s.version          = '1.2.0'
   s.summary          = 'A Flutter SDK that allows developers to simplify Millicast services integration into their own Android and iOS apps.'
   s.homepage         = 'https://github.com/millicast/flutter-sdk/ios'
   s.license          = { :file => '../LICENSE' }
@@ -12,7 +12,7 @@ Pod::Spec.new do |s|
   s.source           = { :path => '.' }
   s.source_files = 'Classes/**/*'
   s.dependency 'Flutter'
-  s.dependency 'WebRTC-SDK', '104.5112.02'
+  s.dependency 'WebRTC-SDK', '104.5112.17'
   s.platform = :ios, '11.0'
 
   # Flutter.framework does not contain a i386 slice.

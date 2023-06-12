@@ -4,12 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_settings_ui/flutter_settings_ui.dart';
 import 'package:logger/logger.dart';
 import 'package:millicast_flutter_sdk/millicast_flutter_sdk.dart';
+import 'package:millicast_flutter_sdk/src/view.dart' as millicast_view;
 
 Logger _logger = getLogger('SubscriberSettings');
 var simulcastQualityValue = 'Auto';
 
 class SubscriberSettingsWidget extends StatefulWidget {
-  final View? view;
+  final millicast_view.View? view;
   final Map? options;
   const SubscriberSettingsWidget({this.view, this.options, Key? key})
       : super(key: key);
@@ -22,7 +23,7 @@ class SubscriberSettingsWidget extends StatefulWidget {
 class SubscriberSettingsWidgetState extends State<SubscriberSettingsWidget> {
   Map? options;
   final _formKey = GlobalKey<FormState>();
-  View? view;
+  millicast_view.View? view;
 
   SubscriberSettingsWidgetState({required this.view, required this.options});
 
