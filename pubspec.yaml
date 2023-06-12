@@ -1,6 +1,6 @@
 name: millicast_flutter_sdk
 description: A Flutter SDK that allows developers to simplify Millicast services integration into their own Android and iOS apps.
-version: 1.1.0
+version: 1.2.0
 homepage: https://github.com/millicast/flutter-sdk
 
 environment:

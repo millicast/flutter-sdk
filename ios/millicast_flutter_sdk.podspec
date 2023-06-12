@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'millicast_flutter_sdk'
-  s.version          = '1.1.0'
+  s.version          = '1.2.0'
   s.summary          = 'A Flutter SDK that allows developers to simplify Millicast services integration into their own Android and iOS apps.'
   s.homepage         = 'https://github.com/millicast/flutter-sdk/ios'
   s.license          = { :file => '../LICENSE' }
