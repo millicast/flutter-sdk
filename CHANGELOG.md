@@ -2,11 +2,11 @@
 
 ### Added
 
-- Millicast Flutter SDK now allow desktop support on all three platforms MacOS, Linux and Windows.
+- Millicast Flutter SDK now allows desktop support on all three platforms MacOS, Linux, and Windows.
 
 ### Changed
 
-- Updated all dependencies to latest resolvable versions.
+- Updated all dependencies to the latest resolvable versions.
 - Updated webRTC versions for iOS (104.5112.17) and Android (104.5112.09)
 
 ### Fixed
