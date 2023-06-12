@@ -32,7 +32,9 @@ class BufferMemoryOutput extends MemoryOutput {
   @override
   // ignore: overridden_fields
   int bufferSize;
-  BufferMemoryOutput({required this.bufferSize, LogOutput? secondOutput}) : super(bufferSize: bufferSize, secondOutput: secondOutput);
+  // ignore: lines_longer_than_80_chars
+  BufferMemoryOutput({required this.bufferSize, LogOutput? secondOutput})
+      : super(bufferSize: bufferSize, secondOutput: secondOutput);
 
   void setBufferSize(int val) {
     bufferSize = val;
