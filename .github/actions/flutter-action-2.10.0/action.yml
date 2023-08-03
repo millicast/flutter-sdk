@@ -1,0 +1,58 @@
+name: 'Flutter action'
+description: 'Setup your runner with Flutter environment'
+author: 'Alif Rachmawadi'
+branding:
+  icon: 'maximize'
+  color: 'blue'
+inputs:
+  flutter-version:
+    description: 'The Flutter version to make available on the path'
+    required: false
+    default: 'any'
+  channel:
+    description: 'The Flutter build release channel'
+    required: false
+    default: 'stable'
+  cache:
+    description: 'Cache the Flutter SDK'
+    required: false
+    default: false
+  cache-key:
+    description: 'Identifier for the Flutter SDK cache'
+    required: false
+    default: 'flutter-:os:-:channel:-:version:-:arch:-:hash:'
+  cache-path:
+    description: 'Flutter SDK cache path'
+    required: false
+    default: '${{ runner.tool_cache }}/flutter/:channel:-:version:-:arch:'
+  architecture:
+    description: 'The architecture of Flutter SDK executable (x64 or arm64)'
+    required: false
+    default: '${{ runner.arch }}'
+outputs:
+  CACHE-PATH:
+    value: '${{ steps.flutter-action.outputs.CACHE-PATH }}'
+  CACHE-KEY:
+    value: '${{ steps.flutter-action.outputs.CACHE-KEY }}'
+  CHANNEL:
+    value: '${{ steps.flutter-action.outputs.CHANNEL }}'
+  VERSION:
+    value: '${{ steps.flutter-action.outputs.VERSION }}'
+  ARCHITECTURE:
+    value: '${{ steps.flutter-action.outputs.ARCHITECTURE }}'
+runs:
+  using: 'composite'
+  steps:
+    - id: flutter-action
+      run: $GITHUB_ACTION_PATH/setup.sh -p -c '${{ inputs.cache-path }}' -k '${{ inputs.cache-key }}' -n '${{ inputs.flutter-version }}' -a '${{ inputs.architecture }}' ${{ inputs.channel }}
+      shell: bash
+    - if: ${{ inputs.cache == 'true' }}
+      uses: actions/cache@v3
+      with:
+        path: ${{ steps.flutter-action.outputs.CACHE-PATH }}
+        key: ${{ steps.flutter-action.outputs.CACHE-KEY }}-${{ hashFiles('**/pubspec.lock') }}
+        restore-keys: |
+          ${{ steps.flutter-action.outputs.CACHE-KEY }}-${{ hashFiles('**/pubspec.lock') }}
+          ${{ steps.flutter-action.outputs.CACHE-KEY }}
+    - run: $GITHUB_ACTION_PATH/setup.sh -c '${{ steps.flutter-action.outputs.CACHE-PATH }}' -n '${{ steps.flutter-action.outputs.VERSION }}' -a '${{ steps.flutter-action.outputs.ARCHITECTURE }}' ${{ steps.flutter-action.outputs.CHANNEL }}
+      shell: bash
