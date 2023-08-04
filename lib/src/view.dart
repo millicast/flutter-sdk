@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:millicast_flutter_sdk/src/peer_connection.dart';
 import 'package:millicast_flutter_sdk/src/signaling.dart';
+import 'package:millicast_flutter_sdk/src/utils/fetch_error.dart';
 import 'package:millicast_flutter_sdk/src/utils/reemit.dart';
 
 import 'director.dart';
@@ -244,9 +245,18 @@ class View extends BaseWebRTC {
     MillicastDirectorResponse subscriberData;
     try {
       subscriberData = await tokenGenerator();
-    } catch (e) {
+    } on FetchException catch (error) {
       _logger.e('Error generating token.');
-      throw Exception(e);
+      if(error.status == 401) {
+        // should not reconnect
+        this.stopReconnection = true;
+      } else {
+        // should reconnect with exponential back off
+        reconnect();
+      }
+      rethrow;
+    } catch (error) {
+      rethrow;
     }
     // ignore: unnecessary_null_comparison
     if (subscriberData == null) {

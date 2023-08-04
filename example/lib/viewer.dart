@@ -149,6 +149,6 @@ Future viewConnect(View view) async {
     });
     return view;
   } catch (e) {
-    view.reconnect();
+    _logger.e(e);
   }
 }

@@ -1,29 +1,27 @@
 PODS:
   - Flutter (1.0.0)
-  - flutter_webrtc (0.9.4):
+  - flutter_webrtc (0.9.31):
     - Flutter
-    - WebRTC-SDK (= 104.5112.02)
-  - millicast_flutter_sdk (1.1.0):
+    - WebRTC-SDK (= 104.5112.17)
+  - millicast_flutter_sdk (1.2.0):
     - Flutter
-    - WebRTC-SDK (= 104.5112.02)
-  - path_provider_ios (0.0.1):
+    - WebRTC-SDK (= 104.5112.17)
+  - path_provider_foundation (0.0.1):
     - Flutter
-  - permission_handler_apple (9.0.4):
+    - FlutterMacOS
+  - permission_handler_apple (9.1.1):
     - Flutter
   - share_plus (0.0.1):
     - Flutter
-  - url_launcher_ios (0.0.1):
-    - Flutter
-  - WebRTC-SDK (104.5112.02)
+  - WebRTC-SDK (104.5112.17)
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
   - flutter_webrtc (from `.symlinks/plugins/flutter_webrtc/ios`)
   - millicast_flutter_sdk (from `.symlinks/plugins/millicast_flutter_sdk/ios`)
-  - path_provider_ios (from `.symlinks/plugins/path_provider_ios/ios`)
+  - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/ios`)
   - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
   - share_plus (from `.symlinks/plugins/share_plus/ios`)
-  - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
 
 SPEC REPOS:
   trunk:
@@ -36,25 +34,22 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_webrtc/ios"
   millicast_flutter_sdk:
     :path: ".symlinks/plugins/millicast_flutter_sdk/ios"
-  path_provider_ios:
-    :path: ".symlinks/plugins/path_provider_ios/ios"
+  path_provider_foundation:
+    :path: ".symlinks/plugins/path_provider_foundation/ios"
   permission_handler_apple:
     :path: ".symlinks/plugins/permission_handler_apple/ios"
   share_plus:
     :path: ".symlinks/plugins/share_plus/ios"
-  url_launcher_ios:
-    :path: ".symlinks/plugins/url_launcher_ios/ios"
 
 SPEC CHECKSUMS:
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
-  flutter_webrtc: aa130dfe1eca6625c2e2e51ce830abb495bdb06e
-  millicast_flutter_sdk: 9241ae3bae4deaa38e15a8900e3427659fd83f94
-  path_provider_ios: 14f3d2fd28c4fdb42f44e0f751d12861c43cee02
-  permission_handler_apple: 44366e37eaf29454a1e7b1b7d736c2cceaeb17ce
+  flutter_webrtc: 02c023207f972145a3bc8c7aada86754f264d563
+  millicast_flutter_sdk: 7604de83ca2016742335a91f3b111a5620987a36
+  path_provider_foundation: 29f094ae23ebbca9d3d0cec13889cd9060c0e943
+  permission_handler_apple: e76247795d700c14ea09e3a2d8855d41ee80a2e6
   share_plus: 056a1e8ac890df3e33cb503afffaf1e9b4fbae68
-  url_launcher_ios: 839c58cdb4279282219f5e248c3321761ff3c4de
-  WebRTC-SDK: e0589abeb63db07a4ca1f45c82ba0f1a72e61622
+  WebRTC-SDK: 082ae4893212534a779ca233f19a9df8efd5f3bd
 
-PODFILE CHECKSUM: 6fa40e3b8e2cc4f6ffdf4ec2237d55ab3e0d469b
+PODFILE CHECKSUM: c7f777b8cab1ad7af915902f4105c73f4511ff5a
 
-COCOAPODS: 1.11.3
+COCOAPODS: 1.12.1

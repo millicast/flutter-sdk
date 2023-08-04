@@ -1,3 +1,5 @@
+import 'package:millicast_flutter_sdk/src/utils/fetch_error.dart';
+
 import 'config.dart';
 import 'dart:io';
 import 'dart:async';
@@ -107,6 +109,12 @@ class Director {
       _logger.i(response.body);
       final Map<String, dynamic> responseBody =
           jsonDecode(response.body)['data'];
+      // Handle a failed POST request
+      if (response.statusCode != 200) {
+        final error = FetchException(responseBody['message'], 
+                                      response.statusCode);
+        throw error;
+      }
       MillicastDirectorResponse data =
           MillicastDirectorResponse.fromJson(responseBody);
       parseIncomingDirectorResponse(data);
@@ -114,7 +122,7 @@ class Director {
       return data;
     } catch (e) {
       _logger.e('Error while getting publisher connection path:$e');
-      throw Exception(e);
+      rethrow;
     } finally {
       client.close();
     }
@@ -164,6 +172,12 @@ class Director {
       _logger.i(jsonDecode(response.body));
       final Map<String, dynamic> responseBody =
           jsonDecode(response.body)['data'];
+      // Handle a failed POST request
+      if (response.statusCode != 200) {
+        final error = FetchException(responseBody['message'], 
+                                      response.statusCode);
+        throw error;
+      }
       MillicastDirectorResponse data =
           MillicastDirectorResponse.fromJson(responseBody);
       parseIncomingDirectorResponse(data);
@@ -171,7 +185,7 @@ class Director {
       return data;
     } catch (e) {
       _logger.e('Error while getting subscriber connection path:$e');
-      throw Exception(e);
+      rethrow;
     } finally {
       client.close();
     }
