@@ -120,6 +120,7 @@ class PublisherWidgetState extends State<PublisherWidget>
         isConnected = false;
         isLoading = false;
       });
+      return;
     }
     setState(() {
       stopWatchTimer.onStartTimer();

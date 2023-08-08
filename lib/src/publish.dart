@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_webrtc/flutter_webrtc.dart';
+import 'package:millicast_flutter_sdk/src/utils/fetch_error.dart';
 
 import 'director.dart';
 import 'logger.dart';
@@ -77,8 +78,17 @@ class Publish extends BaseWebRTC {
     }
     try {
       publisherData = await tokenGenerator();
-    } catch (error) {
+    } on FetchException catch (error) {
       _logger.e('Error generating token.');
+      if(error.status == 401) {
+        // should not reconnect
+        this.stopReconnection = true;
+      } else {
+        // should reconnect with exponential back off
+        reconnect();
+      }
+      rethrow;
+    } catch (error) {
       rethrow;
     }
     if (publisherData.urls.isEmpty && publisherData.jwt.isEmpty) {

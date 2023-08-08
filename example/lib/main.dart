@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:logger/logger.dart';
@@ -6,7 +5,6 @@ import 'home_screen.dart';
 import 'publisher_widget.dart';
 import 'subscriber_widget.dart';
 import 'publisher_settings_widget.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 void main() async {
   Logger.level = Level.info;

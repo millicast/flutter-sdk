@@ -24,6 +24,7 @@ example/web
 
 # Editor generated files/
 .vscode/
+.DS_Store
 
 # Env files
 *.env

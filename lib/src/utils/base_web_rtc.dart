@@ -31,6 +31,7 @@ class BaseWebRTC extends EventEmitter {
   bool? alreadyDisconnected;
   bool? firstReconnection;
   bool stopReconnection = false;
+  bool isReconnecting = false;
   Map<String, dynamic>? options;
 
   BaseWebRTC({
@@ -117,8 +118,10 @@ class BaseWebRTC extends EventEmitter {
         return;
       }
 
-      if (!isActive()) {
+      logger.i('Attempting to reconnect...');
+      if (!isActive() && !isReconnecting) {
         stop();
+        isReconnecting = true;
         if (options != null) {
           await connect(options: options!);
         } else {
@@ -127,8 +130,10 @@ class BaseWebRTC extends EventEmitter {
         alreadyDisconnected = false;
         reconnectionInterval = baseInterval;
         firstReconnection = true;
+        isReconnecting = false;
       }
     } catch (error) {
+      isReconnecting = false;
       reconnectionInterval = nextReconnectInterval(reconnectionInterval!);
       logger.e(
           '''Reconnection failed, retrying in ${reconnectionInterval}ms. Error was: $error''');
