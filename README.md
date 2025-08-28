@@ -1,5 +1,5 @@
 # Deprecated
-This SDK is no longer being developed. If you would like to use a Flutter SDK with OptiView Real-Time (Millicast) please (contact OptiView Sales)[https://optiview.dolby.com/contact/].
+This SDK is no longer being developed. If you would like to use a Flutter SDK with OptiView Real-Time (Millicast) please [contact OptiView Sales](https://optiview.dolby.com/contact/).
 If you are an existing customer using this SDK, please contact us via our support channels for ongoing support and migration options.
 
 ---
