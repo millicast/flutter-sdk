@@ -1,3 +1,10 @@
+# Deprecated
+This SDK is no longer being developed. If you would like to use a Flutter SDK with Optiview Realtime (Millicast) please (contact Optiview Sales)[https://optiview.dolby.com/contact/].
+If you are an existing customer using this SDK, please contact us via our support channels for ongoing support and migration options.
+
+---
+---
+
 # Millicast SDK for Flutter
 
 Flutter SDK for building a realtime broadcaster using the Millicast platform.
